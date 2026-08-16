@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "219925601241",
+    "project_id": "masarpro",
+    "storage_bucket": "masarpro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219925601241:android:84997dba09066161e597c8",
+        "android_client_info": {
+          "package_name": "com.example.masar_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHxO1q0TKRWGP-RyazJcqQL2DVCtVQY_M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

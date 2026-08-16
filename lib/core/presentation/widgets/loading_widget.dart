@@ -1,0 +1,23 @@
+import 'package:flutter/material.dart';
+import '../../../config/app_colors.dart';
+
+class LoadingWidget extends StatelessWidget {
+  final double size;
+  final Color? color;
+
+  const LoadingWidget({super.key, this.size = 32, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: CircularProgressIndicator(
+          strokeWidth: 2.5,
+          valueColor: AlwaysStoppedAnimation<Color>(color ?? AppColors.primary),
+        ),
+      ),
+    );
+  }
+}
