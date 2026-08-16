@@ -5,9 +5,8 @@ import 'package:masar_pro/config/typography.dart';
 import 'package:masar_pro/core/presentation/widgets/app_error_widget.dart';
 import 'package:masar_pro/core/presentation/widgets/loading_widget.dart';
 import 'package:masar_pro/core/presentation/widgets/pub/add_project_button.dart';
-import 'package:masar_pro/core/presentation/widgets/pub/in_progress_publishing_card.dart';
 import 'package:masar_pro/core/presentation/widgets/pub/publishing_progress_header.dart';
-import 'package:masar_pro/core/presentation/widgets/status_badge.dart';
+import 'package:masar_pro/core/presentation/widgets/unified_task_card.dart';
 import 'package:masar_pro/injection/injection_container.dart' as di;
 
 import '../../../../domain/entities/research_project.dart';
@@ -99,11 +98,11 @@ class _ProjectsList extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final project = state.projects[index];
-              return InProgressPublishingCard(
-                category: _categoryFor(project.status),
+              return UnifiedTaskCard(
                 title: project.title,
+                subtitle: _categoryFor(project.status),
                 progress: _progressFor(project),
-                statusBadgeType: _badgeFor(project.status),
+                taskType: UnifiedTaskType.publishing,
               );
             },
           );
@@ -130,18 +129,6 @@ class _ProjectsList extends StatelessWidget {
     final score = project.readinessScore;
     if (score <= 1) return score.clamp(0.0, 1.0);
     return (score / 100).clamp(0.0, 1.0);
-  }
-
-  static Status _badgeFor(ResearchProjectStatus status) {
-    return switch (status) {
-      ResearchProjectStatus.draft => Status.toDo,
-      ResearchProjectStatus.analyzing => Status.inProgress,
-      ResearchProjectStatus.readyForJournal => Status.inProgress,
-      ResearchProjectStatus.needsRevision => Status.toDo,
-      ResearchProjectStatus.submitted => Status.inProgress,
-      ResearchProjectStatus.accepted => Status.done,
-      ResearchProjectStatus.rejected => Status.toDo,
-    };
   }
 }
 

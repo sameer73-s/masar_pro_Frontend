@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../config/app_colors.dart';
-import '../../../../../config/app_theme.dart';
 import '../../../../../core/network/api_config.dart';
 import '../../../../../core/presentation/widgets/app_error_dialog.dart';
-import '../../../../../core/presentation/widgets/status_badge.dart';
+import '../../../../../core/presentation/widgets/unified_task_card.dart';
 import '../../../domain/entities/agency_task.dart';
 import '../../../domain/enums/task_status.dart';
 import '../../bloc/agency_bloc/agency_bloc.dart';
@@ -19,103 +18,18 @@ class AgencyTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final category = _categoryStyle(task);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppShapes.cardRadius),
-        boxShadow: AppShadows.subtleCard,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top: title + category icon
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  _taskTitle(task),
-                  style: const TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: category.bg,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                alignment: Alignment.center,
-                child: Icon(
-                  category.icon,
-                  size: 14,
-                  color: category.fg,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          // Middle: subtitle
-          Text(
-            _taskSubtitle(task),
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 12),
-          // Bottom: time + status badge
-          Row(
-            children: [
-              const Icon(
-                Icons.access_time_rounded,
-                size: 14,
-                color: AppColors.textTertiary,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                _formatTime(task.createdAt),
-                style: const TextStyle(
-                  color: AppColors.textTertiary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const Spacer(),
-              StatusBadge(
-                status: _badgeStatus(task.status),
-                label: _badgeLabel(task.status),
-              ),
-            ],
-          ),
-          if (task.quotedPrice != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Quote: ${task.quotedPrice}',
-              style: const TextStyle(
-                color: AppColors.accentPurple,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-          _ActionRow(task: task),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        UnifiedTaskCard(
+          title: _taskTitle(task),
+          subtitle: _taskSubtitle(task),
+          progress: _progressFor(task.status),
+          taskType: UnifiedTaskType.research,
+        ),
+        const SizedBox(height: 8),
+        _ActionRow(task: task),
+      ],
     );
   }
 
@@ -140,48 +54,15 @@ class AgencyTaskCard extends StatelessWidget {
   static String _taskSubtitle(AgencyTask task) {
     final shortId =
         task.id.length > 8 ? '${task.id.substring(0, 8)}…' : task.id;
-    return 'Client ${task.clientId} · #$shortId';
+    final quote = task.quotedPrice != null ? ' · Quote: ${task.quotedPrice}' : '';
+    return 'Client ${task.clientId} · #$shortId · ${_formatTime(task.createdAt)}$quote';
   }
 
-  static ({IconData icon, Color bg, Color fg}) _categoryStyle(AgencyTask task) {
-    return switch (task.status) {
-      TaskStatus.completed => (
-          icon: Icons.check_circle_outline_rounded,
-          bg: AppColors.surfacePurple,
-          fg: AppColors.accentPurple,
-        ),
-      TaskStatus.processing || TaskStatus.approved => (
-          icon: Icons.auto_awesome_rounded,
-          bg: AppColors.surfaceOrange,
-          fg: AppColors.accentOrange,
-        ),
-      TaskStatus.pendingApproval => (
-          icon: Icons.pending_actions_rounded,
-          bg: AppColors.surfaceBlue,
-          fg: AppColors.statusBlue,
-        ),
-      _ => (
-          icon: Icons.work_outline_rounded,
-          bg: AppColors.surfacePink,
-          fg: const Color(0xFFE91E8C),
-        ),
-    };
-  }
-
-  static Status _badgeStatus(TaskStatus status) => switch (status) {
-        TaskStatus.completed => Status.done,
-        TaskStatus.processing || TaskStatus.approved => Status.inProgress,
-        _ => Status.toDo,
-      };
-
-  static String _badgeLabel(TaskStatus status) => switch (status) {
-        TaskStatus.uploaded => 'To-Do',
-        TaskStatus.pendingApproval => 'Pending',
-        TaskStatus.approved => 'Approved',
-        TaskStatus.rejected => 'Rejected',
-        TaskStatus.processing => 'In Progress',
-        TaskStatus.completed => 'Done',
-        TaskStatus.failed => 'Failed',
+  /// UPLOADED → 0.0, PROCESSING → 0.5, COMPLETED → 1.0.
+  static double _progressFor(TaskStatus status) => switch (status) {
+        TaskStatus.completed => 1.0,
+        TaskStatus.processing || TaskStatus.approved => 0.5,
+        _ => 0.0,
       };
 
   static String _formatTime(DateTime date) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../config/app_colors.dart';
+import '../../../../../../core/presentation/widgets/unified_task_card.dart';
 import '../../../../domain/entities/order_entity.dart';
 import '../../bloc/dashboard_bloc.dart';
 import '../../bloc/dashboard_state.dart';
@@ -75,43 +76,14 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
                   statusAr = 'مكتمل';
                 }
 
-                return Card(
-                  elevation: 0,
-                  color: AppColors.surface,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(
-                      color: AppColors.slateGray.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppColors.background,
-                      child: Icon(
-                        order.isReady
-                            ? Icons.assignment
-                            : Icons.assignment_late,
-                        color: order.isReady
-                            ? AppColors.deepNavy
-                            : AppColors.accentGold,
-                      ),
-                    ),
-                    title: Text(
-                      order.subject,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                    subtitle: Text(
-                      'الحالة: $statusAr • المرفقات: ${order.attachments.length}',
-                      style: const TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 12,
-                      ),
-                    ),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: UnifiedTaskCard(
+                    title: order.subject,
+                    subtitle:
+                        'الحالة: $statusAr • المرفقات: ${order.attachments.length}',
+                    progress: order.status == 'completed' ? 1.0 : 0.0,
+                    taskType: UnifiedTaskType.fromOrderType(order.taskType),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(

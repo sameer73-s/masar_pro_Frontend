@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/presentation/widgets/unified_task_card.dart';
 import '../../domain/entities/research_job.dart';
-import 'animated_progress_ring.dart';
+import '../../domain/enums/research_status.dart';
 
 /// بلاط بحث سابق من Hive
 class PreviousResearchTile extends StatelessWidget {
@@ -34,99 +36,29 @@ class PreviousResearchTile extends StatelessWidget {
     return '${dt.day} ${months[dt.month]} ${dt.year}';
   }
 
+  double _progressFor(ResearchStatus status) => switch (status) {
+        ResearchStatus.pending => 0.0,
+        ResearchStatus.outlining => 0.2,
+        ResearchStatus.researching => 0.4,
+        ResearchStatus.writing => 0.6,
+        ResearchStatus.reviewing => 0.75,
+        ResearchStatus.assembling => 0.9,
+        ResearchStatus.completed => 1.0,
+        ResearchStatus.failed || ResearchStatus.cancelled => 0.0,
+      };
+
   @override
   Widget build(BuildContext context) {
     final titleShort = job.title.length > 50
         ? '${job.title.substring(0, 50)}...'
         : job.title;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(kCardRadius),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: kCardBg,
-          borderRadius: BorderRadius.circular(kCardRadius),
-          border: Border.all(color: kBorderColor),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          textDirection: TextDirection.rtl,
-          children: [
-            // أيقونة
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: kResearchBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: kGoldAccent.withOpacity(0.3)),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.description_outlined,
-                  color: kGoldAccent,
-                  size: 22,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // التفاصيل
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                textDirection: TextDirection.rtl,
-                children: [
-                  Text(
-                    titleShort,
-                    textDirection: TextDirection.rtl,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: kTextPrimary,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Text(
-                        _formatDate(job.createdAt),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: kTextSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // زر التحميل
-            if (onDownload != null && job.downloadUrl.isNotEmpty)
-              IconButton(
-                onPressed: onDownload,
-                icon: const Icon(
-                  Icons.download_outlined,
-                  color: kGoldAccent,
-                ),
-                tooltip: 'تحميل',
-              ),
-          ],
-        ),
-      ),
+    return UnifiedTaskCard(
+      title: titleShort,
+      subtitle: '${job.status.label} · ${_formatDate(job.createdAt)}',
+      progress: _progressFor(job.status),
+      taskType: UnifiedTaskType.research,
+      onTap: onTap ?? onDownload,
     );
   }
 }
