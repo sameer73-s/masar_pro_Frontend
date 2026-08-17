@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,11 +11,43 @@ import '../../../../../core/presentation/widgets/app_success_dialog.dart';
 import '../../../../../core/presentation/widgets/empty_widget.dart';
 import '../../../../../core/presentation/widgets/loading_widget.dart';
 import '../../../domain/entities/agency_task.dart';
+import '../../../domain/enums/task_status.dart';
 import '../../bloc/agency_bloc/agency_bloc.dart';
 import '../widgets/agency_task_card.dart';
 
-class AgencyDashboardBody extends StatelessWidget {
+class AgencyDashboardBody extends StatefulWidget {
   const AgencyDashboardBody({super.key});
+
+  @override
+  State<AgencyDashboardBody> createState() => _AgencyDashboardBodyState();
+}
+
+class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
+  Timer? _pollTimer;
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+    super.dispose();
+  }
+
+  /// Poll every 5s while any task is PROCESSING; stop otherwise to save battery.
+  void _syncPollTimer(List<AgencyTask> tasks) {
+    final hasProcessing =
+        tasks.any((task) => task.status == TaskStatus.processing);
+    if (hasProcessing) {
+      _pollTimer ??= Timer.periodic(const Duration(seconds: 5), (_) {
+        if (!mounted) return;
+        context.read<AgencyBloc>().add(
+              const FetchAgencyTasksRequested(silent: true),
+            );
+      });
+    } else {
+      _pollTimer?.cancel();
+      _pollTimer = null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +69,12 @@ class AgencyDashboardBody extends StatelessWidget {
             secondaryButtonText: Strings.ok.tr(),
             onSecondaryAction: () {},
           );
+        }
+
+        if (state is AgencyTasksLoaded) {
+          _syncPollTimer(state.tasks);
+        } else if (state is AgencyActionSuccess) {
+          _syncPollTimer(state.updatedTasks);
         }
       },
       builder: (context, state) {

@@ -34,6 +34,16 @@ class SmartParserBloc extends Bloc<SmartParserEvent, SmartParserState> {
     result.fold(
       (failure) => emit(SmartParserFailure(failure.message)),
       (order) {
+        if (order.status == 'error' || order.subject == 'AI Processing Failed') {
+          final message = order.missingInfo?.trim();
+          emit(SmartParserFailure(
+            (message != null && message.isNotEmpty)
+                ? message
+                : 'AI processing failed. Please try again.',
+          ));
+          return;
+        }
+
         // If isReady is false the order has dynamic fields to fill first.
         final hasMissingInfo = !order.isReady ||
             (order.missingInfo != null && order.missingInfo!.isNotEmpty);

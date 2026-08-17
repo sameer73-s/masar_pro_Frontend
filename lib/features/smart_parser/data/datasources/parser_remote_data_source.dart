@@ -63,8 +63,32 @@ class ParserRemoteDataSourceImpl implements ParserRemoteDataSource {
       return response.fold(
         (failure) => Either.left(failure),
         (data) {
-          final analyzedOrder = OrderModel.fromJson(data);
-          
+          if (data is! Map) {
+            return Either.left(
+              AppFailure.server(
+                message: 'AI processing failed. Please try again.',
+                statusCode: 502,
+              ),
+            );
+          }
+
+          final payload = Map<String, dynamic>.from(data);
+          final status = payload['status']?.toString();
+          final subject = payload['subject']?.toString() ?? '';
+          if (status == 'error' || subject == 'AI Processing Failed') {
+            final detail = payload['missing_info']?.toString().trim();
+            return Either.left(
+              AppFailure.server(
+                message: (detail != null && detail.isNotEmpty)
+                    ? detail
+                    : 'AI processing failed. Please try again.',
+                statusCode: 502,
+              ),
+            );
+          }
+
+          final analyzedOrder = OrderModel.fromJson(payload);
+
           final orderModel = OrderModel(
             id: orderId,
             subject: analyzedOrder.subject,

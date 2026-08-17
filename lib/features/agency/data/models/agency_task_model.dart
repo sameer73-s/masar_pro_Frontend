@@ -10,6 +10,7 @@ class AgencyTaskModel extends AgencyTask {
     super.quotedPrice,
     super.aiResultRef,
     required super.createdAt,
+    super.progressPct,
   });
 
   factory AgencyTaskModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class AgencyTaskModel extends AgencyTask {
       quotedPrice: _parseInt(json['quoted_price']),
       aiResultRef: json['ai_result_ref']?.toString(),
       createdAt: _parseDateTime(json['created_at']),
+      progressPct: _parseProgressPct(json['progress_pct']),
     );
   }
 
@@ -33,6 +35,7 @@ class AgencyTaskModel extends AgencyTask {
       'quoted_price': quotedPrice,
       'ai_result_ref': aiResultRef,
       'created_at': createdAt.toUtc().toIso8601String(),
+      'progress_pct': progressPct,
     };
   }
 
@@ -45,7 +48,13 @@ class AgencyTaskModel extends AgencyTask {
       quotedPrice: entity.quotedPrice,
       aiResultRef: entity.aiResultRef,
       createdAt: entity.createdAt,
+      progressPct: entity.progressPct,
     );
+  }
+
+  static int _parseProgressPct(dynamic value) {
+    final parsed = _parseInt(value) ?? 0;
+    return parsed.clamp(0, 100).toInt();
   }
 
   static int? _parseInt(dynamic value) {

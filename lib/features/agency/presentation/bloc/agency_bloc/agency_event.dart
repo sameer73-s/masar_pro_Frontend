@@ -11,10 +11,17 @@ class FetchAgencyTasksRequested extends AgencyEvent {
   /// Optional client-side filter applied after fetching all tasks.
   final TaskStatus? statusFilter;
 
-  const FetchAgencyTasksRequested({this.statusFilter});
+  /// When true, skip the loading spinner and keep the current list on failure.
+  /// Used by the PROCESSING auto-refresh timer.
+  final bool silent;
+
+  const FetchAgencyTasksRequested({
+    this.statusFilter,
+    this.silent = false,
+  });
 
   @override
-  List<Object?> get props => [statusFilter];
+  List<Object?> get props => [statusFilter, silent];
 }
 
 class QuoteTaskRequested extends AgencyEvent {

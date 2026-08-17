@@ -13,6 +13,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
 
   TaskStatus? _statusFilter;
   List<AgencyTask> _tasks = const [];
+  bool _fetchInFlight = false;
 
   AgencyBloc({required this.repository}) : super(const AgencyInitial()) {
     on<FetchAgencyTasksRequested>(_onFetchAgencyTasksRequested);
@@ -26,17 +27,33 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
     FetchAgencyTasksRequested event,
     Emitter<AgencyState> emit,
   ) async {
-    _statusFilter = event.statusFilter;
-    emit(const AgencyLoading());
+    if (event.silent && _fetchInFlight) return;
 
-    final result = await repository.getTasks();
-    result.fold(
-      (failure) => emit(AgencyFailure(failure.message)),
-      (tasks) {
-        _tasks = _applyFilter(tasks);
-        emit(AgencyTasksLoaded(_tasks));
-      },
-    );
+    if (!event.silent) {
+      _statusFilter = event.statusFilter;
+    }
+
+    _fetchInFlight = true;
+    if (!event.silent) {
+      emit(const AgencyLoading());
+    }
+
+    try {
+      final result = await repository.getTasks();
+      result.fold(
+        (failure) {
+          if (isClosed || event.silent) return;
+          emit(AgencyFailure(failure.message));
+        },
+        (tasks) {
+          _tasks = _applyFilter(tasks);
+          if (isClosed) return;
+          emit(AgencyTasksLoaded(_tasks));
+        },
+      );
+    } finally {
+      _fetchInFlight = false;
+    }
   }
 
   Future<void> _onQuoteTaskRequested(

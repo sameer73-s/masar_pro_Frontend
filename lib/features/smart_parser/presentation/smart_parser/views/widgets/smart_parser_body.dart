@@ -19,18 +19,33 @@ class SmartParserBody extends StatelessWidget {
         return current is SmartParserSuccess || current is SmartParserFailure || current is UploadFailure;
       },
       listener: (context, state) {
+        if (state is SmartParserFailure) {
+          AppErrorDialog.show(context, message: state.message);
+          return;
+        }
+        if (state is UploadFailure) {
+          AppErrorDialog.show(
+            context,
+            message: 'فشل في الرفع: ${state.message}',
+          );
+          return;
+        }
         if (state is SmartParserSuccess) {
+          if (state.order.status == 'error' ||
+              state.order.subject == 'AI Processing Failed') {
+            AppErrorDialog.show(
+              context,
+              message: (state.order.missingInfo != null &&
+                      state.order.missingInfo!.trim().isNotEmpty)
+                  ? state.order.missingInfo!
+                  : 'AI processing failed. Please try again.',
+            );
+            return;
+          }
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (_) => OrderDetailsPage(order: state.order),
             ),
-          );
-        } else if (state is SmartParserFailure) {
-          AppErrorDialog.show(context, message: state.message);
-        } else if (state is UploadFailure) {
-          AppErrorDialog.show(
-            context,
-            message: 'فشل في الرفع: ${state.message}',
           );
         }
       },

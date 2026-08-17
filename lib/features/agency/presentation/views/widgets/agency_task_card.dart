@@ -24,7 +24,7 @@ class AgencyTaskCard extends StatelessWidget {
         UnifiedTaskCard(
           title: _taskTitle(task),
           subtitle: _taskSubtitle(task),
-          progress: _progressFor(task.status),
+          progress: task.progress,
           taskType: UnifiedTaskType.research,
         ),
         const SizedBox(height: 8),
@@ -57,13 +57,6 @@ class AgencyTaskCard extends StatelessWidget {
     final quote = task.quotedPrice != null ? ' · Quote: ${task.quotedPrice}' : '';
     return 'Client ${task.clientId} · #$shortId · ${_formatTime(task.createdAt)}$quote';
   }
-
-  /// UPLOADED → 0.0, PROCESSING → 0.5, COMPLETED → 1.0.
-  static double _progressFor(TaskStatus status) => switch (status) {
-        TaskStatus.completed => 1.0,
-        TaskStatus.processing || TaskStatus.approved => 0.5,
-        _ => 0.0,
-      };
 
   static String _formatTime(DateTime date) {
     final local = date.toLocal();
