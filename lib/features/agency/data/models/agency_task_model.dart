@@ -10,10 +10,15 @@ class AgencyTaskModel extends AgencyTask {
     super.quotedPrice,
     super.aiResultRef,
     required super.createdAt,
+    required super.deadline,
     super.progressPct,
   });
 
   factory AgencyTaskModel.fromJson(Map<String, dynamic> json) {
+    final createdAt = _parseDateTime(json['created_at']);
+    final parsedDeadline = _tryParseDateTime(
+      json['deadline'] ?? json['due_date'] ?? json['dueDate'],
+    );
     return AgencyTaskModel(
       id: json['id']?.toString() ?? '',
       clientId: json['client_id']?.toString() ?? '',
@@ -21,7 +26,8 @@ class AgencyTaskModel extends AgencyTask {
       storageFolder: json['storage_folder']?.toString() ?? '',
       quotedPrice: _parseInt(json['quoted_price']),
       aiResultRef: json['ai_result_ref']?.toString(),
-      createdAt: _parseDateTime(json['created_at']),
+      createdAt: createdAt,
+      deadline: parsedDeadline ?? createdAt.add(const Duration(days: 3)),
       progressPct: _parseProgressPct(json['progress_pct']),
     );
   }
@@ -35,6 +41,7 @@ class AgencyTaskModel extends AgencyTask {
       'quoted_price': quotedPrice,
       'ai_result_ref': aiResultRef,
       'created_at': createdAt.toUtc().toIso8601String(),
+      'deadline': deadline.toUtc().toIso8601String(),
       'progress_pct': progressPct,
     };
   }
@@ -48,6 +55,7 @@ class AgencyTaskModel extends AgencyTask {
       quotedPrice: entity.quotedPrice,
       aiResultRef: entity.aiResultRef,
       createdAt: entity.createdAt,
+      deadline: entity.deadline,
       progressPct: entity.progressPct,
     );
   }
@@ -65,10 +73,15 @@ class AgencyTaskModel extends AgencyTask {
   }
 
   static DateTime _parseDateTime(dynamic value) {
+    return _tryParseDateTime(value) ?? DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
+  static DateTime? _tryParseDateTime(dynamic value) {
+    if (value == null) return null;
     if (value is DateTime) return value;
     if (value is String && value.isNotEmpty) {
-      return DateTime.tryParse(value) ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return DateTime.tryParse(value);
     }
-    return DateTime.fromMillisecondsSinceEpoch(0);
+    return null;
   }
 }

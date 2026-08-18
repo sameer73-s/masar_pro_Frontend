@@ -24,6 +24,24 @@ class FetchAgencyTasksRequested extends AgencyEvent {
   List<Object?> get props => [statusFilter, silent];
 }
 
+class SelectDateRequested extends AgencyEvent {
+  final DateTime date;
+
+  const SelectDateRequested(this.date);
+
+  @override
+  List<Object?> get props => [date];
+}
+
+class ChangeDateFilterRequested extends AgencyEvent {
+  final DateFilterMode mode;
+
+  const ChangeDateFilterRequested(this.mode);
+
+  @override
+  List<Object?> get props => [mode];
+}
+
 class QuoteTaskRequested extends AgencyEvent {
   final String taskId;
   final int price;

@@ -194,6 +194,7 @@ class _TaskDetailsDialog extends StatelessWidget {
             if (task.quotedPrice != null)
               _detailRow('Quote', '${task.quotedPrice}'),
             _detailRow('Created', task.createdAt.toLocal().toString()),
+            _detailRow('Deadline', task.deadline.toLocal().toString()),
             if (task.storageFolder.isNotEmpty)
               _detailRow('Storage', task.storageFolder),
           ],

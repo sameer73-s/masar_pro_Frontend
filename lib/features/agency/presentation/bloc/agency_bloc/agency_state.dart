@@ -16,12 +16,32 @@ class AgencyLoading extends AgencyState {
 }
 
 class AgencyTasksLoaded extends AgencyState {
+  /// Status-filtered tasks (not date-filtered). Used for polling.
   final List<AgencyTask> tasks;
 
-  const AgencyTasksLoaded(this.tasks);
+  /// Tasks matching [selectedDate] and [dateFilterMode].
+  final List<AgencyTask> filteredTasks;
+
+  final DateTime selectedDate;
+  final DateFilterMode dateFilterMode;
+  final Map<DateTime, DateStatusSummary> dateSummaries;
+
+  const AgencyTasksLoaded({
+    required this.tasks,
+    required this.filteredTasks,
+    required this.selectedDate,
+    required this.dateFilterMode,
+    required this.dateSummaries,
+  });
 
   @override
-  List<Object?> get props => [tasks];
+  List<Object?> get props => [
+        tasks,
+        filteredTasks,
+        selectedDate,
+        dateFilterMode,
+        dateSummaries,
+      ];
 }
 
 class AgencyActionSuccess extends AgencyState {

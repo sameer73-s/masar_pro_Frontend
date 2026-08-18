@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/agency_task.dart';
+import '../../../domain/entities/date_status_summary.dart';
+import '../../../domain/enums/date_filter_mode.dart';
 import '../../../domain/enums/task_status.dart';
 import '../../../domain/repositories/agency_repository.dart';
 
@@ -14,9 +16,13 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
   TaskStatus? _statusFilter;
   List<AgencyTask> _tasks = const [];
   bool _fetchInFlight = false;
+  DateTime _selectedDate = AgencyCalendarRange.dateOnly(DateTime.now());
+  DateFilterMode _dateFilterMode = DateFilterMode.all;
 
   AgencyBloc({required this.repository}) : super(const AgencyInitial()) {
     on<FetchAgencyTasksRequested>(_onFetchAgencyTasksRequested);
+    on<SelectDateRequested>(_onSelectDateRequested);
+    on<ChangeDateFilterRequested>(_onChangeDateFilterRequested);
     on<QuoteTaskRequested>(_onQuoteTaskRequested);
     on<ApproveTaskRequested>(_onApproveTaskRequested);
     on<RejectTaskRequested>(_onRejectTaskRequested);
@@ -36,7 +42,8 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
     }
 
     _fetchInFlight = true;
-    if (!event.silent) {
+    // Keep the calendar selection during refresh / status-tab changes.
+    if (!event.silent && state is! AgencyTasksLoaded) {
       emit(const AgencyLoading());
     }
 
@@ -48,13 +55,32 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
           emit(AgencyFailure(failure.message));
         },
         (tasks) {
-          _tasks = _applyFilter(tasks);
-          if (isClosed) return;
-          emit(AgencyTasksLoaded(_tasks));
+          _tasks = _applyStatusFilter(tasks);
+          _emitLoaded(emit);
         },
       );
     } finally {
       _fetchInFlight = false;
+    }
+  }
+
+  void _onSelectDateRequested(
+    SelectDateRequested event,
+    Emitter<AgencyState> emit,
+  ) {
+    _selectedDate = AgencyCalendarRange.dateOnly(event.date);
+    if (state is AgencyTasksLoaded || _tasks.isNotEmpty) {
+      _emitLoaded(emit);
+    }
+  }
+
+  void _onChangeDateFilterRequested(
+    ChangeDateFilterRequested event,
+    Emitter<AgencyState> emit,
+  ) {
+    _dateFilterMode = event.mode;
+    if (state is AgencyTasksLoaded || _tasks.isNotEmpty) {
+      _emitLoaded(emit);
     }
   }
 
@@ -161,7 +187,21 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
           _tasks.where((t) => t.id != event.taskId),
         );
         emit(AgencyActionSuccess('Task deleted successfully', _tasks));
+        _emitLoaded(emit);
       },
+    );
+  }
+
+  void _emitLoaded(Emitter<AgencyState> emit) {
+    if (isClosed) return;
+    emit(
+      AgencyTasksLoaded(
+        tasks: _tasks,
+        filteredTasks: _applyDateFilter(_tasks),
+        selectedDate: _selectedDate,
+        dateFilterMode: _dateFilterMode,
+        dateSummaries: _buildDateSummaries(_tasks),
+      ),
     );
   }
 
@@ -173,14 +213,91 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
     } else {
       updated.insert(0, task);
     }
-    _tasks = _applyFilter(updated);
+    _tasks = _applyStatusFilter(updated);
   }
 
-  List<AgencyTask> _applyFilter(List<AgencyTask> tasks) {
+  List<AgencyTask> _applyStatusFilter(List<AgencyTask> tasks) {
     final filter = _statusFilter;
     if (filter == null) return List<AgencyTask>.unmodifiable(tasks);
     return List<AgencyTask>.unmodifiable(
       tasks.where((t) => t.status == filter),
     );
+  }
+
+  List<AgencyTask> _applyDateFilter(List<AgencyTask> tasks) {
+    final selected = _selectedDate;
+    return List<AgencyTask>.unmodifiable(
+      tasks.where((task) {
+        final created = AgencyCalendarRange.dateOnly(task.createdAt);
+        final deadline = AgencyCalendarRange.dateOnly(task.deadline);
+        switch (_dateFilterMode) {
+          case DateFilterMode.all:
+            return created == selected || deadline == selected;
+          case DateFilterMode.created:
+            return created == selected;
+          case DateFilterMode.due:
+            return deadline == selected;
+        }
+      }),
+    );
+  }
+
+  Map<DateTime, DateStatusSummary> _buildDateSummaries(
+    List<AgencyTask> tasks,
+  ) {
+    final today = AgencyCalendarRange.dateOnly(DateTime.now());
+    final visible = AgencyCalendarRange.visibleDates(
+      _selectedDate,
+      now: today,
+    );
+    // Always include the default today-window so dots stay correct after jumps.
+    final defaultWindow = AgencyCalendarRange.visibleDates(today, now: today);
+    final dates = <DateTime>{...visible, ...defaultWindow, _selectedDate};
+
+    final map = <DateTime, DateStatusSummary>{};
+    for (final date in dates) {
+      map[date] = _summarizeDate(date, tasks, today);
+    }
+    return Map<DateTime, DateStatusSummary>.unmodifiable(map);
+  }
+
+  DateStatusSummary _summarizeDate(
+    DateTime date,
+    List<AgencyTask> tasks,
+    DateTime today,
+  ) {
+    final tomorrow = today.add(const Duration(days: 1));
+    var hasTasks = false;
+    var deadlineTomorrow = false;
+    var isOverdue = false;
+
+    for (final task in tasks) {
+      final created = AgencyCalendarRange.dateOnly(task.createdAt);
+      final deadline = AgencyCalendarRange.dateOnly(task.deadline);
+      final associated = created == date || deadline == date;
+      if (!associated) continue;
+
+      hasTasks = true;
+      if (_isOpenTask(task.status)) {
+        if (deadline == tomorrow) {
+          deadlineTomorrow = true;
+        }
+        if (deadline.isBefore(today)) {
+          isOverdue = true;
+        }
+      }
+    }
+
+    return DateStatusSummary(
+      hasTasks: hasTasks,
+      deadlineTomorrow: deadlineTomorrow,
+      isOverdue: isOverdue,
+    );
+  }
+
+  static bool _isOpenTask(TaskStatus status) {
+    return status != TaskStatus.completed &&
+        status != TaskStatus.rejected &&
+        status != TaskStatus.failed;
   }
 }

@@ -11,6 +11,9 @@ class AgencyTask extends Equatable {
   final String? aiResultRef;
   final DateTime createdAt;
 
+  /// Due date. Defaults to `createdAt + 3 days` when the backend omits it.
+  final DateTime deadline;
+
   /// Backend `progress_pct` (integer 0–100).
   final int progressPct;
 
@@ -22,6 +25,7 @@ class AgencyTask extends Equatable {
     this.quotedPrice,
     this.aiResultRef,
     required this.createdAt,
+    required this.deadline,
     this.progressPct = 0,
   });
 
@@ -37,6 +41,7 @@ class AgencyTask extends Equatable {
         quotedPrice,
         aiResultRef,
         createdAt,
+        deadline,
         progressPct,
       ];
 }

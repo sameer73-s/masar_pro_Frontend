@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../config/app_colors.dart';
 import '../../../../../core/presentation/widgets/custom_app_bar.dart';
-import '../../../../../core/presentation/widgets/date_selector_chip.dart';
 import '../../../../../core/presentation/widgets/filter_tab_bar.dart';
 import '../../../../../core/presentation/widgets/notification_bell.dart';
 import '../../../../../injection/injection_container.dart' as di;
@@ -26,17 +25,7 @@ class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
     'Completed',
   ];
 
-  late final List<DateTime> _dates;
-  int _selectedDateIndex = 0;
   int _selectedTabIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    final today = DateTime.now();
-    final start = DateTime(today.year, today.month, today.day);
-    _dates = List.generate(7, (i) => start.add(Duration(days: i)));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,24 +52,6 @@ class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 8),
-                SizedBox(
-                  height: 82,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _dates.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(width: 10),
-                    itemBuilder: (context, index) {
-                      return DateSelectorChip(
-                        date: _dates[index],
-                        isSelected: index == _selectedDateIndex,
-                        onTap: () =>
-                            setState(() => _selectedDateIndex = index),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
                 Builder(
                   builder: (context) {
                     return FilterTabBar(
@@ -102,7 +73,7 @@ class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
                     );
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 const Expanded(child: AgencyDashboardBody()),
               ],
             ),
