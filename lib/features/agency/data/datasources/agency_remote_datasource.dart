@@ -21,6 +21,10 @@ abstract class AgencyRemoteDataSource {
     Map<String, dynamic> params,
   );
 
+  Future<Either<AppFailure, AgencyTaskModel>> retryTask(String id);
+
+  Future<Either<AppFailure, void>> deleteTask(String id);
+
   /// Bridge Smart Parser → Agency Active Tasks.
   Future<Either<AppFailure, AgencyTaskModel>> createTaskFromUrls({
     required String clientId,
@@ -172,6 +176,48 @@ class AgencyRemoteDataSourceImpl implements AgencyRemoteDataSource {
               : map;
           return Either.right(AgencyTaskModel.fromJson(taskJson));
         },
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, AgencyTaskModel>> retryTask(String id) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '/api/v1/tasks/$id/retry',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) {
+          final map = Map<String, dynamic>.from(data as Map);
+          final taskJson = map['task'] is Map
+              ? Map<String, dynamic>.from(map['task'] as Map)
+              : map;
+          return Either.right(AgencyTaskModel.fromJson(taskJson));
+        },
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, void>> deleteTask(String id) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.delete,
+        endPoint: '/api/v1/tasks/$id',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (_) => Either.right(null),
       );
     } catch (e) {
       return Either.left(AppFailure.server(message: e.toString()));

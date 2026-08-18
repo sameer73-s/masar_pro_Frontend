@@ -62,3 +62,21 @@ class ProcessTaskRequested extends AgencyEvent {
   @override
   List<Object?> get props => [taskId, workflow, params];
 }
+
+class RetryTaskRequested extends AgencyEvent {
+  final String taskId;
+
+  const RetryTaskRequested(this.taskId);
+
+  @override
+  List<Object?> get props => [taskId];
+}
+
+class DeleteTaskRequested extends AgencyEvent {
+  final String taskId;
+
+  const DeleteTaskRequested(this.taskId);
+
+  @override
+  List<Object?> get props => [taskId];
+}

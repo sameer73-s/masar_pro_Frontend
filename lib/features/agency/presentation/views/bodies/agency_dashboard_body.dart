@@ -32,11 +32,16 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
     super.dispose();
   }
 
-  /// Poll every 5s while any task is PROCESSING; stop otherwise to save battery.
+  static bool _needsPolling(TaskStatus status) {
+    return status == TaskStatus.processing ||
+        status == TaskStatus.uploaded ||
+        status == TaskStatus.pendingApproval;
+  }
+
+  /// Poll every 5s while any task is active; stop when all are terminal.
   void _syncPollTimer(List<AgencyTask> tasks) {
-    final hasProcessing =
-        tasks.any((task) => task.status == TaskStatus.processing);
-    if (hasProcessing) {
+    final shouldPoll = tasks.any((task) => _needsPolling(task.status));
+    if (shouldPoll) {
       _pollTimer ??= Timer.periodic(const Duration(seconds: 5), (_) {
         if (!mounted) return;
         context.read<AgencyBloc>().add(
@@ -47,6 +52,14 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
       _pollTimer?.cancel();
       _pollTimer = null;
     }
+  }
+
+  Future<void> _onRefresh() async {
+    final bloc = context.read<AgencyBloc>();
+    bloc.add(const FetchAgencyTasksRequested());
+    await bloc.stream.firstWhere(
+      (state) => state is AgencyTasksLoaded || state is AgencyFailure,
+    );
   }
 
   @override
@@ -92,15 +105,26 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
         }
 
         final tasks = _tasksFromState(state);
-        if (tasks.isEmpty) {
-          return const EmptyWidget(message: 'No agency tasks yet');
-        }
 
-        return ListView.separated(
-          padding: const EdgeInsets.only(bottom: 24),
-          itemCount: tasks.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 12),
-          itemBuilder: (context, index) => AgencyTaskCard(task: tasks[index]),
+        return RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: tasks.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 120),
+                    EmptyWidget(message: 'No agency tasks yet'),
+                  ],
+                )
+              : ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 24),
+                  itemCount: tasks.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) =>
+                      AgencyTaskCard(task: tasks[index]),
+                ),
         );
       },
     );

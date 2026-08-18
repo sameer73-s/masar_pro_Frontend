@@ -84,6 +84,24 @@ class AgencyRepositoryImpl extends BaseRepository implements AgencyRepository {
   }
 
   @override
+  Future<Either<AppFailure, AgencyTask>> retryTask(String id) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.retryTask(id);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model),
+      );
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, void>> deleteTask(String id) async {
+    return guardedCall(() async {
+      return remoteDataSource.deleteTask(id);
+    });
+  }
+
+  @override
   Future<Either<AppFailure, AgencyTask>> createTaskFromUrls({
     required String clientId,
     required List<String> fileUrls,

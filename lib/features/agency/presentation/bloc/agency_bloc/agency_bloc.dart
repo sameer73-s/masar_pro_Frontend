@@ -21,6 +21,8 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
     on<ApproveTaskRequested>(_onApproveTaskRequested);
     on<RejectTaskRequested>(_onRejectTaskRequested);
     on<ProcessTaskRequested>(_onProcessTaskRequested);
+    on<RetryTaskRequested>(_onRetryTaskRequested);
+    on<DeleteTaskRequested>(_onDeleteTaskRequested);
   }
 
   Future<void> _onFetchAgencyTasksRequested(
@@ -124,6 +126,41 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
         _upsertTask(task);
         emit(AgencyActionSuccess('Task processing started', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
+      },
+    );
+  }
+
+  Future<void> _onRetryTaskRequested(
+    RetryTaskRequested event,
+    Emitter<AgencyState> emit,
+  ) async {
+    emit(const AgencyLoading());
+
+    final result = await repository.retryTask(event.taskId);
+    await result.fold(
+      (failure) async => emit(AgencyFailure(failure.message)),
+      (task) async {
+        _upsertTask(task);
+        emit(AgencyActionSuccess('Task retry started', _tasks));
+        add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
+      },
+    );
+  }
+
+  Future<void> _onDeleteTaskRequested(
+    DeleteTaskRequested event,
+    Emitter<AgencyState> emit,
+  ) async {
+    emit(const AgencyLoading());
+
+    final result = await repository.deleteTask(event.taskId);
+    await result.fold(
+      (failure) async => emit(AgencyFailure(failure.message)),
+      (_) async {
+        _tasks = List<AgencyTask>.unmodifiable(
+          _tasks.where((t) => t.id != event.taskId),
+        );
+        emit(AgencyActionSuccess('Task deleted successfully', _tasks));
       },
     );
   }

@@ -19,6 +19,10 @@ abstract class AgencyRepository {
     Map<String, dynamic> params,
   );
 
+  Future<Either<AppFailure, AgencyTask>> retryTask(String id);
+
+  Future<Either<AppFailure, void>> deleteTask(String id);
+
   Future<Either<AppFailure, AgencyTask>> createTaskFromUrls({
     required String clientId,
     required List<String> fileUrls,
