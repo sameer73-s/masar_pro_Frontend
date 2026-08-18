@@ -268,6 +268,9 @@ class ApiClient {
     final statusCode = response.statusCode ?? 0;
     if (statusCode >= 200 && statusCode < 300) {
       AppLogger.info('Request Success ($statusCode)');
+      if (statusCode == 204) {
+        return Either.right(null);
+      }
       return Either.right(response.data);
     }
     final message = _extractMessage(response.data);

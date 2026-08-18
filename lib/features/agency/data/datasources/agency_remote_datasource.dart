@@ -242,9 +242,9 @@ class AgencyRemoteDataSourceImpl implements AgencyRemoteDataSource {
           'client_id': clientId,
           'file_urls': fileUrls,
           'status': status,
-          if (orderId != null) 'order_id': orderId,
-          if (subject != null) 'subject': subject,
-          if (taskType != null) 'task_type': taskType,
+          if (orderId case final value?) 'order_id': value,
+          if (subject case final value?) 'subject': value,
+          if (taskType case final value?) 'task_type': value,
         },
       );
 
