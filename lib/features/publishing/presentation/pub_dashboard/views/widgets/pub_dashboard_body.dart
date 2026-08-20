@@ -5,6 +5,7 @@ import 'package:masar_pro/config/typography.dart';
 import 'package:masar_pro/core/presentation/widgets/app_error_widget.dart';
 import 'package:masar_pro/core/presentation/widgets/loading_widget.dart';
 import 'package:masar_pro/core/presentation/widgets/pub/add_project_button.dart';
+import 'package:masar_pro/core/presentation/widgets/pub/empty_state.dart';
 import 'package:masar_pro/core/presentation/widgets/pub/publishing_progress_header.dart';
 import 'package:masar_pro/core/presentation/widgets/unified_task_card.dart';
 import 'package:masar_pro/injection/injection_container.dart' as di;
@@ -129,44 +130,5 @@ class _ProjectsList extends StatelessWidget {
     final score = project.readinessScore;
     if (score <= 1) return score.clamp(0.0, 1.0);
     return (score / 100).clamp(0.0, 1.0);
-  }
-}
-
-class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: const BoxDecoration(
-                color: AppColors.surfacePurple,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.menu_book_rounded,
-                size: 36,
-                color: AppColors.accentPurple,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTypography.body(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

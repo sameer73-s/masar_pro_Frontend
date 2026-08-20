@@ -4,20 +4,27 @@ import 'package:masar_pro/config/app_theme.dart';
 
 const Color _kPubBorder = Color(0xFFE8E5F0);
 
-/// Reviewer comment with an AI-suggested response and accept/edit actions.
+/// Reviewer comment with an optional AI-suggested response and accept/edit actions.
 class ReviewerCommentCard extends StatelessWidget {
   const ReviewerCommentCard({
     super.key,
     required this.commentText,
-    required this.aiResponse,
-    required this.onAccept,
-    required this.onEdit,
+    this.aiResponse,
+    this.onAccept,
+    this.onEdit,
   });
 
   final String commentText;
-  final String aiResponse;
-  final VoidCallback onAccept;
-  final VoidCallback onEdit;
+  final String? aiResponse;
+  final VoidCallback? onAccept;
+  final VoidCallback? onEdit;
+
+  bool get _hasAiResponse {
+    final value = aiResponse?.trim();
+    return value != null && value.isNotEmpty;
+  }
+
+  bool get _hasActions => onAccept != null || onEdit != null;
 
   @override
   Widget build(BuildContext context) {
@@ -42,67 +49,74 @@ class ReviewerCommentCard extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 1, color: _kPubBorder),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F0FF),
-                borderRadius: BorderRadius.circular(12),
+            if (_hasAiResponse) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Divider(height: 1, color: _kPubBorder),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.auto_awesome,
-                        size: 14,
-                        color: AppColors.accentPurple,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'AI suggested response',
-                        style: TextStyle(
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F0FF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 14,
                           color: AppColors.accentPurple,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    aiResponse,
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 13,
-                      height: 1.45,
-                      fontWeight: FontWeight.w400,
+                        SizedBox(width: 6),
+                        Text(
+                          'AI suggested response',
+                          style: TextStyle(
+                            color: AppColors.accentPurple,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      aiResponse!.trim(),
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontSize: 13,
+                        height: 1.45,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (_hasActions) ...[
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  if (onAccept != null)
+                    _PillButton(
+                      label: 'Accept',
+                      filled: true,
+                      onPressed: onAccept!,
+                    ),
+                  if (onAccept != null && onEdit != null)
+                    const SizedBox(width: 8),
+                  if (onEdit != null)
+                    _PillButton(
+                      label: 'Edit',
+                      filled: false,
+                      onPressed: onEdit!,
+                    ),
                 ],
               ),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                _PillButton(
-                  label: 'Accept',
-                  filled: true,
-                  onPressed: onAccept,
-                ),
-                const SizedBox(width: 8),
-                _PillButton(
-                  label: 'Edit',
-                  filled: false,
-                  onPressed: onEdit,
-                ),
-              ],
-            ),
+            ],
           ],
         ),
       ),

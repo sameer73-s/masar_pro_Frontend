@@ -47,3 +47,85 @@ class MatchJournalsRequested extends PublishingEvent {
   @override
   List<Object?> get props => [projectId];
 }
+
+class PrepareManuscriptRequested extends PublishingEvent {
+  final String projectId;
+  final String journalId;
+
+  const PrepareManuscriptRequested(this.projectId, this.journalId);
+
+  @override
+  List<Object?> get props => [projectId, journalId];
+}
+
+class CreateSubmissionRequested extends PublishingEvent {
+  final String projectId;
+  final String journalId;
+  final String submissionId;
+
+  const CreateSubmissionRequested(
+    this.projectId,
+    this.journalId,
+    this.submissionId,
+  );
+
+  @override
+  List<Object?> get props => [projectId, journalId, submissionId];
+}
+
+class FetchSubmissionRequested extends PublishingEvent {
+  final String projectId;
+
+  const FetchSubmissionRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}
+
+class AddEvidenceRequested extends PublishingEvent {
+  final String submissionId;
+  final File file;
+
+  const AddEvidenceRequested(this.submissionId, this.file);
+
+  @override
+  List<Object?> get props => [submissionId, file.path];
+}
+
+class FetchReviewerCommentsRequested extends PublishingEvent {
+  final String submissionId;
+
+  const FetchReviewerCommentsRequested(this.submissionId);
+
+  @override
+  List<Object?> get props => [submissionId];
+}
+
+class AddReviewerCommentsRequested extends PublishingEvent {
+  final String submissionId;
+  final List<String> comments;
+
+  const AddReviewerCommentsRequested(this.submissionId, this.comments);
+
+  @override
+  List<Object?> get props => [submissionId, comments];
+}
+
+class GenerateResponsesRequested extends PublishingEvent {
+  final String submissionId;
+
+  const GenerateResponsesRequested(this.submissionId);
+
+  @override
+  List<Object?> get props => [submissionId];
+}
+
+class UploadRevisionRequested extends PublishingEvent {
+  final String submissionId;
+  final File file;
+
+  const UploadRevisionRequested(this.submissionId, this.file);
+
+  @override
+  List<Object?> get props => [submissionId, file.path];
+}

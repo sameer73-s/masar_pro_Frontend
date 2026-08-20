@@ -65,6 +65,47 @@ class PublishingJournalsMatched extends PublishingState {
   List<Object?> get props => [matches];
 }
 
+class PublishingManuscriptPrepared extends PublishingState {
+  final String packageUrl;
+
+  const PublishingManuscriptPrepared(this.packageUrl);
+
+  @override
+  List<Object?> get props => [packageUrl];
+}
+
+class PublishingSubmissionEmpty extends PublishingState {
+  const PublishingSubmissionEmpty();
+}
+
+class PublishingSubmissionLoaded extends PublishingState {
+  final Submission submission;
+  final List<Evidence> evidence;
+
+  const PublishingSubmissionLoaded(this.submission, this.evidence);
+
+  @override
+  List<Object?> get props => [submission, evidence];
+}
+
+class PublishingCommentsLoaded extends PublishingState {
+  final List<ReviewerComment> comments;
+
+  const PublishingCommentsLoaded(this.comments);
+
+  @override
+  List<Object?> get props => [comments];
+}
+
+class PublishingResponsesGenerated extends PublishingState {
+  final List<ResponseItem> responses;
+
+  const PublishingResponsesGenerated(this.responses);
+
+  @override
+  List<Object?> get props => [responses];
+}
+
 class PublishingFailure extends PublishingState {
   final String error;
 

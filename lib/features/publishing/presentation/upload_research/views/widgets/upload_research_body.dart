@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/core/presentation/widgets/app_error_dialog.dart';
 
-import '../../../../domain/entities/readiness_report.dart';
 import '../../../bloc/publishing_bloc/publishing_bloc.dart';
 import '../../../readiness_result/views/readiness_result_page.dart';
 import 'publishing_ai_pipeline.dart';
@@ -79,13 +78,9 @@ class _UploadResearchBodyState extends State<UploadResearchBody> {
   }
 
   void _onManuscriptUploaded(String projectId) {
-    context.read<PublishingBloc>().add(AnalyzeReadinessRequested(projectId));
-  }
-
-  void _onReadinessAnalyzed(ReadinessReport report) {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute<void>(
-        builder: (_) => ReadinessResultPage(report: report),
+        builder: (_) => ReadinessResultPage(projectId: projectId),
       ),
     );
   }
@@ -102,15 +97,12 @@ class _UploadResearchBodyState extends State<UploadResearchBody> {
       listenWhen: (previous, current) =>
           current is PublishingResearchCreated ||
           current is PublishingManuscriptUploaded ||
-          current is PublishingReadinessAnalyzed ||
           current is PublishingFailure,
       listener: (context, state) {
         if (state is PublishingResearchCreated) {
           _onResearchCreated(state.projectId);
         } else if (state is PublishingManuscriptUploaded) {
           _onManuscriptUploaded(state.version.projectId);
-        } else if (state is PublishingReadinessAnalyzed) {
-          _onReadinessAnalyzed(state.report);
         } else if (state is PublishingFailure) {
           setState(() => _isSubmitting = false);
           AppErrorDialog.show(context, message: state.error);

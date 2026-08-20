@@ -10,11 +10,17 @@ class ManuscriptFilePickerButton extends StatelessWidget {
     required this.onPressed,
     this.fileName,
     this.enabled = true,
+    this.emptyTitle = 'Select manuscript',
+    this.emptySubtitle = 'PDF or DOCX · mocked picker',
+    this.selectedSubtitle = 'Tap to replace (mocked)',
   });
 
   final VoidCallback onPressed;
   final String? fileName;
   final bool enabled;
+  final String emptyTitle;
+  final String emptySubtitle;
+  final String selectedSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +54,7 @@ class ManuscriptFilePickerButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      hasFile ? fileName! : 'Select manuscript',
+                      hasFile ? fileName! : emptyTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -59,7 +65,7 @@ class ManuscriptFilePickerButton extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      hasFile ? 'Tap to replace (mocked)' : 'PDF or DOCX · mocked picker',
+                      hasFile ? selectedSubtitle : emptySubtitle,
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,

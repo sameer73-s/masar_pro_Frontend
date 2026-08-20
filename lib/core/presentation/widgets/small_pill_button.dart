@@ -8,15 +8,17 @@ class SmallPillButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
+    this.width = 111,
   });
 
   final String label;
   final VoidCallback onPressed;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 111,
+      width: width,
       height: 38,
       child: Material(
         color: AppColors.surfacePurple,
@@ -24,13 +26,18 @@ class SmallPillButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(9),
-          child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: AppColors.accentPurple,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Center(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppColors.accentPurple,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
