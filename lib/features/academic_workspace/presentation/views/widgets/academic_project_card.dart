@@ -6,6 +6,7 @@ import '../../../../../core/presentation/widgets/academic_journey_header.dart';
 import '../../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../../core/presentation/widgets/status_badge.dart';
 import '../../../domain/entities/academic_project.dart';
+import '../../widgets/feedback_bottom_sheet.dart';
 import '../pages/academic_project_placeholder_page.dart';
 
 class AcademicProjectCard extends StatelessWidget {
@@ -72,6 +73,29 @@ class AcademicProjectCard extends StatelessWidget {
             borderRadius: 10,
             backgroundColor: AppColors.surfacePurple,
             textColor: AppColors.accentPurple,
+          ),
+          // Temporary entry point — move to Proposal/Research detail pages later.
+          const SizedBox(height: 10),
+          PrimaryButton(
+            text: 'Add Feedback',
+            onPressed: () {
+              FeedbackBottomSheet.show(
+                context,
+                feedbackSource: FeedbackSource.doctor,
+                onSubmit: (feedbackText, feedbackFile, instructions) {
+                  debugPrint(
+                    'Feedback submitted for ${project.id}: '
+                    'textLen=${feedbackText.length}, '
+                    'file=${feedbackFile?.path}, '
+                    'instructionsLen=${instructions.length}',
+                  );
+                },
+              );
+            },
+            width: double.infinity,
+            height: 42,
+            borderRadius: 10,
+            icon: Icons.rate_review_outlined,
           ),
         ],
       ),
