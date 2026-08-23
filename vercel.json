@@ -1,4 +1,5 @@
 {
-  "framework": "flutter",
-  "outputDirectory": "build/web"
+  "buildCommand": "bash build.sh",
+  "outputDirectory": "build/web",
+  "framework": null
 }
