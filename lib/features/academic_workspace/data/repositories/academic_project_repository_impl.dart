@@ -96,11 +96,37 @@ class AcademicProjectRepositoryImpl extends BaseRepository
   }
 
   @override
+  Future<Either<AppFailure, AcademicProject>> generateProposal(
+    String projectId,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.generateProposal(projectId);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model),
+      );
+    });
+  }
+
+  @override
   Future<Either<AppFailure, AcademicProject>> approveProposal(
     String projectId,
   ) async {
     return guardedCall(() async {
       final result = await remoteDataSource.approveProposal(projectId);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model),
+      );
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProject>> skipProposal(
+    String projectId,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.skipProposal(projectId);
       return result.fold(
         (failure) => Either.left(failure),
         (model) => Either.right(model),

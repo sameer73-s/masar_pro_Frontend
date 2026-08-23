@@ -29,10 +29,28 @@ class UploadProposalRequested extends ProposalModuleEvent {
   List<Object?> get props => [projectId, file.path];
 }
 
+class GenerateProposalRequested extends ProposalModuleEvent {
+  final String projectId;
+
+  const GenerateProposalRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}
+
 class ApproveProposalRequested extends ProposalModuleEvent {
   final String projectId;
 
   const ApproveProposalRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}
+
+class SkipProposalRequested extends ProposalModuleEvent {
+  final String projectId;
+
+  const SkipProposalRequested(this.projectId);
 
   @override
   List<Object?> get props => [projectId];

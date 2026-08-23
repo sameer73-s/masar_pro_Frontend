@@ -15,10 +15,23 @@ class ProposalModuleLoading extends ProposalModuleState {
   const ProposalModuleLoading();
 }
 
+class ProposalModuleGenerating extends ProposalModuleState {
+  const ProposalModuleGenerating();
+}
+
 class ProposalModuleLoaded extends ProposalModuleState {
   final AcademicProject project;
 
   const ProposalModuleLoaded(this.project);
+
+  @override
+  List<Object?> get props => [project];
+}
+
+class ProposalModuleSkipSuccess extends ProposalModuleState {
+  final AcademicProject project;
+
+  const ProposalModuleSkipSuccess(this.project);
 
   @override
   List<Object?> get props => [project];

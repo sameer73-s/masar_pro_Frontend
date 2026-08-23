@@ -14,6 +14,7 @@ import '../../../../core/network/api_config.dart';
 import '../../../../core/presentation/widgets/academic_journey_header.dart';
 import '../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
+import '../../../../core/presentation/widgets/pub/ai_worker_card.dart';
 import '../../domain/entities/academic_project.dart';
 import '../research_module/research_module_page.dart';
 import 'bloc/proposal_module_bloc.dart';
@@ -143,6 +144,18 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         );
   }
 
+  void _generateWithAi() {
+    context.read<ProposalModuleBloc>().add(
+          GenerateProposalRequested(widget.projectId),
+        );
+  }
+
+  void _skipProposal() {
+    context.read<ProposalModuleBloc>().add(
+          SkipProposalRequested(widget.projectId),
+        );
+  }
+
   void _proceedToResearch(AcademicProject project) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -158,8 +171,31 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         if (state is ProposalModuleFailure) {
           AppErrorDialog.show(context, message: state.error);
         }
+        if (state is ProposalModuleSkipSuccess) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute<void>(
+              builder: (_) => ResearchModulePage(projectId: state.project.id),
+            ),
+          );
+        }
       },
       builder: (context, state) {
+        if (state is ProposalModuleGenerating) {
+          return const Padding(
+            padding: EdgeInsets.fromLTRB(20, 24, 20, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AIWorkerCard(
+                  taskTitle: 'Generating proposal…',
+                  progress: 0.55,
+                  state: AIWorkerState.processing,
+                ),
+              ],
+            ),
+          );
+        }
+
         if (state is ProposalModuleLoading || state is ProposalModuleInitial) {
           return const Center(
             child: CircularProgressIndicator(color: AppColors.accentPurple),
@@ -238,15 +274,9 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
               )
             else
               _UploadSection(
-                onGeneratePlaceholder: () {
-                  AppErrorDialog.show(
-                    context,
-                    title: 'تنبيه',
-                    message: 'AI generation will be available soon.',
-                    okButtonText: 'حسناً',
-                  );
-                },
+                onGenerate: _generateWithAi,
                 onUpload: _pickAndUpload,
+                onSkip: _skipProposal,
               ),
           ],
         );
@@ -257,12 +287,14 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
 
 class _UploadSection extends StatelessWidget {
   const _UploadSection({
-    required this.onGeneratePlaceholder,
+    required this.onGenerate,
     required this.onUpload,
+    required this.onSkip,
   });
 
-  final VoidCallback onGeneratePlaceholder;
+  final VoidCallback onGenerate;
   final VoidCallback onUpload;
+  final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +323,7 @@ class _UploadSection extends StatelessWidget {
           icon: Icons.auto_awesome_outlined,
           title: 'Generate with AI',
           subtitle: 'Create a proposal draft from your project details',
-          onTap: onGeneratePlaceholder,
+          onTap: onGenerate,
         ),
         const SizedBox(height: 12),
         _ActionCard(
@@ -299,6 +331,25 @@ class _UploadSection extends StatelessWidget {
           title: 'Upload Existing Proposal',
           subtitle: 'PDF or DOCX — sent for admin review',
           onTap: onUpload,
+        ),
+        const SizedBox(height: 20),
+        OutlinedButton(
+          onPressed: onSkip,
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.textSecondary,
+            side: BorderSide(color: AppColors.border),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppShapes.cardRadius),
+            ),
+          ),
+          child: const Text(
+            'Skip Proposal (I have the Research)',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );

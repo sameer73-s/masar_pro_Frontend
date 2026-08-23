@@ -28,7 +28,11 @@ abstract class AcademicProjectRepository {
     File file,
   );
 
+  Future<Either<AppFailure, AcademicProject>> generateProposal(String projectId);
+
   Future<Either<AppFailure, AcademicProject>> approveProposal(String projectId);
+
+  Future<Either<AppFailure, AcademicProject>> skipProposal(String projectId);
 
   Future<Either<AppFailure, AcademicProject>> uploadResearch(
     String projectId,

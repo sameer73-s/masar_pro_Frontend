@@ -32,7 +32,15 @@ abstract class AcademicProjectRemoteDataSource {
     File file,
   );
 
+  Future<Either<AppFailure, AcademicProjectModel>> generateProposal(
+    String projectId,
+  );
+
   Future<Either<AppFailure, AcademicProjectModel>> approveProposal(
+    String projectId,
+  );
+
+  Future<Either<AppFailure, AcademicProjectModel>> skipProposal(
     String projectId,
   );
 
@@ -233,6 +241,28 @@ class AcademicProjectRemoteDataSourceImpl
   }
 
   @override
+  Future<Either<AppFailure, AcademicProjectModel>> generateProposal(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/proposal/generate',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<AppFailure, AcademicProjectModel>> approveProposal(
     String projectId,
   ) async {
@@ -240,6 +270,28 @@ class AcademicProjectRemoteDataSourceImpl
       final response = await ApiClient.request(
         requestType: RequestType.post,
         endPoint: '$_base/$projectId/proposal/approve',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProjectModel>> skipProposal(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/proposal/skip',
         headers: await _authHeaders(),
       );
 

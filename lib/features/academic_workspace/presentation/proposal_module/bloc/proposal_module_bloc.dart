@@ -17,7 +17,9 @@ class ProposalModuleBloc
       : super(const ProposalModuleInitial()) {
     on<LoadProposalProjectRequested>(_onLoadProposalProjectRequested);
     on<UploadProposalRequested>(_onUploadProposalRequested);
+    on<GenerateProposalRequested>(_onGenerateProposalRequested);
     on<ApproveProposalRequested>(_onApproveProposalRequested);
+    on<SkipProposalRequested>(_onSkipProposalRequested);
   }
 
   Future<void> _onLoadProposalProjectRequested(
@@ -49,6 +51,19 @@ class ProposalModuleBloc
     );
   }
 
+  Future<void> _onGenerateProposalRequested(
+    GenerateProposalRequested event,
+    Emitter<ProposalModuleState> emit,
+  ) async {
+    emit(const ProposalModuleGenerating());
+
+    final result = await repository.generateProposal(event.projectId);
+    result.fold(
+      (failure) => emit(ProposalModuleFailure(failure.message)),
+      (project) => emit(ProposalModuleLoaded(project)),
+    );
+  }
+
   Future<void> _onApproveProposalRequested(
     ApproveProposalRequested event,
     Emitter<ProposalModuleState> emit,
@@ -59,6 +74,19 @@ class ProposalModuleBloc
     result.fold(
       (failure) => emit(ProposalModuleFailure(failure.message)),
       (project) => emit(ProposalModuleLoaded(project)),
+    );
+  }
+
+  Future<void> _onSkipProposalRequested(
+    SkipProposalRequested event,
+    Emitter<ProposalModuleState> emit,
+  ) async {
+    emit(const ProposalModuleLoading());
+
+    final result = await repository.skipProposal(event.projectId);
+    result.fold(
+      (failure) => emit(ProposalModuleFailure(failure.message)),
+      (project) => emit(ProposalModuleSkipSuccess(project)),
     );
   }
 }
