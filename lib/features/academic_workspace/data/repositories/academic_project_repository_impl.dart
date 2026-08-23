@@ -162,6 +162,17 @@ class AcademicProjectRepositoryImpl extends BaseRepository
   }
 
   @override
+  Future<Either<AppFailure, String>> startPublishing(String projectId) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.startPublishing(projectId);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (pubProjectId) => Either.right(pubProjectId),
+      );
+    });
+  }
+
+  @override
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,

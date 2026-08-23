@@ -18,6 +18,7 @@ class ResearchModuleBloc
     on<LoadResearchProjectRequested>(_onLoadResearchProjectRequested);
     on<UploadResearchRequested>(_onUploadResearchRequested);
     on<ApproveResearchRequested>(_onApproveResearchRequested);
+    on<StartPublishingRequested>(_onStartPublishingRequested);
   }
 
   Future<void> _onLoadResearchProjectRequested(
@@ -59,6 +60,26 @@ class ResearchModuleBloc
     result.fold(
       (failure) => emit(ResearchModuleFailure(failure.message)),
       (project) => emit(ResearchModuleLoaded(project)),
+    );
+  }
+
+  Future<void> _onStartPublishingRequested(
+    StartPublishingRequested event,
+    Emitter<ResearchModuleState> emit,
+  ) async {
+    emit(const ResearchModuleLoading());
+
+    final result = await repository.startPublishing(event.projectId);
+    await result.fold(
+      (failure) async => emit(ResearchModuleFailure(failure.message)),
+      (pubProjectId) async {
+        emit(ResearchModulePublishingStarted(pubProjectId));
+        final details = await repository.getProjectDetails(event.projectId);
+        details.fold(
+          (failure) => null,
+          (project) => emit(ResearchModuleLoaded(project)),
+        );
+      },
     );
   }
 }

@@ -32,3 +32,12 @@ class ResearchModuleFailure extends ResearchModuleState {
   @override
   List<Object?> get props => [error];
 }
+
+class ResearchModulePublishingStarted extends ResearchModuleState {
+  final String pubProjectId;
+
+  const ResearchModulePublishingStarted(this.pubProjectId);
+
+  @override
+  List<Object?> get props => [pubProjectId];
+}

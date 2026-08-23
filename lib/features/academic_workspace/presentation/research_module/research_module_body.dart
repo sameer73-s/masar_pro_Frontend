@@ -14,7 +14,7 @@ import '../../../../core/network/api_config.dart';
 import '../../../../core/presentation/widgets/academic_journey_header.dart';
 import '../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
-import '../../../publishing/presentation/pub_dashboard/views/pub_dashboard_page.dart';
+import '../../../publishing/presentation/readiness_result/views/readiness_result_page.dart';
 import 'bloc/research_module_bloc.dart';
 
 class ResearchModuleBody extends StatefulWidget {
@@ -143,11 +143,9 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
   }
 
   void _proceedToPublishing() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const PubDashboardPage(),
-      ),
-    );
+    context.read<ResearchModuleBloc>().add(
+          StartPublishingRequested(widget.projectId),
+        );
   }
 
   @override
@@ -157,9 +155,20 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
         if (state is ResearchModuleFailure) {
           AppErrorDialog.show(context, message: state.error);
         }
+        if (state is ResearchModulePublishingStarted) {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => ReadinessResultPage(
+                projectId: state.pubProjectId,
+              ),
+            ),
+          );
+        }
       },
       builder: (context, state) {
-        if (state is ResearchModuleLoading || state is ResearchModuleInitial) {
+        if (state is ResearchModuleLoading ||
+            state is ResearchModuleInitial ||
+            state is ResearchModulePublishingStarted) {
           return const Center(
             child: CircularProgressIndicator(color: AppColors.accentPurple),
           );

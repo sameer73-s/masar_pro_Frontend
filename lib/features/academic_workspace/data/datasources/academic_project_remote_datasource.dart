@@ -53,6 +53,8 @@ abstract class AcademicProjectRemoteDataSource {
     String projectId,
   );
 
+  Future<Either<AppFailure, String>> startPublishing(String projectId);
+
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,
@@ -353,6 +355,38 @@ class AcademicProjectRemoteDataSourceImpl
         (data) => Either.right(
           AcademicProjectModel.fromJson(_asMap(data)),
         ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, String>> startPublishing(String projectId) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/publish/start',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) {
+          final map = _asMap(data);
+          final pubProjectId =
+              (map['pub_project_id'] ?? map['pubProjectId'] ?? '')
+                  .toString()
+                  .trim();
+          if (pubProjectId.isEmpty) {
+            return Either.left(
+              AppFailure.server(
+                message: 'Start publishing response missing pub_project_id',
+              ),
+            );
+          }
+          return Either.right(pubProjectId);
+        },
       );
     } catch (e) {
       return Either.left(AppFailure.server(message: e.toString()));

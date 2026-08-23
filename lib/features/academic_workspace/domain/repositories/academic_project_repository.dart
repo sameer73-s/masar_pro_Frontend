@@ -41,6 +41,8 @@ abstract class AcademicProjectRepository {
 
   Future<Either<AppFailure, AcademicProject>> approveResearch(String projectId);
 
+  Future<Either<AppFailure, String>> startPublishing(String projectId);
+
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,

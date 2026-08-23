@@ -37,3 +37,12 @@ class ApproveResearchRequested extends ResearchModuleEvent {
   @override
   List<Object?> get props => [projectId];
 }
+
+class StartPublishingRequested extends ResearchModuleEvent {
+  final String projectId;
+
+  const StartPublishingRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}
