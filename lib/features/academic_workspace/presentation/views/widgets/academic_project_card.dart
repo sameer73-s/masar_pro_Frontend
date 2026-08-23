@@ -15,8 +15,8 @@ import '../../../../../core/presentation/widgets/pub/ai_worker_card.dart';
 import '../../../../../core/presentation/widgets/status_badge.dart';
 import '../../../domain/entities/academic_project.dart';
 import '../../bloc/academic_workspace_bloc/academic_workspace_bloc.dart';
+import '../../proposal_module/proposal_module_page.dart';
 import '../../widgets/feedback_bottom_sheet.dart';
-import '../pages/academic_project_placeholder_page.dart';
 
 class AcademicProjectCard extends StatefulWidget {
   const AcademicProjectCard({super.key, required this.project});
@@ -190,9 +190,8 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
                     : () {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
-                            builder: (_) => AcademicProjectPlaceholderPage(
+                            builder: (_) => ProposalModulePage(
                               projectId: widget.project.id,
-                              projectTitle: widget.project.title,
                             ),
                           ),
                         );
@@ -203,11 +202,11 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
                 backgroundColor: AppColors.surfacePurple,
                 textColor: AppColors.accentPurple,
               ),
-              // Temporary entry point — move to Proposal/Research detail pages later.
               const SizedBox(height: 10),
               PrimaryButton(
                 text: 'Add Feedback',
-                onPressed: showWorker || _isDownloading ? null : _openFeedbackSheet,
+                onPressed:
+                    showWorker || _isDownloading ? null : _openFeedbackSheet,
                 width: double.infinity,
                 height: 42,
                 borderRadius: 10,

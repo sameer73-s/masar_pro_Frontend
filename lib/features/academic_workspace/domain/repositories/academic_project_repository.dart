@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/errors/either.dart';
 import '../entities/academic_project.dart';
@@ -20,6 +22,13 @@ abstract class AcademicProjectRepository {
     AcademicPhase phase,
     String status,
   );
+
+  Future<Either<AppFailure, AcademicProject>> uploadProposal(
+    String projectId,
+    File file,
+  );
+
+  Future<Either<AppFailure, AcademicProject>> approveProposal(String projectId);
 
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,

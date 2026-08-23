@@ -5,6 +5,10 @@ void _initAcademicWorkspace() {
     () => AcademicWorkspaceBloc(repository: locator()),
   );
 
+  locator.registerFactory(
+    () => ProposalModuleBloc(repository: locator()),
+  );
+
   locator.registerLazySingleton<AcademicProjectRepository>(
     () => AcademicProjectRepositoryImpl(
       networkService: locator(),

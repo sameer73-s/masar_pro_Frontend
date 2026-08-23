@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/errors/either.dart';
 import '../../../../core/network/api_client.dart';
@@ -21,6 +25,15 @@ abstract class AcademicProjectRemoteDataSource {
     String id,
     AcademicPhase phase,
     String status,
+  );
+
+  Future<Either<AppFailure, AcademicProjectModel>> uploadProposal(
+    String projectId,
+    File file,
+  );
+
+  Future<Either<AppFailure, AcademicProjectModel>> approveProposal(
+    String projectId,
   );
 
   Future<Either<AppFailure, String>> submitFeedback({
@@ -63,6 +76,12 @@ class AcademicProjectRemoteDataSourceImpl
       }
     }
     return const [];
+  }
+
+  String _fileName(File file) {
+    final parts = file.path.replaceAll('\\', '/').split('/');
+    final name = parts.isNotEmpty ? parts.last : '';
+    return name.trim().isEmpty ? 'proposal.pdf' : name;
   }
 
   @override
@@ -174,6 +193,59 @@ class AcademicProjectRemoteDataSourceImpl
   }
 
   @override
+  Future<Either<AppFailure, AcademicProjectModel>> uploadProposal(
+    String projectId,
+    File file,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: _fileName(file),
+        ),
+      });
+
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/proposal/upload',
+        headers: await _authHeaders(),
+        body: formData,
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProjectModel>> approveProposal(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/proposal/approve',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,
@@ -196,7 +268,8 @@ class AcademicProjectRemoteDataSourceImpl
         (failure) => Either.left(failure),
         (data) {
           final map = _asMap(data);
-          final fileUrl = (map['file_url'] ?? map['fileUrl'] ?? '').toString().trim();
+          final fileUrl =
+              (map['file_url'] ?? map['fileUrl'] ?? '').toString().trim();
           if (fileUrl.isEmpty) {
             return Either.left(
               AppFailure.server(message: 'Feedback response missing file_url'),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../../../core/base/base_repository.dart';
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/errors/either.dart';
@@ -72,6 +74,33 @@ class AcademicProjectRepositoryImpl extends BaseRepository
         phase,
         status,
       );
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model),
+      );
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProject>> uploadProposal(
+    String projectId,
+    File file,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.uploadProposal(projectId, file);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model),
+      );
+    });
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProject>> approveProposal(
+    String projectId,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.approveProposal(projectId);
       return result.fold(
         (failure) => Either.left(failure),
         (model) => Either.right(model),

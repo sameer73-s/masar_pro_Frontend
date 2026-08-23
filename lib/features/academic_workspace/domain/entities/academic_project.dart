@@ -9,6 +9,7 @@ class AcademicProject extends Equatable {
   final String proposalStatus;
   final String researchStatus;
   final String publishingStatus;
+  final String? proposalFileUrl;
   final String? agencyTaskId;
   final String? pubProjectId;
 
@@ -21,6 +22,7 @@ class AcademicProject extends Equatable {
     required this.proposalStatus,
     required this.researchStatus,
     required this.publishingStatus,
+    this.proposalFileUrl,
     this.agencyTaskId,
     this.pubProjectId,
   });
@@ -35,6 +37,7 @@ class AcademicProject extends Equatable {
         proposalStatus,
         researchStatus,
         publishingStatus,
+        proposalFileUrl,
         agencyTaskId,
         pubProjectId,
       ];
