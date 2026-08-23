@@ -73,6 +73,12 @@ import '../features/publishing/data/repositories/publishing_repository_impl.dart
 import '../features/publishing/domain/repositories/publishing_repository.dart';
 import '../features/publishing/presentation/bloc/publishing_bloc/publishing_bloc.dart';
 
+// Academic Workspace Imports
+import '../features/academic_workspace/data/datasources/academic_project_remote_datasource.dart';
+import '../features/academic_workspace/data/repositories/academic_project_repository_impl.dart';
+import '../features/academic_workspace/domain/repositories/academic_project_repository.dart';
+import '../features/academic_workspace/presentation/bloc/academic_workspace_bloc/academic_workspace_bloc.dart';
+
 part 'injection_core.dart';
 part 'injection_smart_parser.dart';
 part 'injection_content_creation.dart';
@@ -81,6 +87,7 @@ part 'injection_long_research.dart';
 part 'injection_agency.dart';
 part 'injection_excel_versioner.dart';
 part 'injection_publishing.dart';
+part 'injection_academic_workspace.dart';
 
 enum Environment { dev, prod }
 
@@ -101,4 +108,5 @@ Future<void> init({Environment env = Environment.prod}) async {
   _initLongResearch();
   _initExcelVersioner();
   _initPublishing();
+  _initAcademicWorkspace();
 }

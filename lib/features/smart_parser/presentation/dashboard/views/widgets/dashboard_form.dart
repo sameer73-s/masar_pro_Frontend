@@ -1,20 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../config/app_colors.dart';
 import '../../../../../../config/constants.dart';
 import '../../../../../../config/secure_storage_service.dart';
 import '../../../../../../core/presentation/widgets/app_bar_greeting.dart';
 import '../../../../../../core/presentation/widgets/dashboard_progress_card.dart';
 import '../../../../../../core/utils/responsive_layout.dart';
-import '../../../smart_parser/views/smart_parser_page.dart';
 import '../../../../../../injection/injection_container.dart' as di;
 import '../../../../../agency/presentation/views/pages/agency_dashboard_page.dart';
-import '../../../../../content_creation/presentation/task_selection/views/task_selection_page.dart';
-import '../../../../../long_research/presentation/bloc/research_bloc.dart';
-import '../../../../../long_research/presentation/screens/research_hub_screen.dart';
-import '../../../../../publishing/presentation/pub_dashboard/views/pub_dashboard_page.dart';
-import 'workflow_grid.dart';
+import '../../../../../academic_workspace/presentation/views/pages/academic_workspace_page.dart';
+import 'academic_workspace_banner.dart';
 
 class DashboardForm extends StatefulWidget {
   const DashboardForm({super.key});
@@ -67,45 +62,18 @@ class _DashboardFormState extends State<DashboardForm> {
     });
   }
 
-  void _navigateToSmartParser(BuildContext context) {
+  void _navigateToAcademicWorkspace(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const SmartParserScreen(),
+      MaterialPageRoute<void>(
+        builder: (_) => const AcademicWorkspacePage(),
       ),
     );
   }
 
   void _navigateToActiveTasks(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (_) => const AgencyDashboardPage(),
-      ),
-    );
-  }
-
-  void _navigateToContentCreation(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const TaskSelectionPage(),
-      ),
-    );
-  }
-
-  void _navigateToResearch(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-          create: (_) => di.locator<ResearchBloc>(),
-          child: const ResearchHubScreen(),
-        ),
-      ),
-    );
-  }
-
-  void _navigateToAcademicPublishing(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const PubDashboardPage(),
       ),
     );
   }
@@ -134,12 +102,10 @@ class _DashboardFormState extends State<DashboardForm> {
               onViewTask: () => _navigateToActiveTasks(context),
             ),
             const SizedBox(height: kSpacing24),
-            WorkflowGrid(
-              onSmartParserTap: () => _navigateToSmartParser(context),
-              onContentCreationTap: () => _navigateToContentCreation(context),
-              onResearchTap: () => _navigateToResearch(context),
-              onAcademicPublishingTap: () =>
-                  _navigateToAcademicPublishing(context),
+            AcademicWorkspaceBanner(
+              onAcademicWorkspaceTap: () =>
+                  _navigateToAcademicWorkspace(context),
+              onActiveTasksTap: () => _navigateToActiveTasks(context),
             ),
           ],
         ),
