@@ -30,6 +30,13 @@ abstract class AcademicProjectRepository {
 
   Future<Either<AppFailure, AcademicProject>> approveProposal(String projectId);
 
+  Future<Either<AppFailure, AcademicProject>> uploadResearch(
+    String projectId,
+    File file,
+  );
+
+  Future<Either<AppFailure, AcademicProject>> approveResearch(String projectId);
+
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,

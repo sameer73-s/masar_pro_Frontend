@@ -9,6 +9,10 @@ void _initAcademicWorkspace() {
     () => ProposalModuleBloc(repository: locator()),
   );
 
+  locator.registerFactory(
+    () => ResearchModuleBloc(repository: locator()),
+  );
+
   locator.registerLazySingleton<AcademicProjectRepository>(
     () => AcademicProjectRepositoryImpl(
       networkService: locator(),

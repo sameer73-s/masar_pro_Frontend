@@ -79,6 +79,7 @@ import '../features/academic_workspace/data/repositories/academic_project_reposi
 import '../features/academic_workspace/domain/repositories/academic_project_repository.dart';
 import '../features/academic_workspace/presentation/bloc/academic_workspace_bloc/academic_workspace_bloc.dart';
 import '../features/academic_workspace/presentation/proposal_module/bloc/proposal_module_bloc.dart';
+import '../features/academic_workspace/presentation/research_module/bloc/research_module_bloc.dart';
 
 part 'injection_core.dart';
 part 'injection_smart_parser.dart';

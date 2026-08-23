@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../config/app_colors.dart';
+import '../../../../core/presentation/widgets/custom_app_bar.dart';
+import '../../../../injection/injection_container.dart' as di;
+import 'bloc/research_module_bloc.dart';
+import 'research_module_body.dart';
+
+class ResearchModulePage extends StatelessWidget {
+  const ResearchModulePage({
+    super.key,
+    required this.projectId,
+  });
+
+  final String projectId;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => di.locator<ResearchModuleBloc>()
+        ..add(LoadResearchProjectRequested(projectId)),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: const CustomAppBar(title: 'Full Research'),
+        body: SafeArea(
+          child: ResearchModuleBody(projectId: projectId),
+        ),
+      ),
+    );
+  }
+}

@@ -36,6 +36,15 @@ abstract class AcademicProjectRemoteDataSource {
     String projectId,
   );
 
+  Future<Either<AppFailure, AcademicProjectModel>> uploadResearch(
+    String projectId,
+    File file,
+  );
+
+  Future<Either<AppFailure, AcademicProjectModel>> approveResearch(
+    String projectId,
+  );
+
   Future<Either<AppFailure, String>> submitFeedback({
     required String projectId,
     required String feedbackText,
@@ -231,6 +240,59 @@ class AcademicProjectRemoteDataSourceImpl
       final response = await ApiClient.request(
         requestType: RequestType.post,
         endPoint: '$_base/$projectId/proposal/approve',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProjectModel>> uploadResearch(
+    String projectId,
+    File file,
+  ) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: _fileName(file),
+        ),
+      });
+
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/research/upload',
+        headers: await _authHeaders(),
+        body: formData,
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) => Either.right(
+          AcademicProjectModel.fromJson(_asMap(data)),
+        ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, AcademicProjectModel>> approveResearch(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/research/approve',
         headers: await _authHeaders(),
       );
 

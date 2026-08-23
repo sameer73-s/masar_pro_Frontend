@@ -14,12 +14,11 @@ import '../../../../core/network/api_config.dart';
 import '../../../../core/presentation/widgets/academic_journey_header.dart';
 import '../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
-import '../../domain/entities/academic_project.dart';
-import '../research_module/research_module_page.dart';
-import 'bloc/proposal_module_bloc.dart';
+import '../../../publishing/presentation/pub_dashboard/views/pub_dashboard_page.dart';
+import 'bloc/research_module_bloc.dart';
 
-class ProposalModuleBody extends StatefulWidget {
-  const ProposalModuleBody({
+class ResearchModuleBody extends StatefulWidget {
+  const ResearchModuleBody({
     super.key,
     required this.projectId,
   });
@@ -27,10 +26,10 @@ class ProposalModuleBody extends StatefulWidget {
   final String projectId;
 
   @override
-  State<ProposalModuleBody> createState() => _ProposalModuleBodyState();
+  State<ResearchModuleBody> createState() => _ResearchModuleBodyState();
 }
 
-class _ProposalModuleBodyState extends State<ProposalModuleBody> {
+class _ResearchModuleBodyState extends State<ResearchModuleBody> {
   bool _isDownloading = false;
 
   Future<void> _pickAndUpload() async {
@@ -52,18 +51,18 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
     }
 
     if (!mounted) return;
-    context.read<ProposalModuleBloc>().add(
-          UploadProposalRequested(
+    context.read<ResearchModuleBloc>().add(
+          UploadResearchRequested(
             projectId: widget.projectId,
             file: File(path),
           ),
         );
   }
 
-  Future<void> _downloadProposal(String? fileUrl) async {
+  Future<void> _downloadResearch(String? fileUrl) async {
     final raw = (fileUrl ?? '').trim();
     if (raw.isEmpty) {
-      await AppErrorDialog.show(context, message: 'No proposal file available');
+      await AppErrorDialog.show(context, message: 'No research file available');
       return;
     }
 
@@ -72,7 +71,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         : '${ApiConfig.normalizedBaseUrl}$raw';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid proposal file URL');
+      await AppErrorDialog.show(context, message: 'Invalid research file URL');
       return;
     }
 
@@ -114,7 +113,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the proposal file',
+              : 'Could not open the research file',
         );
       }
     } catch (_) {
@@ -132,41 +131,41 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         : '';
     final cleaned = last.split('?').first.trim();
     if (cleaned.isEmpty || !cleaned.contains('.')) {
-      return 'proposal.pdf';
+      return 'research.pdf';
     }
     return cleaned.replaceAll(RegExp(r'[^\w.\-]+'), '_');
   }
 
   void _approve() {
-    context.read<ProposalModuleBloc>().add(
-          ApproveProposalRequested(widget.projectId),
+    context.read<ResearchModuleBloc>().add(
+          ApproveResearchRequested(widget.projectId),
         );
   }
 
-  void _proceedToResearch(AcademicProject project) {
+  void _proceedToPublishing() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ResearchModulePage(projectId: project.id),
+        builder: (_) => const PubDashboardPage(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProposalModuleBloc, ProposalModuleState>(
+    return BlocConsumer<ResearchModuleBloc, ResearchModuleState>(
       listener: (context, state) {
-        if (state is ProposalModuleFailure) {
+        if (state is ResearchModuleFailure) {
           AppErrorDialog.show(context, message: state.error);
         }
       },
       builder: (context, state) {
-        if (state is ProposalModuleLoading || state is ProposalModuleInitial) {
+        if (state is ResearchModuleLoading || state is ResearchModuleInitial) {
           return const Center(
             child: CircularProgressIndicator(color: AppColors.accentPurple),
           );
         }
 
-        if (state is ProposalModuleFailure) {
+        if (state is ResearchModuleFailure) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
@@ -185,8 +184,8 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
                   PrimaryButton(
                     text: 'Retry',
                     onPressed: () {
-                      context.read<ProposalModuleBloc>().add(
-                            LoadProposalProjectRequested(widget.projectId),
+                      context.read<ResearchModuleBloc>().add(
+                            LoadResearchProjectRequested(widget.projectId),
                           );
                     },
                     width: 160,
@@ -199,13 +198,13 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
           );
         }
 
-        if (state is! ProposalModuleLoaded) {
+        if (state is! ResearchModuleLoaded) {
           return const SizedBox.shrink();
         }
 
         final project = state.project;
-        final status = project.proposalStatus.trim().toUpperCase();
-        final hasFile = (project.proposalFileUrl ?? '').trim().isNotEmpty;
+        final status = project.researchStatus.trim().toUpperCase();
+        final hasFile = (project.researchFileUrl ?? '').trim().isNotEmpty;
         final isApproved = status == 'APPROVED';
         final isInReview = status == 'REVIEW' || (hasFile && !isApproved);
 
@@ -229,11 +228,11 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
             ),
             const SizedBox(height: 28),
             if (isApproved)
-              _ApprovedSection(onProceed: () => _proceedToResearch(project))
+              _ApprovedSection(onProceed: _proceedToPublishing)
             else if (isInReview)
               _ReviewSection(
                 isDownloading: _isDownloading,
-                onDownload: () => _downloadProposal(project.proposalFileUrl),
+                onDownload: () => _downloadResearch(project.researchFileUrl),
                 onApprove: _approve,
               )
             else
@@ -270,7 +269,7 @@ class _UploadSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Get started with your proposal',
+          'Get started with full research',
           style: TextStyle(
             color: AppColors.primary,
             fontSize: 15,
@@ -290,14 +289,14 @@ class _UploadSection extends StatelessWidget {
         _ActionCard(
           icon: Icons.auto_awesome_outlined,
           title: 'Generate with AI',
-          subtitle: 'Create a proposal draft from your project details',
+          subtitle: 'Create a research draft from your proposal',
           onTap: onGeneratePlaceholder,
         ),
         const SizedBox(height: 12),
         _ActionCard(
           icon: Icons.upload_file_outlined,
-          title: 'Upload Existing Proposal',
-          subtitle: 'PDF or DOCX — sent for admin review',
+          title: 'Upload Existing Research',
+          subtitle: 'PDF or DOCX — sent for review',
           onTap: onUpload,
         ),
       ],
@@ -332,7 +331,7 @@ class _ReviewSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Proposal under review',
+                'Research under review',
                 style: TextStyle(
                   color: AppColors.primary,
                   fontSize: 15,
@@ -341,7 +340,7 @@ class _ReviewSection extends StatelessWidget {
               ),
               SizedBox(height: 6),
               Text(
-                'Download the file to verify, then approve to unlock Full Research.',
+                'Download the file to verify, then approve to unlock Publishing.',
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -353,7 +352,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: isDownloading ? 'Downloading…' : 'Download Proposal',
+          text: isDownloading ? 'Downloading…' : 'Download Research',
           onPressed: isDownloading ? null : onDownload,
           width: double.infinity,
           height: 48,
@@ -364,7 +363,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         PrimaryButton(
-          text: 'Approve Proposal',
+          text: 'Approve Research',
           onPressed: onApprove,
           width: double.infinity,
           height: 56,
@@ -400,7 +399,7 @@ class _ApprovedSection extends StatelessWidget {
               Icon(Icons.verified_outlined, size: 40, color: AppColors.success),
               const SizedBox(height: 12),
               const Text(
-                'Proposal Approved ✓',
+                'Research Approved ✓',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.primary,
@@ -410,7 +409,7 @@ class _ApprovedSection extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Full Research is unlocked. Continue when you are ready.',
+                'Publishing is unlocked. Continue when you are ready.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -423,7 +422,7 @@ class _ApprovedSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: 'Proceed to Full Research',
+          text: 'Proceed to Publishing',
           onPressed: onProceed,
           width: double.infinity,
           height: 52,

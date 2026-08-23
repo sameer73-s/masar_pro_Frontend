@@ -11,6 +11,7 @@ class AcademicProjectModel extends AcademicProject {
     required super.researchStatus,
     required super.publishingStatus,
     super.proposalFileUrl,
+    super.researchFileUrl,
     super.agencyTaskId,
     super.pubProjectId,
   });
@@ -42,6 +43,9 @@ class AcademicProjectModel extends AcademicProject {
       proposalFileUrl: _nullableString(
         json['proposal_file_url'] ?? json['proposalFileUrl'],
       ),
+      researchFileUrl: _nullableString(
+        json['research_file_url'] ?? json['researchFileUrl'],
+      ),
       agencyTaskId: _nullableString(
         json['agency_task_id'] ?? json['agencyTaskId'],
       ),
@@ -62,6 +66,7 @@ class AcademicProjectModel extends AcademicProject {
       'research_status': researchStatus,
       'publishing_status': publishingStatus,
       'proposal_file_url': proposalFileUrl,
+      'research_file_url': researchFileUrl,
       'agency_task_id': agencyTaskId,
       'pub_project_id': pubProjectId,
     };
@@ -78,6 +83,7 @@ class AcademicProjectModel extends AcademicProject {
       researchStatus: entity.researchStatus,
       publishingStatus: entity.publishingStatus,
       proposalFileUrl: entity.proposalFileUrl,
+      researchFileUrl: entity.researchFileUrl,
       agencyTaskId: entity.agencyTaskId,
       pubProjectId: entity.pubProjectId,
     );
