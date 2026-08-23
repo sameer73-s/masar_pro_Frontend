@@ -17,6 +17,7 @@ class AcademicWorkspaceBloc
     on<FetchAcademicProjectsRequested>(_onFetchAcademicProjectsRequested);
     on<CreateAcademicProjectRequested>(_onCreateAcademicProjectRequested);
     on<UpdatePhaseStatusRequested>(_onUpdatePhaseStatusRequested);
+    on<SubmitFeedbackRequested>(_onSubmitFeedbackRequested);
   }
 
   Future<void> _onFetchAcademicProjectsRequested(
@@ -70,6 +71,24 @@ class AcademicWorkspaceBloc
           event.status,
         ),
       ),
+    );
+  }
+
+  Future<void> _onSubmitFeedbackRequested(
+    SubmitFeedbackRequested event,
+    Emitter<AcademicWorkspaceState> emit,
+  ) async {
+    emit(const AcademicWorkspaceLoading());
+
+    final result = await repository.submitFeedback(
+      projectId: event.projectId,
+      feedbackText: event.feedbackText,
+      instructions: event.instructions,
+      source: event.source,
+    );
+    result.fold(
+      (failure) => emit(AcademicWorkspaceFailure(failure.message)),
+      (fileUrl) => emit(FeedbackProcessed(fileUrl)),
     );
   }
 }

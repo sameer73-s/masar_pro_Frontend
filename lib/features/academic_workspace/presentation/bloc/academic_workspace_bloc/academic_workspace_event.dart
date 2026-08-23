@@ -42,3 +42,20 @@ class UpdatePhaseStatusRequested extends AcademicWorkspaceEvent {
   @override
   List<Object?> get props => [projectId, phase, status];
 }
+
+class SubmitFeedbackRequested extends AcademicWorkspaceEvent {
+  final String projectId;
+  final String feedbackText;
+  final String instructions;
+  final String source;
+
+  const SubmitFeedbackRequested({
+    required this.projectId,
+    required this.feedbackText,
+    required this.instructions,
+    required this.source,
+  });
+
+  @override
+  List<Object?> get props => [projectId, feedbackText, instructions, source];
+}

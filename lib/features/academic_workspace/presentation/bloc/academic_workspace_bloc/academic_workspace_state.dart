@@ -48,6 +48,15 @@ class AcademicPhaseStatusUpdated extends AcademicWorkspaceState {
   List<Object?> get props => [projectId, phase, status];
 }
 
+class FeedbackProcessed extends AcademicWorkspaceState {
+  final String fileUrl;
+
+  const FeedbackProcessed(this.fileUrl);
+
+  @override
+  List<Object?> get props => [fileUrl];
+}
+
 class AcademicWorkspaceFailure extends AcademicWorkspaceState {
   final String error;
 

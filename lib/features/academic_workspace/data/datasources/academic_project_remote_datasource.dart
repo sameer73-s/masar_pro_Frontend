@@ -22,6 +22,13 @@ abstract class AcademicProjectRemoteDataSource {
     AcademicPhase phase,
     String status,
   );
+
+  Future<Either<AppFailure, String>> submitFeedback({
+    required String projectId,
+    required String feedbackText,
+    required String instructions,
+    required String source,
+  });
 }
 
 class AcademicProjectRemoteDataSourceImpl
@@ -160,6 +167,43 @@ class AcademicProjectRemoteDataSourceImpl
         (data) => Either.right(
           AcademicProjectModel.fromJson(_asMap(data)),
         ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, String>> submitFeedback({
+    required String projectId,
+    required String feedbackText,
+    required String instructions,
+    required String source,
+  }) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.post,
+        endPoint: '$_base/$projectId/feedback',
+        headers: await _authHeaders(),
+        body: {
+          'feedback_text': feedbackText,
+          'instructions': instructions,
+          'source': source,
+        },
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (data) {
+          final map = _asMap(data);
+          final fileUrl = (map['file_url'] ?? map['fileUrl'] ?? '').toString().trim();
+          if (fileUrl.isEmpty) {
+            return Either.left(
+              AppFailure.server(message: 'Feedback response missing file_url'),
+            );
+          }
+          return Either.right(fileUrl);
+        },
       );
     } catch (e) {
       return Either.left(AppFailure.server(message: e.toString()));

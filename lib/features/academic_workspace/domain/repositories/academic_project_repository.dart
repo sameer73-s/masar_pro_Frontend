@@ -20,4 +20,11 @@ abstract class AcademicProjectRepository {
     AcademicPhase phase,
     String status,
   );
+
+  Future<Either<AppFailure, String>> submitFeedback({
+    required String projectId,
+    required String feedbackText,
+    required String instructions,
+    required String source,
+  });
 }

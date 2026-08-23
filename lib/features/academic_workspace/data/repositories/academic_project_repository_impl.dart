@@ -78,4 +78,25 @@ class AcademicProjectRepositoryImpl extends BaseRepository
       );
     });
   }
+
+  @override
+  Future<Either<AppFailure, String>> submitFeedback({
+    required String projectId,
+    required String feedbackText,
+    required String instructions,
+    required String source,
+  }) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.submitFeedback(
+        projectId: projectId,
+        feedbackText: feedbackText,
+        instructions: instructions,
+        source: source,
+      );
+      return result.fold(
+        (failure) => Either.left(failure),
+        (fileUrl) => Either.right(fileUrl),
+      );
+    });
+  }
 }
