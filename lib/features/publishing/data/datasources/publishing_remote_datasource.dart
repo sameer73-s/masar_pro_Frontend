@@ -20,6 +20,8 @@ abstract class PublishingRemoteDataSource {
 
   Future<Either<AppFailure, ResearchProjectModel>> createResearch(String title);
 
+  Future<Either<AppFailure, void>> deleteResearchProject(String projectId);
+
   Future<Either<AppFailure, ManuscriptVersionModel>> uploadManuscript(
     String projectId,
     PlatformFile file,
@@ -131,6 +133,26 @@ class PublishingRemoteDataSourceImpl implements PublishingRemoteDataSource {
         (data) => Either.right(
           ResearchProjectModel.fromJson(_asMap(data)),
         ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, void>> deleteResearchProject(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.delete,
+        endPoint: '$_base/research/$projectId',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (_) => Either.right(null),
       );
     } catch (e) {
       return Either.left(AppFailure.server(message: e.toString()));

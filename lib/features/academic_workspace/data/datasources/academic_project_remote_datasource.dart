@@ -21,6 +21,8 @@ abstract class AcademicProjectRemoteDataSource {
 
   Future<Either<AppFailure, AcademicProjectModel>> getProjectDetails(String id);
 
+  Future<Either<AppFailure, void>> deleteAcademicProject(String projectId);
+
   Future<Either<AppFailure, AcademicProjectModel>> updatePhaseStatus(
     String id,
     AcademicPhase phase,
@@ -177,6 +179,26 @@ class AcademicProjectRemoteDataSourceImpl
         (data) => Either.right(
           AcademicProjectModel.fromJson(_asMap(data)),
         ),
+      );
+    } catch (e) {
+      return Either.left(AppFailure.server(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppFailure, void>> deleteAcademicProject(
+    String projectId,
+  ) async {
+    try {
+      final response = await ApiClient.request(
+        requestType: RequestType.delete,
+        endPoint: '$_base/$projectId',
+        headers: await _authHeaders(),
+      );
+
+      return response.fold(
+        (failure) => Either.left(failure),
+        (_) => Either.right(null),
       );
     } catch (e) {
       return Either.left(AppFailure.server(message: e.toString()));

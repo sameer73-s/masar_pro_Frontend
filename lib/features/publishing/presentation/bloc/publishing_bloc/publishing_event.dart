@@ -20,6 +20,15 @@ class CreateResearchRequested extends PublishingEvent {
   List<Object?> get props => [title];
 }
 
+class DeletePublishingProjectRequested extends PublishingEvent {
+  final String projectId;
+
+  const DeletePublishingProjectRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}
+
 class UploadManuscriptRequested extends PublishingEvent {
   final String projectId;
   final File file;

@@ -59,3 +59,12 @@ class SubmitFeedbackRequested extends AcademicWorkspaceEvent {
   @override
   List<Object?> get props => [projectId, feedbackText, instructions, source];
 }
+
+class DeleteAcademicProjectRequested extends AcademicWorkspaceEvent {
+  final String projectId;
+
+  const DeleteAcademicProjectRequested(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}

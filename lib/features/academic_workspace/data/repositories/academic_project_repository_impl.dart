@@ -63,6 +63,19 @@ class AcademicProjectRepositoryImpl extends BaseRepository
   }
 
   @override
+  Future<Either<AppFailure, void>> deleteAcademicProject(
+    String projectId,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.deleteAcademicProject(projectId);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (_) => Either.right(null),
+      );
+    });
+  }
+
+  @override
   Future<Either<AppFailure, AcademicProject>> updatePhaseStatus(
     String id,
     AcademicPhase phase,

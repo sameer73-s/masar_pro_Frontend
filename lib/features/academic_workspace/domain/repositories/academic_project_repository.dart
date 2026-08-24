@@ -17,6 +17,8 @@ abstract class AcademicProjectRepository {
 
   Future<Either<AppFailure, AcademicProject>> getProjectDetails(String id);
 
+  Future<Either<AppFailure, void>> deleteAcademicProject(String projectId);
+
   Future<Either<AppFailure, AcademicProject>> updatePhaseStatus(
     String id,
     AcademicPhase phase,

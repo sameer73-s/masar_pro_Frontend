@@ -25,6 +25,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
       : super(const PublishingInitial()) {
     on<FetchResearchProjectsRequested>(_onFetchResearchProjectsRequested);
     on<CreateResearchRequested>(_onCreateResearchRequested);
+    on<DeletePublishingProjectRequested>(_onDeletePublishingProjectRequested);
     on<UploadManuscriptRequested>(_onUploadManuscriptRequested);
     on<AnalyzeReadinessRequested>(_onAnalyzeReadinessRequested);
     on<MatchJournalsRequested>(_onMatchJournalsRequested);
@@ -63,6 +64,34 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     result.fold(
       (failure) => emit(PublishingFailure(failure.message)),
       (project) => emit(PublishingResearchCreated(project.id)),
+    );
+  }
+
+  Future<void> _onDeletePublishingProjectRequested(
+    DeletePublishingProjectRequested event,
+    Emitter<PublishingState> emit,
+  ) async {
+    final previous = state;
+    emit(const PublishingLoading('Deleting project...'));
+
+    final result = await repository.deleteResearchProject(event.projectId);
+    await result.fold(
+      (failure) async => emit(PublishingFailure(failure.message)),
+      (_) async {
+        if (previous is PublishingProjectsLoaded) {
+          final updated = previous.projects
+              .where((project) => project.id != event.projectId)
+              .toList();
+          emit(PublishingProjectsLoaded(updated));
+          return;
+        }
+
+        final refresh = await repository.getResearchProjects();
+        refresh.fold(
+          (failure) => emit(PublishingFailure(failure.message)),
+          (projects) => emit(PublishingProjectsLoaded(projects)),
+        );
+      },
     );
   }
 

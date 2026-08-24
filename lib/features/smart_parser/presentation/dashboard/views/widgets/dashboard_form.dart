@@ -4,12 +4,11 @@ import '../../../../../../config/app_colors.dart';
 import '../../../../../../config/constants.dart';
 import '../../../../../../config/secure_storage_service.dart';
 import '../../../../../../core/presentation/widgets/app_bar_greeting.dart';
-import '../../../../../../core/presentation/widgets/dashboard_progress_card.dart';
 import '../../../../../../core/utils/responsive_layout.dart';
 import '../../../../../../injection/injection_container.dart' as di;
-import '../../../../../agency/presentation/views/pages/agency_dashboard_page.dart';
-import '../../../../../academic_workspace/presentation/views/pages/academic_workspace_page.dart';
-import 'academic_workspace_banner.dart';
+import 'academic_workspace_section.dart';
+import 'active_tasks_section.dart';
+import 'quick_tools_section.dart';
 
 class DashboardForm extends StatefulWidget {
   const DashboardForm({super.key});
@@ -62,22 +61,6 @@ class _DashboardFormState extends State<DashboardForm> {
     });
   }
 
-  void _navigateToAcademicWorkspace(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const AcademicWorkspacePage(),
-      ),
-    );
-  }
-
-  void _navigateToActiveTasks(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const AgencyDashboardPage(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final content = ColoredBox(
@@ -98,15 +81,11 @@ class _DashboardFormState extends State<DashboardForm> {
               hasNotifications: true,
             ),
             const SizedBox(height: kSpacing24),
-            DashboardProgressCard(
-              onViewTask: () => _navigateToActiveTasks(context),
-            ),
+            const AcademicWorkspaceSection(),
             const SizedBox(height: kSpacing24),
-            AcademicWorkspaceBanner(
-              onAcademicWorkspaceTap: () =>
-                  _navigateToAcademicWorkspace(context),
-              onActiveTasksTap: () => _navigateToActiveTasks(context),
-            ),
+            const ActiveTasksSection(),
+            const SizedBox(height: kSpacing24),
+            const QuickToolsSection(),
           ],
         ),
       ),

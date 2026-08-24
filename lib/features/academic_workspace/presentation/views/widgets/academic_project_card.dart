@@ -161,11 +161,12 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   StatusBadge(
                     status: Status.toDo,
                     label: widget.project.academicLevel,
                   ),
+                  _ProjectOverflowMenu(projectId: widget.project.id),
                 ],
               ),
               const SizedBox(height: 16),
@@ -219,3 +220,63 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
     );
   }
 }
+
+class _ProjectOverflowMenu extends StatelessWidget {
+  const _ProjectOverflowMenu({required this.projectId});
+
+  final String projectId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: PopupMenuButton<_ProjectMenuAction>(
+        icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+        padding: EdgeInsets.zero,
+        onSelected: (action) => _handleAction(context, action),
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            value: _ProjectMenuAction.delete,
+            child: ListTile(
+              leading: Icon(
+                Icons.delete_outline,
+                size: 20,
+                color: AppColors.error,
+              ),
+              title: Text(
+                'Delete',
+                style: TextStyle(color: AppColors.error),
+              ),
+              contentPadding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleAction(BuildContext context, _ProjectMenuAction action) {
+    switch (action) {
+      case _ProjectMenuAction.delete:
+        _confirmDelete(context);
+    }
+  }
+
+  void _confirmDelete(BuildContext context) {
+    AppErrorDialog.show(
+      context,
+      title: 'Delete Project',
+      message:
+          'This academic project and all its files will be permanently removed.',
+      okButtonText: 'Delete',
+      onOk: () => context.read<AcademicWorkspaceBloc>().add(
+            DeleteAcademicProjectRequested(projectId),
+          ),
+      secondaryButtonText: 'Cancel',
+      onSecondaryAction: () {},
+    );
+  }
+}
+
+enum _ProjectMenuAction { delete }

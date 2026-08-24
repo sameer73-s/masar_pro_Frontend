@@ -17,6 +17,8 @@ abstract class PublishingRepository {
 
   Future<Either<AppFailure, ResearchProject>> createResearch(String title);
 
+  Future<Either<AppFailure, void>> deleteResearchProject(String projectId);
+
   Future<Either<AppFailure, ManuscriptVersion>> uploadManuscript(
     String projectId,
     PlatformFile file,

@@ -18,6 +18,7 @@ class AcademicWorkspaceBloc
     on<CreateAcademicProjectRequested>(_onCreateAcademicProjectRequested);
     on<UpdatePhaseStatusRequested>(_onUpdatePhaseStatusRequested);
     on<SubmitFeedbackRequested>(_onSubmitFeedbackRequested);
+    on<DeleteAcademicProjectRequested>(_onDeleteAcademicProjectRequested);
   }
 
   Future<void> _onFetchAcademicProjectsRequested(
@@ -89,6 +90,34 @@ class AcademicWorkspaceBloc
     result.fold(
       (failure) => emit(AcademicWorkspaceFailure(failure.message)),
       (fileUrl) => emit(FeedbackProcessed(fileUrl)),
+    );
+  }
+
+  Future<void> _onDeleteAcademicProjectRequested(
+    DeleteAcademicProjectRequested event,
+    Emitter<AcademicWorkspaceState> emit,
+  ) async {
+    final previous = state;
+    emit(const AcademicWorkspaceLoading());
+
+    final result = await repository.deleteAcademicProject(event.projectId);
+    await result.fold(
+      (failure) async => emit(AcademicWorkspaceFailure(failure.message)),
+      (_) async {
+        if (previous is AcademicProjectsLoaded) {
+          final updated = previous.projects
+              .where((project) => project.id != event.projectId)
+              .toList();
+          emit(AcademicProjectsLoaded(updated));
+          return;
+        }
+
+        final refresh = await repository.getProjects();
+        refresh.fold(
+          (failure) => emit(AcademicWorkspaceFailure(failure.message)),
+          (projects) => emit(AcademicProjectsLoaded(projects)),
+        );
+      },
     );
   }
 }

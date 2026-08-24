@@ -49,6 +49,19 @@ class PublishingRepositoryImpl extends BaseRepository
   }
 
   @override
+  Future<Either<AppFailure, void>> deleteResearchProject(
+    String projectId,
+  ) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.deleteResearchProject(projectId);
+      return result.fold(
+        (failure) => Either.left(failure),
+        (_) => Either.right(null),
+      );
+    });
+  }
+
+  @override
   Future<Either<AppFailure, ManuscriptVersion>> uploadManuscript(
     String projectId,
     PlatformFile file,
