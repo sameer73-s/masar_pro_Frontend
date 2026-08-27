@@ -377,7 +377,7 @@ class PublishingRemoteDataSourceImpl implements PublishingRemoteDataSource {
       final inferredType = _inferEvidenceType(file.name);
       final formData = FormData.fromMap({
         'file': multipartFile,
-        'file_type': ?inferredType,
+        if (inferredType != null) 'file_type': inferredType,
       });
 
       final response = await ApiClient.request(
