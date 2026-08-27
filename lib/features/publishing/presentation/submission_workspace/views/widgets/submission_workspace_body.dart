@@ -34,11 +34,17 @@ class SubmissionWorkspaceBody extends StatefulWidget {
     required this.projectId,
     required this.journalId,
     this.journalName,
+    this.targetUrl,
+    this.fileId,
+    required this.onStartAutomatedSubmission,
   });
 
   final String projectId;
   final String journalId;
   final String? journalName;
+  final String? targetUrl;
+  final String? fileId;
+  final VoidCallback onStartAutomatedSubmission;
 
   @override
   State<SubmissionWorkspaceBody> createState() =>
@@ -57,8 +63,8 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
   void initState() {
     super.initState();
     context.read<PublishingBloc>().add(
-          FetchSubmissionRequested(widget.projectId),
-        );
+      FetchSubmissionRequested(widget.projectId),
+    );
   }
 
   @override
@@ -70,8 +76,8 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
 
   void _fetch() {
     context.read<PublishingBloc>().add(
-          FetchSubmissionRequested(widget.projectId),
-        );
+      FetchSubmissionRequested(widget.projectId),
+    );
   }
 
   void _createSubmission() {
@@ -80,20 +86,17 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
 
     final journalId = widget.journalId.trim();
     if (journalId.isEmpty) {
-      AppErrorDialog.show(
-        context,
-        message: 'journalMustBeSelected'.tr(),
-      );
+      AppErrorDialog.show(context, message: 'journalMustBeSelected'.tr());
       return;
     }
 
     context.read<PublishingBloc>().add(
-          CreateSubmissionRequested(
-            widget.projectId,
-            journalId,
-            _submissionIdController.text.trim(),
-          ),
-        );
+      CreateSubmissionRequested(
+        widget.projectId,
+        journalId,
+        _submissionIdController.text.trim(),
+      ),
+    );
   }
 
   Future<void> _pickAndUploadEvidence(String submissionId) async {
@@ -117,8 +120,8 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
     setState(() => _pickedEvidenceName = picked.name);
     if (!mounted) return;
     context.read<PublishingBloc>().add(
-          AddEvidenceRequested(submissionId, File(path)),
-        );
+      AddEvidenceRequested(submissionId, File(path)),
+    );
   }
 
   Future<void> _viewEvidence(Evidence evidence) async {
@@ -217,8 +220,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
   Widget build(BuildContext context) {
     return BlocListener<PublishingBloc, PublishingState>(
       listenWhen: (previous, current) =>
-          current is PublishingFailure ||
-          current is PublishingSubmissionLoaded,
+          current is PublishingFailure || current is PublishingSubmissionLoaded,
       listener: (context, state) {
         if (state is PublishingFailure) {
           AppErrorDialog.show(context, message: state.error.tr());
@@ -233,6 +235,9 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
               submission: state.submission,
               evidence: state.evidence,
               journalName: widget.journalName,
+              targetUrl: widget.targetUrl,
+              fileId: widget.fileId,
+              onStartAutomatedSubmission: widget.onStartAutomatedSubmission,
               trackingController: _trackingController,
               pickedEvidenceName: _pickedEvidenceName,
               onUploadEvidence: () =>
@@ -247,10 +252,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
           }
 
           if (state is PublishingFailure) {
-            return AppErrorWidget(
-              message: state.error.tr(),
-              onRetry: _fetch,
-            );
+            return AppErrorWidget(message: state.error.tr(), onRetry: _fetch);
           }
 
           return _CreateSubmissionForm(
@@ -342,8 +344,11 @@ class _LoadedWorkspace extends StatelessWidget {
     required this.onUploadEvidence,
     required this.onViewEvidence,
     required this.onDownloadEvidence,
+    required this.onStartAutomatedSubmission,
     this.journalName,
     this.pickedEvidenceName,
+    this.targetUrl,
+    this.fileId,
   });
 
   final Submission submission;
@@ -352,8 +357,11 @@ class _LoadedWorkspace extends StatelessWidget {
   final VoidCallback onUploadEvidence;
   final ValueChanged<Evidence> onViewEvidence;
   final ValueChanged<Evidence> onDownloadEvidence;
+  final VoidCallback onStartAutomatedSubmission;
   final String? journalName;
   final String? pickedEvidenceName;
+  final String? targetUrl;
+  final String? fileId;
 
   @override
   Widget build(BuildContext context) {
@@ -374,9 +382,7 @@ class _LoadedWorkspace extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 12),
-        SubmissionTimelineWidget(
-          events: _timelineEvents(submission),
-        ),
+        SubmissionTimelineWidget(events: _timelineEvents(submission)),
         const SizedBox(height: 24),
         LabeledWidget(
           labelPadding: const EdgeInsets.only(bottom: 8),
@@ -394,6 +400,22 @@ class _LoadedWorkspace extends StatelessWidget {
             readOnly: true,
           ),
         ),
+        const SizedBox(height: 24),
+        PrimaryButton(
+          text: 'Start Automated Submission (Dry Run)',
+          onPressed: onStartAutomatedSubmission,
+          width: double.infinity,
+          height: 52,
+          icon: Icons.smart_toy_outlined,
+        ),
+        if ((targetUrl?.trim().isEmpty ?? true) ||
+            (fileId?.trim().isEmpty ?? true)) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Provide the journal submission URL and manuscript file ID to enable this flow.',
+            style: AppTypography.caption(color: AppColors.textSecondary),
+          ),
+        ],
         const SizedBox(height: 24),
         LabeledWidget(
           labelPadding: const EdgeInsets.only(bottom: 8),
@@ -441,10 +463,7 @@ class _LoadedWorkspace extends StatelessWidget {
 
   static List<TimelineEvent> _timelineEvents(Submission submission) {
     final stages = submission.status == SubmissionStatus.rejected
-        ? const [
-            SubmissionStatus.submitted,
-            SubmissionStatus.rejected,
-          ]
+        ? const [SubmissionStatus.submitted, SubmissionStatus.rejected]
         : const [
             SubmissionStatus.submitted,
             SubmissionStatus.withEditor,
@@ -464,15 +483,15 @@ class _LoadedWorkspace extends StatelessWidget {
           timestamp: i == 0
               ? _formatTimestamp(submission.submittedAt)
               : i == resolvedIndex
-                  ? _formatTimestamp(submission.updatedAt)
-                  : i < resolvedIndex
-                      ? 'completed'.tr()
-                      : 'pending'.tr(),
+              ? _formatTimestamp(submission.updatedAt)
+              : i < resolvedIndex
+              ? 'completed'.tr()
+              : 'pending'.tr(),
           state: i < resolvedIndex
               ? TimelineEventState.completed
               : i == resolvedIndex
-                  ? TimelineEventState.current
-                  : TimelineEventState.pending,
+              ? TimelineEventState.current
+              : TimelineEventState.pending,
         ),
     ];
   }
@@ -512,7 +531,8 @@ class _EvidenceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPdf = evidence.fileType.toUpperCase().contains('PDF') ||
+    final isPdf =
+        evidence.fileType.toUpperCase().contains('PDF') ||
         evidence.displayName.toLowerCase().endsWith('.pdf');
 
     return Card(
