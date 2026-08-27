@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../config/app_colors.dart';
@@ -16,8 +17,31 @@ class AppBarGreeting extends StatelessWidget {
   final String? avatarUrl;
   final bool hasNotifications;
 
+  /// Localized default when no logged-in display name is available.
+  static String defaultDisplayName() => 'defaultUserName'.tr();
+
+  /// Resolves [rawName] to a display name, falling back to [defaultDisplayName].
+  static String resolveDisplayName(String? rawName) {
+    final trimmed = rawName?.trim() ?? '';
+    if (trimmed.isEmpty || trimmed.toLowerCase() == 'user') {
+      return defaultDisplayName();
+    }
+    return trimmed;
+  }
+
+  Future<void> _toggleLocale(BuildContext context) async {
+    if (context.locale.languageCode == 'ar') {
+      await context.setLocale(const Locale('en'));
+    } else {
+      await context.setLocale(const Locale('ar'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final displayName = resolveDisplayName(userName);
+    final languageCode = context.locale.languageCode;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -37,17 +61,16 @@ class AppBarGreeting extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text(
-                      'Hello!',
-                      textDirection: TextDirection.ltr,
-                      style: TextStyle(
+                    Text(
+                      'hello'.tr(context: context),
+                      style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     Text(
-                      userName,
+                      displayName,
                       style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 19,
@@ -60,6 +83,18 @@ class AppBarGreeting extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+        IconButton(
+          tooltip: 'changeLanguage'.tr(context: context),
+          onPressed: () => _toggleLocale(context),
+          icon: Text(
+            languageCode == 'ar' ? 'EN' : 'AR',
+            style: const TextStyle(
+              color: AppColors.accentPurple,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         NotificationBell(hasActiveNotifications: hasNotifications),

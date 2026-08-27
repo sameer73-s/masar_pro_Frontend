@@ -11,7 +11,7 @@ class PubDashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Academic Publishing'),
+      appBar: CustomAppBar(title: 'academicPublishing'),
       body: const PubDashboardBody(),
     );
   }

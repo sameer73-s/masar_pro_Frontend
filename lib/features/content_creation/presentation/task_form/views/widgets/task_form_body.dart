@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../config/app_colors.dart';
@@ -15,36 +16,33 @@ class TaskFormBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: CustomAppBar(title: task.title),
-        body: BlocListener<TaskFormBloc, TaskFormState>(
-          listener: (context, state) {
-            if (state is ContentGenerationSuccess) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (_) => ContentResultPage(
-                    taskType: state.taskType,
-                    title: state.title,
-                    payload: state.rawResult,
-                    resultData: state.rawResult,
-                    content: state.content,
-                  ),
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: CustomAppBar(title: task.title),
+      body: BlocListener<TaskFormBloc, TaskFormState>(
+        listener: (context, state) {
+          if (state is ContentGenerationSuccess) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => ContentResultPage(
+                  taskType: state.taskType,
+                  title: state.title,
+                  payload: state.rawResult,
+                  resultData: state.rawResult,
+                  content: state.content,
                 ),
-              );
-            } else if (state is ContentCreationFailure) {
-              AppErrorDialog.show(context, message: state.message);
-            } else if (state is UploadFailure) {
-              AppErrorDialog.show(
-                context,
-                message: 'فشل رفع الملف: ${state.message}',
-              );
-            }
-          },
-          child: TaskForm(task: task),
-        ),
+              ),
+            );
+          } else if (state is ContentCreationFailure) {
+            AppErrorDialog.show(context, message: state.message);
+          } else if (state is UploadFailure) {
+            AppErrorDialog.show(
+              context,
+              message: 'uploadFailed'.tr(args: [state.message]),
+            );
+          }
+        },
+        child: TaskForm(task: task),
       ),
     );
   }

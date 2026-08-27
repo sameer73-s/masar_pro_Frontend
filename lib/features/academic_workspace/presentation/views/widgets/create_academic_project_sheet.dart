@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,10 +41,14 @@ class _CreateAcademicProjectSheetState
   String? _language = 'arabic';
   String? _error;
 
-  static const _levels = ['Bachelor', 'Master', 'PhD'];
+  static const _levels = [
+    ('Bachelor', 'levelBachelor'),
+    ('Master', 'levelMaster'),
+    ('PhD', 'levelPhD'),
+  ];
   static const _languages = [
-    ('arabic', 'Arabic'),
-    ('english', 'English'),
+    ('arabic', 'langArabic'),
+    ('english', 'langEnglish'),
   ];
 
   @override
@@ -55,11 +60,11 @@ class _CreateAcademicProjectSheetState
   void _submit() {
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      setState(() => _error = 'Please enter a project title');
+      setState(() => _error = 'pleaseEnterProjectTitle'.tr());
       return;
     }
     if (_academicLevel == null || _language == null) {
-      setState(() => _error = 'Please select academic level and language');
+      setState(() => _error = 'pleaseSelectLevelAndLanguage'.tr());
       return;
     }
 
@@ -75,9 +80,11 @@ class _CreateAcademicProjectSheetState
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
+      key: ValueKey(locale.languageCode),
       padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -94,26 +101,26 @@ class _CreateAcademicProjectSheetState
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'New Academic Project',
-            style: TextStyle(
+          Text(
+            'newAcademicProject'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Set the title, level, and language to start your journey.',
-            style: TextStyle(
+          Text(
+            'newAcademicProjectSubtitle'.tr(),
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Title',
-            style: TextStyle(
+          Text(
+            'projectTitle'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -122,15 +129,15 @@ class _CreateAcademicProjectSheetState
           const SizedBox(height: 6),
           CustomTextField(
             controller: _titleController,
-            hintText: 'e.g. AI in Higher Education',
+            hintText: 'projectTitleHint'.tr(),
             onChanged: (_) {
               if (_error != null) setState(() => _error = null);
             },
           ),
           const SizedBox(height: 14),
-          const Text(
-            'Academic Level',
-            style: TextStyle(
+          Text(
+            'academicLevel'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -138,23 +145,23 @@ class _CreateAcademicProjectSheetState
           ),
           const SizedBox(height: 6),
           CustomDropdownField<String>(
-            hintText: 'Select level',
+            hintText: 'selectLevel'.tr(),
             value: _academicLevel,
             disableAutoSelect: true,
             items: _levels
                 .map(
                   (level) => DropdownMenuItem(
-                    value: level,
-                    child: Text(level),
+                    value: level.$1,
+                    child: Text(level.$2.tr()),
                   ),
                 )
                 .toList(),
             onChanged: (value) => setState(() => _academicLevel = value),
           ),
           const SizedBox(height: 14),
-          const Text(
-            'Language',
-            style: TextStyle(
+          Text(
+            'language'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -162,14 +169,14 @@ class _CreateAcademicProjectSheetState
           ),
           const SizedBox(height: 6),
           CustomDropdownField<String>(
-            hintText: 'Select language',
+            hintText: 'selectLanguage'.tr(),
             value: _language,
             disableAutoSelect: true,
             items: _languages
                 .map(
                   (entry) => DropdownMenuItem(
                     value: entry.$1,
-                    child: Text(entry.$2),
+                    child: Text(entry.$2.tr()),
                   ),
                 )
                 .toList(),
@@ -184,7 +191,7 @@ class _CreateAcademicProjectSheetState
           ],
           const SizedBox(height: 20),
           PrimaryButton(
-            text: 'Create Project',
+            text: 'createProject'.tr(),
             onPressed: _submit,
             width: double.infinity,
             height: 48,

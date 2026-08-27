@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/presentation/widgets/app_success_dialog.dart';
@@ -15,35 +16,35 @@ import '../widgets/research_complete_card.dart';
 import '../../domain/entities/research_progress.dart';
 import '../../domain/entities/sub_agent_status.dart';
 
-/// الرسائل التشجيعية حسب حالة البحث
+/// Encouraging message keys by research status
 const _messages = {
   ResearchStatus.outlining: [
-    'جاري تحليل عنوان بحثك...',
-    'نبني هيكل أكاديمي احترافي...',
-    'نحدد الفصول والمباحث الأنسب...',
+    'researchMsgOutlining1',
+    'researchMsgOutlining2',
+    'researchMsgOutlining3',
   ],
   ResearchStatus.researching: [
-    'نبحث في Google Scholar...',
-    'نجمع أبحاثاً حقيقية من قواعد البيانات...',
-    'نحدد المصادر الأكثر صلة بموضوعك...',
-    'نسجل أسماء المؤلفين والمجلات...',
+    'researchMsgResearching1',
+    'researchMsgResearching2',
+    'researchMsgResearching3',
+    'researchMsgResearching4',
   ],
   ResearchStatus.writing: [
-    'Gemini يكتب مبحثاً مبحثاً...',
-    'كل فصل يقرأ السابق ويكمل الفكرة...',
-    'الكتابة المجزأة تضمن جودة لا مثيل لها...',
-    'نوثق كل فقرة بأسلوب APA...',
+    'researchMsgWriting1',
+    'researchMsgWriting2',
+    'researchMsgWriting3',
+    'researchMsgWriting4',
   ],
   ResearchStatus.reviewing: [
-    'نتأكد من ترابط الأفكار بين الفصول...',
-    'نكتب الملخص العلمي بعد اكتمال البحث...',
-    'نضيف الانتقالات الطبيعية بين المباحث...',
+    'researchMsgReviewing1',
+    'researchMsgReviewing2',
+    'researchMsgReviewing3',
   ],
   ResearchStatus.assembling: [
-    'نُجمّع كل شيء في ملف Word احترافي...',
-    'نضبط التنسيق الأكاديمي RTL...',
-    'نرتب قائمة المراجع بنظام APA...',
-    'نُضيف صفحة الغلاف وفهرس المحتويات...',
+    'researchMsgAssembling1',
+    'researchMsgAssembling2',
+    'researchMsgAssembling3',
+    'researchMsgAssembling4',
   ],
 };
 
@@ -99,8 +100,7 @@ class _ResearchProgressScreenState
         _showLongWaitSnack = true;
         AppSuccessDialog.show(
           context,
-          message:
-              'البحث يسير بشكل طبيعي — يمكنك إبقاء التطبيق مفتوحاً',
+          message: 'researchLongWaitMessage'.tr(),
         );
       }
     });
@@ -108,9 +108,9 @@ class _ResearchProgressScreenState
 
   String _currentMessage(ResearchStatus status) {
     final msgs =
-        _messages[status] ?? ['جاري إعداد بحثك...'];
-    if (_messageIndex >= msgs.length) return msgs.first;
-    return msgs[_messageIndex];
+        _messages[status] ?? ['researchPreparing'];
+    if (_messageIndex >= msgs.length) return msgs.first.tr();
+    return msgs[_messageIndex].tr();
   }
 
   @override
@@ -142,13 +142,13 @@ class _ResearchProgressScreenState
         return PopScope(
           canPop: isCompleted || state is ResearchFailed,
           child: Directionality(
-            textDirection: TextDirection.rtl,
+            textDirection: Directionality.of(context),
             child: Scaffold(
               backgroundColor: kBgLight,
               appBar: CustomAppBar(
                 title: isCompleted
-                    ? '✓ اكتمل البحث'
-                    : 'جاري إعداد بحثك...',
+                    ? 'researchCompletedTitle'
+                    : 'researchPreparing',
                 showBackButton: isCompleted || state is ResearchFailed,
               ),
               body: _buildBody(context, state),
@@ -213,7 +213,7 @@ class _ResearchProgressScreenState
       return _ProgressContent(
         progress: state.progress,
         currentMessage: isComplete
-            ? 'اكتمل البحث! جاري التحضير...'
+            ? 'researchCompletedPreparing'.tr()
             : _currentMessage(state.progress.status),
         isDownloading: false,
         onDownload: isComplete
@@ -226,15 +226,15 @@ class _ResearchProgressScreenState
     }
 
     // ──── بدء (loading) ────
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: kGoldAccent),
-          SizedBox(height: 16),
+          const CircularProgressIndicator(color: kGoldAccent),
+          const SizedBox(height: 16),
           Text(
-            'جاري بدء البحث...',
-            style: TextStyle(color: kTextSecondary),
+            'researchStarting'.tr(),
+            style: const TextStyle(color: kTextSecondary),
           ),
         ],
       ),
@@ -244,7 +244,7 @@ class _ResearchProgressScreenState
   void _handleDownloadReady(String filePath) {
     AppSuccessDialog.show(
       context,
-      message: 'تم حفظ الملف: $filePath',
+      message: 'researchFileSaved'.tr(args: [filePath]),
     );
   }
 }
@@ -295,7 +295,7 @@ class _ProgressContent extends StatelessWidget {
             child: Text(
               currentMessage,
               key: ValueKey(currentMessage),
-              textDirection: TextDirection.rtl,
+              textDirection: Directionality.of(context),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 14,
@@ -328,7 +328,7 @@ class _ProgressContent extends StatelessWidget {
           // ⑥ زر تحميل إذا اكتمل
           if (onDownload != null)
             PrimaryButton(
-              text: 'تحميل ملف Word',
+              text: 'researchDownloadWord'.tr(),
               onPressed: isDownloading ? null : onDownload,
               isLoading: isDownloading,
               icon: Icons.download_rounded,
@@ -377,12 +377,12 @@ class _CurrentSectionCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           children: [
-            const Text(
-              'يُكتب الآن:',
-              textDirection: TextDirection.rtl,
-              style: TextStyle(
+            Text(
+              'researchWritingNow'.tr(),
+              textDirection: Directionality.of(context),
+              style: const TextStyle(
                 fontSize: 11,
                 color: kTextSecondary,
               ),
@@ -390,7 +390,7 @@ class _CurrentSectionCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               section,
-              textDirection: TextDirection.rtl,
+              textDirection: Directionality.of(context),
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -408,8 +408,11 @@ class _CurrentSectionCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '$done / $total فصل',
-                textDirection: TextDirection.rtl,
+                'researchChaptersProgress'.tr(args: [
+                  done.toString(),
+                  total.toString(),
+                ]),
+                textDirection: Directionality.of(context),
                 style: const TextStyle(
                   fontSize: 11,
                   color: kTextSecondary,
@@ -450,9 +453,9 @@ class _FailureView extends StatelessWidget {
             const Text('😞',
                 style: TextStyle(fontSize: 56)),
             const SizedBox(height: 16),
-            const Text(
-              'حدث خطأ أثناء إنشاء البحث',
-              style: TextStyle(
+            Text(
+              'researchErrorTitle'.tr(),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: kTextPrimary,
@@ -460,15 +463,15 @@ class _FailureView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              message,
-              textDirection: TextDirection.rtl,
+              message.tr(),
+              textDirection: Directionality.of(context),
               textAlign: TextAlign.center,
               style: const TextStyle(color: kTextSecondary),
             ),
             const SizedBox(height: 24),
             if (onRetry != null)
               PrimaryButton(
-                text: 'إعادة الاتصال',
+                text: 'researchReconnect'.tr(),
                 onPressed: onRetry,
                 icon: Icons.refresh,
                 width: double.infinity,
@@ -487,9 +490,9 @@ class _FailureView extends StatelessWidget {
                         BorderRadius.circular(kButtonRadius),
                   ),
                 ),
-                child: const Text(
-                  'العودة إلى البداية',
-                  style: TextStyle(color: kTextSecondary),
+                child: Text(
+                  'researchBackToStart'.tr(),
+                  style: const TextStyle(color: kTextSecondary),
                 ),
               ),
             ),

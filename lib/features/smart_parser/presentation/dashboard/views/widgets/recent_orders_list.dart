@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../config/app_colors.dart';
@@ -17,8 +18,24 @@ class RecentOrdersList extends StatefulWidget {
 class _RecentOrdersListState extends State<RecentOrdersList> {
   List<OrderEntity> _orders = [];
 
+  String _localizedStatus(String status) {
+    switch (status) {
+      case 'pending':
+        return 'orderStatusPending'.tr();
+      case 'processing':
+        return 'orderStatusProcessing'.tr();
+      case 'missing_info':
+        return 'orderStatusMissingInfo'.tr();
+      case 'completed':
+        return 'orderStatusCompleted'.tr();
+      default:
+        return status;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return BlocListener<DashboardBloc, DashboardState>(
       listenWhen: (previous, current) => current is DashboardOrdersUpdated,
       listener: (context, state) {
@@ -36,7 +53,7 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'الطلبات النشطة',
+            'activeOrders'.tr(),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: AppColors.deepNavy,
                   fontWeight: FontWeight.bold,
@@ -49,7 +66,7 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24.0),
                 child: Text(
-                  'لا توجد طلبات حالياً',
+                  'noOrdersCurrently'.tr(),
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     color: AppColors.slateGray,
@@ -64,24 +81,18 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
               itemCount: _orders.length,
               itemBuilder: (context, index) {
                 final order = _orders[index];
-
-                String statusAr = order.status;
-                if (order.status == 'pending') {
-                  statusAr = 'قيد الانتظار';
-                } else if (order.status == 'processing') {
-                  statusAr = 'قيد المعالجة';
-                } else if (order.status == 'missing_info') {
-                  statusAr = 'معلومات ناقصة';
-                } else if (order.status == 'completed') {
-                  statusAr = 'مكتمل';
-                }
+                final statusLabel = _localizedStatus(order.status);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: UnifiedTaskCard(
                     title: order.subject,
-                    subtitle:
-                        'الحالة: $statusAr • المرفقات: ${order.attachments.length}',
+                    subtitle: 'orderCardSubtitle'.tr(
+                      args: [
+                        statusLabel,
+                        '${order.attachments.length}',
+                      ],
+                    ),
                     progress: order.status == 'completed' ? 1.0 : 0.0,
                     taskType: UnifiedTaskType.fromOrderType(order.taskType),
                     onTap: () {

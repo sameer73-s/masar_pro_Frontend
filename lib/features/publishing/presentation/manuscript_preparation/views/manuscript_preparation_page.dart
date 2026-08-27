@@ -23,7 +23,7 @@ class ManuscriptPreparationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Manuscript Preparation'),
+      appBar: CustomAppBar(title: 'manuscriptPreparation'),
       body: BlocProvider(
         create: (_) => di.locator<PublishingBloc>(),
         child: ManuscriptPreparationBody(

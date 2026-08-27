@@ -22,7 +22,7 @@ class ResearchModulePage extends StatelessWidget {
         ..add(LoadResearchProjectRequested(projectId)),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(title: 'Full Research'),
+        appBar: const CustomAppBar(title: 'fullResearch'),
         body: SafeArea(
           child: ResearchModuleBody(projectId: projectId),
         ),

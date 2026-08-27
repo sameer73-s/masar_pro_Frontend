@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/presentation/widgets/filter_tab_bar.dart';
@@ -14,12 +15,14 @@ class DateFilterTabs extends StatelessWidget {
   final DateFilterMode mode;
   final ValueChanged<DateFilterMode> onChanged;
 
-  static const _tabs = ['All', 'Created', 'Due'];
-
   @override
   Widget build(BuildContext context) {
     return FilterTabBar(
-      tabs: _tabs,
+      tabs: [
+        'dateFilterAll'.tr(),
+        'dateFilterCreated'.tr(),
+        'dateFilterDue'.tr(),
+      ],
       selectedIndex: mode.index,
       onTabSelected: (index) => onChanged(DateFilterMode.values[index]),
     );

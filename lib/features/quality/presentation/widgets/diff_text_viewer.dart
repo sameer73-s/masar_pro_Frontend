@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/change_item.dart';
 
@@ -51,10 +52,10 @@ class _DiffTextViewerState extends State<DiffTextViewer> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SegmentedButton<ViewMode>(
-            segments: const [
-              ButtonSegment(value: ViewMode.before, label: Text('قبل')),
-              ButtonSegment(value: ViewMode.comparison, label: Text('مقارنة')),
-              ButtonSegment(value: ViewMode.after, label: Text('بعد')),
+            segments: [
+              ButtonSegment(value: ViewMode.before, label: Text('viewModeBefore'.tr())),
+              ButtonSegment(value: ViewMode.comparison, label: Text('viewModeComparison'.tr())),
+              ButtonSegment(value: ViewMode.after, label: Text('viewModeAfter'.tr())),
             ],
             selected: {_viewMode},
             onSelectionChanged: (Set<ViewMode> newSelection) {
@@ -83,7 +84,7 @@ class _DiffTextViewerState extends State<DiffTextViewer> {
     } else {
       // Simple text display. Advanced comparison highlighting can be done here.
       return Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: Directionality.of(context),
         child: SelectableText(
           widget.humanizedText,
           style: const TextStyle(height: 1.6, fontSize: 15, color: Color(0xFF0F172A)),
@@ -92,7 +93,7 @@ class _DiffTextViewerState extends State<DiffTextViewer> {
     }
 
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: SelectableText(
         textToShow,
         style: const TextStyle(height: 1.6, fontSize: 15, color: Color(0xFF0F172A)),

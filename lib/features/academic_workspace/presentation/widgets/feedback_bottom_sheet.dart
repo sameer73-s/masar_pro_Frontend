@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -62,8 +63,8 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
   String? _error;
 
   String get _title => switch (widget.feedbackSource) {
-        FeedbackSource.doctor => 'Doctor Feedback',
-        FeedbackSource.student => 'Student Feedback',
+        FeedbackSource.doctor => 'doctorFeedback'.tr(),
+        FeedbackSource.student => 'studentFeedback'.tr(),
       };
 
   @override
@@ -84,7 +85,7 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
     final path = picked.path;
     if (path == null || path.isEmpty) {
       if (!mounted) return;
-      setState(() => _error = 'Could not read the selected file.');
+      setState(() => _error = 'couldNotReadSelectedFile'.tr());
       return;
     }
 
@@ -100,9 +101,7 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
     final instructions = _instructionsController.text.trim();
 
     if (feedbackText.isEmpty && _feedbackFile == null) {
-      setState(
-        () => _error = 'Paste feedback or upload a feedback file to continue.',
-      );
+      setState(() => _error = 'feedbackRequired'.tr());
       return;
     }
 
@@ -112,9 +111,11 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
+      key: ValueKey(locale.languageCode),
       padding: EdgeInsets.fromLTRB(20, 16, 20, 20 + bottomInset),
       child: SingleChildScrollView(
         child: Column(
@@ -141,17 +142,17 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Share feedback for the AI to generate a revised draft.',
-              style: TextStyle(
+            Text(
+              'feedbackShareHint'.tr(),
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Feedback',
-              style: TextStyle(
+            Text(
+              'feedback'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -160,7 +161,7 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
             const SizedBox(height: 6),
             CustomTextField(
               controller: _feedbackController,
-              hintText: 'Paste feedback here...',
+              hintText: 'pasteFeedbackHint'.tr(),
               maxLines: 5,
               keyboardType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
@@ -175,14 +176,14 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
             ManuscriptFilePickerButton(
               onPressed: _pickFeedbackFile,
               fileName: _feedbackFileName,
-              emptyTitle: 'Upload Feedback File',
-              emptySubtitle: 'PDF, DOC, DOCX, or TXT',
-              selectedSubtitle: 'Tap to replace',
+              emptyTitle: 'uploadFeedbackFile'.tr(),
+              emptySubtitle: 'feedbackFileTypes'.tr(),
+              selectedSubtitle: 'tapToReplace'.tr(),
             ),
             const SizedBox(height: 14),
-            const Text(
-              'Additional instructions',
-              style: TextStyle(
+            Text(
+              'additionalInstructions'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -191,7 +192,7 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
             const SizedBox(height: 6),
             CustomTextField(
               controller: _instructionsController,
-              hintText: 'Additional instructions to AI...',
+              hintText: 'additionalInstructionsHint'.tr(),
               maxLines: 3,
               keyboardType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
@@ -208,7 +209,7 @@ class _FeedbackBottomSheetState extends State<FeedbackBottomSheet> {
             ],
             const SizedBox(height: 20),
             PrimaryButton(
-              text: 'Generate AI Revision',
+              text: 'generateAiRevision'.tr(),
               onPressed: _submit,
               width: double.infinity,
               height: 48,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../config/app_colors.dart';
@@ -34,10 +35,10 @@ class DashboardProgressCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Your today's task\nalmost done!",
-                  textDirection: TextDirection.ltr,
-                  style: TextStyle(
+                Text(
+                  'todaysTaskAlmostDone'.tr(),
+                  textDirection: Directionality.of(context),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -46,7 +47,7 @@ class DashboardProgressCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 SmallPillButton(
-                  label: 'View Task',
+                  label: 'viewTask'.tr(),
                   onPressed: onViewTask,
                 ),
               ],

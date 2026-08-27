@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PipelineProgressStepper extends StatelessWidget {
@@ -15,13 +16,13 @@ class PipelineProgressStepper extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildStep('التحليل', 1),
+          _buildStep('pipelineStepAnalysis'.tr(), 1),
           _buildLine(1),
-          _buildStep('التوليد', 2),
+          _buildStep('pipelineStepGeneration'.tr(), 2),
           _buildLine(2),
-          _buildStep('الجودة', 3),
+          _buildStep('pipelineStepQuality'.tr(), 3),
           _buildLine(3),
-          _buildStep('التصدير', 4),
+          _buildStep('pipelineStepExport'.tr(), 4),
         ],
       ),
     );

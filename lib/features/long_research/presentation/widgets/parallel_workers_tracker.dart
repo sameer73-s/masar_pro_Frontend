@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/sub_agent_status.dart';
 import 'animated_progress_ring.dart';
@@ -35,7 +36,7 @@ class ParallelWorkersTracker extends StatelessWidget {
       ),
       padding: cardPadding,
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: Directionality.of(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -43,10 +44,10 @@ class ParallelWorkersTracker extends StatelessWidget {
               children: [
                 const Icon(Icons.hub_outlined, size: 18, color: kPrimaryBlue),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'عمال البحث المتوازي',
-                    style: TextStyle(
+                    'researchParallelWorkers'.tr(),
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: kTextPrimary,
@@ -66,7 +67,7 @@ class ParallelWorkersTracker extends StatelessWidget {
             if (running > 0) ...[
               const SizedBox(height: 6),
               Text(
-                '$running يعمل الآن',
+                'researchWorkersRunning'.tr(args: [running.toString()]),
                 style: const TextStyle(fontSize: 11, color: kTextSecondary),
               ),
             ],
@@ -109,7 +110,7 @@ class _WorkerRow extends StatelessWidget {
               children: [
                 Text(
                   worker.section,
-                  textDirection: TextDirection.rtl,
+                  textDirection: Directionality.of(context),
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -120,7 +121,7 @@ class _WorkerRow extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     worker.message,
-                    textDirection: TextDirection.rtl,
+                    textDirection: Directionality.of(context),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

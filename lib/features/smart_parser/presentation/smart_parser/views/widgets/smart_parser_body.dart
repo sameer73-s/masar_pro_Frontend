@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/presentation/widgets/app_error_dialog.dart';
@@ -26,7 +27,7 @@ class SmartParserBody extends StatelessWidget {
         if (state is UploadFailure) {
           AppErrorDialog.show(
             context,
-            message: 'فشل في الرفع: ${state.message}',
+            message: 'uploadFailed'.tr(args: [state.message]),
           );
           return;
         }
@@ -38,7 +39,7 @@ class SmartParserBody extends StatelessWidget {
               message: (state.order.missingInfo != null &&
                       state.order.missingInfo!.trim().isNotEmpty)
                   ? state.order.missingInfo!
-                  : 'AI processing failed. Please try again.',
+                  : 'aiProcessingFailed'.tr(),
             );
             return;
           }

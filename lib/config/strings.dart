@@ -7,9 +7,7 @@ class Strings {
   static const splashTagline = "splashTagline";
   static const noInternetConnection = "no_internet_connection";
   static const unableToReachServer = "unable_to_reach_server";
-  /// Shown for Render cold-start / long connect timeouts (UI may not call `.tr()`).
-  static const serverWakingUp =
-      "الخادم يستيقظ من السكون، يرجى المحاولة مرة أخرى خلال لحظات.";
+  static const serverWakingUp = "unable_to_reach_server";
   static const somethingWentWrong = "something_went_wrong";
   static const error = "error";
   static const copied = "copied";
@@ -34,7 +32,7 @@ class Strings {
   static const tryDemo = "try_demo";
   static const year = "year";
   static const financialUnit = "unit";
-  static const changeLanguage = "change_language";
+  static const changeLanguage = "changeLanguage";
   static const pendingTitle = "pendingTitle";
   static const pendingDescription = "pendingDescription";
   static const name = "name";

@@ -35,8 +35,7 @@ class AppFailure {
   );
 
   factory AppFailure.connection({
-    String message =
-        'تعذر الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.',
+    String message = Strings.noInternetConnection,
   }) => AppFailure(message: message, type: AppFailureType.connection);
 
   factory AppFailure.timeout({String message = Strings.requestTimedOut}) =>

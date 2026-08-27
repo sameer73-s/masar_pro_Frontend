@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/enums/citation_style.dart';
@@ -22,8 +23,7 @@ class _ResearchFormScreenState extends State<ResearchFormScreen> {
 
   // Controllers
   final _titleController = TextEditingController();
-  final _subjectController =
-      TextEditingController(text: 'إدارة الأعمال');
+  late final TextEditingController _subjectController;
   final _universityController = TextEditingController();
   final _supervisorController = TextEditingController();
   final _studentController = TextEditingController();
@@ -33,6 +33,13 @@ class _ResearchFormScreenState extends State<ResearchFormScreen> {
   int _targetPages = 30;
   ResearchLanguage _language = ResearchLanguage.arabic;
   CitationStyle _citationStyle = CitationStyle.apa;
+
+  @override
+  void initState() {
+    super.initState();
+    _subjectController =
+        TextEditingController(text: 'researchDefaultSubject'.tr());
+  }
 
   @override
   void dispose() {
@@ -75,10 +82,10 @@ class _ResearchFormScreenState extends State<ResearchFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: Scaffold(
         backgroundColor: kBgLight,
-        appBar: const CustomAppBar(title: 'إعداد البحث'),
+        appBar: CustomAppBar(title: 'researchFormTitle'),
         body: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -88,7 +95,7 @@ class _ResearchFormScreenState extends State<ResearchFormScreen> {
               children: [
                 // بطاقة المعلومات الأساسية
                 ResearchFormCard(
-                  title: 'معلومات البحث',
+                  title: 'researchInfoSection'.tr(),
                   icon: Icons.menu_book_outlined,
                   child: _BasicFormFields(
                     titleController: _titleController,
@@ -108,7 +115,7 @@ class _ResearchFormScreenState extends State<ResearchFormScreen> {
 
                 // بطاقة الخيارات المتقدمة (قابلة للطي)
                 ResearchFormCard(
-                  title: 'معلومات إضافية (اختيارية)',
+                  title: 'researchExtraSection'.tr(),
                   icon: Icons.tune_outlined,
                   collapsible: true,
                   child: _AdvancedFormFields(
@@ -174,20 +181,19 @@ class _BasicFormFields extends StatelessWidget {
           controller: titleController,
           maxLines: 3,
           maxLength: 300,
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           style: const TextStyle(
             fontSize: 16,
             color: kTextPrimary,
             fontWeight: FontWeight.w500,
           ),
           decoration: _inputDecoration(
-            hint:
-                'مثال: الإفصاح المحاسبي ودوره في استقطاب الاستثمارات',
-            label: 'عنوان البحث *',
+            hint: 'researchTitleHint'.tr(),
+            label: 'researchTitleLabel'.tr(),
           ),
           validator: (v) {
             if (v == null || v.trim().length < 10) {
-              return 'يجب أن يكون العنوان 10 أحرف على الأقل';
+              return 'researchTitleMinLength'.tr();
             }
             return null;
           },
@@ -197,10 +203,10 @@ class _BasicFormFields extends StatelessWidget {
         // 2. التخصص
         TextFormField(
           controller: subjectController,
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           decoration: _inputDecoration(
-            hint: 'مثال: إدارة الأعمال، المحاسبة، الاقتصاد...',
-            label: 'التخصص',
+            hint: 'researchSubjectHint'.tr(),
+            label: 'researchSubjectLabel'.tr(),
           ),
         ),
         const SizedBox(height: 20),
@@ -208,14 +214,14 @@ class _BasicFormFields extends StatelessWidget {
         // 3. عدد الصفحات
         Row(
           children: [
-            const Text(
-              'عدد الصفحات:',
-              style: TextStyle(
+            Text(
+              'researchPagesLabel'.tr(),
+              style: const TextStyle(
                   fontWeight: FontWeight.w600, color: kTextPrimary),
             ),
             const SizedBox(width: 8),
             Text(
-              '$targetPages صفحة',
+              'researchPagesCount'.tr(args: [targetPages.toString()]),
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
@@ -235,7 +241,7 @@ class _BasicFormFields extends StatelessWidget {
           onChanged: onPagesChanged,
         ),
         Text(
-          '≈ ${targetPages * 280} كلمة',
+          'researchApproxWords'.tr(args: [(targetPages * 280).toString()]),
           style: const TextStyle(
             fontSize: 12,
             color: kTextSecondary,
@@ -244,9 +250,9 @@ class _BasicFormFields extends StatelessWidget {
         const SizedBox(height: 20),
 
         // 4. لغة البحث
-        const Text(
-          'لغة البحث',
-          style: TextStyle(
+        Text(
+          'researchLanguageLabel'.tr(),
+          style: const TextStyle(
               fontWeight: FontWeight.w600, color: kTextPrimary),
         ),
         const SizedBox(height: 8),
@@ -257,9 +263,9 @@ class _BasicFormFields extends StatelessWidget {
         const SizedBox(height: 20),
 
         // 5. أسلوب التوثيق
-        const Text(
-          'أسلوب التوثيق',
-          style: TextStyle(
+        Text(
+          'researchCitationLabel'.tr(),
+          style: const TextStyle(
               fontWeight: FontWeight.w600, color: kTextPrimary),
         ),
         const SizedBox(height: 8),
@@ -358,9 +364,9 @@ class _CitationSelector extends StatelessWidget {
       {required this.selected, required this.onChanged});
 
   String _tooltip(CitationStyle cs) => switch (cs) {
-        CitationStyle.apa => 'American Psychological Association',
-        CitationStyle.mla => 'Modern Language Association',
-        CitationStyle.chicago => 'Chicago Manual of Style',
+        CitationStyle.apa => 'researchCitationApaTooltip'.tr(),
+        CitationStyle.mla => 'researchCitationMlaTooltip'.tr(),
+        CitationStyle.chicago => 'researchCitationChicagoTooltip'.tr(),
       };
 
   @override
@@ -418,36 +424,36 @@ class _AdvancedFormFields extends StatelessWidget {
       children: [
         _AdvancedField(
           controller: universityController,
-          label: 'اسم الجامعة',
-          hint: 'مثال: جامعة الملك عبدالعزيز',
+          label: 'researchUniversityLabel'.tr(),
+          hint: 'researchUniversityHint'.tr(),
           icon: Icons.school_outlined,
         ),
         const SizedBox(height: 12),
         _AdvancedField(
           controller: supervisorController,
-          label: 'اسم المشرف',
-          hint: 'د. محمد العتيبي',
+          label: 'researchSupervisorLabel'.tr(),
+          hint: 'researchSupervisorHint'.tr(),
           icon: Icons.person_outline,
         ),
         const SizedBox(height: 12),
         _AdvancedField(
           controller: studentController,
-          label: 'اسم الطالب',
-          hint: 'أحمد محمد الغامدي',
+          label: 'researchStudentLabel'.tr(),
+          hint: 'researchStudentHint'.tr(),
           icon: Icons.badge_outlined,
         ),
         const SizedBox(height: 12),
         _AdvancedField(
           controller: semesterController,
-          label: 'الفصل الدراسي',
-          hint: 'الفصل الثاني – 2026',
+          label: 'researchSemesterLabel'.tr(),
+          hint: 'researchSemesterHint'.tr(),
           icon: Icons.calendar_today_outlined,
         ),
         const SizedBox(height: 4),
-        const Text(
-          'تُستخدم هذه المعلومات في صفحة الغلاف فقط ولا تؤثر على جودة البحث.',
-          textDirection: TextDirection.rtl,
-          style: TextStyle(
+        Text(
+          'researchCoverOnlyNote'.tr(),
+          textDirection: Directionality.of(context),
+          style: const TextStyle(
             fontSize: 11,
             color: kTextSecondary,
             fontStyle: FontStyle.italic,
@@ -475,7 +481,7 @@ class _AdvancedField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -537,19 +543,22 @@ class _EstimatedTimeCard extends StatelessWidget {
           Row(
             children: [
               _EstimateStat(
-                  value: pages.toString(), label: 'صفحة'),
+                  value: pages.toString(),
+                  label: 'researchStatPages'.tr()),
               const SizedBox(width: 10),
               _EstimateStat(
-                  value: '~$estimatedMinutes', label: 'دقيقة'),
+                  value: '~$estimatedMinutes',
+                  label: 'researchStatMinutes'.tr()),
               const SizedBox(width: 10),
               _EstimateStat(
-                  value: '~$estimatedSources', label: 'مصدر'),
+                  value: '~$estimatedSources',
+                  label: 'researchStatSources'.tr()),
             ],
           ),
           const SizedBox(height: 12),
           Text(
-            'يتضمن: هيكل أكاديمي + مصادر حقيقية + توثيق APA + ملف Word جاهز',
-            textDirection: TextDirection.rtl,
+            'researchEstimateIncludes'.tr(),
+            textDirection: Directionality.of(context),
             style: const TextStyle(
               fontSize: 11,
               color: kTextSecondary,
@@ -613,7 +622,7 @@ class _StartButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PrimaryButton(
-      text: 'ابدأ البحث الآن',
+      text: 'researchStartNow'.tr(),
       onPressed: onPressed,
       icon: Icons.auto_awesome,
       width: double.infinity,

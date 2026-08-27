@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,27 +19,28 @@ class AgencyDashboardPage extends StatefulWidget {
 }
 
 class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
-  static const _tabs = [
-    'All',
-    'Pending',
-    'Processing',
-    'Completed',
-  ];
-
   int _selectedTabIndex = 0;
+
+  List<String> get _tabs => [
+        'allTasks'.tr(),
+        'orderStatusPending'.tr(),
+        'orderStatusProcessing'.tr(),
+        'orderStatusCompleted'.tr(),
+      ];
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return BlocProvider(
       create: (_) => di.locator<AgencyBloc>()
         ..add(const FetchAgencyTasksRequested()),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(
-          title: 'Active Tasks',
-          actions: [
+        appBar: CustomAppBar(
+          title: 'activeTasks',
+          actions: const [
             Padding(
-              padding: EdgeInsetsDirectional.only(end: 16),
+              padding: EdgeInsetsDirectional.only(end: 4),
               child: Center(
                 child: NotificationBell(hasActiveNotifications: true),
               ),

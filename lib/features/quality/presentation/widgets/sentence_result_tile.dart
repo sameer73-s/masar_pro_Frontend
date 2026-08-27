@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../domain/entities/sentence_match.dart';
@@ -53,15 +54,15 @@ class SentenceResultTile extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 14, height: 1.5),
-            textDirection: TextDirection.rtl,
+            textDirection: Directionality.of(context),
           ),
           subtitle: match.isFlagged
-              ? const Row(
+              ? Row(
                   children: [
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Badge(
-                      label: Text('مُعلَّمة', style: TextStyle(fontSize: 10)),
-                      backgroundColor: Color(0xFFDC2626),
+                      label: Text('flaggedBadge'.tr(), style: const TextStyle(fontSize: 10)),
+                      backgroundColor: const Color(0xFFDC2626),
                     ),
                   ],
                 )

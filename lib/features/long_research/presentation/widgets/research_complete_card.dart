@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
 import 'animated_progress_ring.dart';
@@ -63,7 +64,7 @@ class _ResearchCompleteCardState extends State<ResearchCompleteCard>
       child: ScaleTransition(
         scale: _scaleAnim,
         child: Directionality(
-          textDirection: TextDirection.rtl,
+          textDirection: Directionality.of(context),
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -88,9 +89,9 @@ class _ResearchCompleteCardState extends State<ResearchCompleteCard>
                 // Emoji + عنوان
                 const Text('🎉', style: TextStyle(fontSize: 48)),
                 const SizedBox(height: 8),
-                const Text(
-                  'اكتمل بحثك الأكاديمي!',
-                  style: TextStyle(
+                Text(
+                  'researchCompleteHeadline'.tr(),
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: kTextPrimary,
@@ -104,17 +105,17 @@ class _ResearchCompleteCardState extends State<ResearchCompleteCard>
                     _StatChip(
                       value:
                           _formatNumber(widget.totalWords),
-                      label: 'كلمة',
+                      label: 'researchStatWords'.tr(),
                     ),
                     const SizedBox(width: 10),
                     _StatChip(
                       value: widget.sourcesCount.toString(),
-                      label: 'مصدر',
+                      label: 'researchStatSources'.tr(),
                     ),
                     const SizedBox(width: 10),
                     _StatChip(
                       value: _minutes,
-                      label: 'دقيقة',
+                      label: 'researchStatMinutes'.tr(),
                     ),
                   ],
                 ),
@@ -122,7 +123,7 @@ class _ResearchCompleteCardState extends State<ResearchCompleteCard>
 
                 // زر التحميل
                 PrimaryButton(
-                  text: 'تحميل ملف Word',
+                  text: 'researchDownloadWord'.tr(),
                   onPressed: widget.isDownloading ? null : widget.onDownload,
                   isLoading: widget.isDownloading,
                   icon: Icons.download_rounded,
@@ -144,14 +145,14 @@ class _ResearchCompleteCardState extends State<ResearchCompleteCard>
                             BorderRadius.circular(kButtonRadius),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add, color: kPrimaryGreen),
-                        SizedBox(width: 6),
+                        const Icon(Icons.add, color: kPrimaryGreen),
+                        const SizedBox(width: 6),
                         Text(
-                          'بحث جديد',
-                          style: TextStyle(
+                          'researchNewResearch'.tr(),
+                          style: const TextStyle(
                             color: kPrimaryGreen,
                             fontWeight: FontWeight.w600,
                           ),

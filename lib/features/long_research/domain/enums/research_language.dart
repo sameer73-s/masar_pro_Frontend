@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum ResearchLanguage {
   arabic,
   english;
@@ -5,8 +7,8 @@ enum ResearchLanguage {
   String get apiValue => name;
 
   String get label => switch (this) {
-        arabic => 'العربية',
-        english => 'English',
+        arabic => 'researchLanguageArabic'.tr(),
+        english => 'researchLanguageEnglish'.tr(),
       };
 
   String get flag => switch (this) {

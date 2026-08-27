@@ -18,7 +18,7 @@ class DashboardForm extends StatefulWidget {
 }
 
 class _DashboardFormState extends State<DashboardForm> {
-  String _userName = 'User';
+  String _userName = '';
   String? _avatarUrl;
 
   @override
@@ -56,13 +56,14 @@ class _DashboardFormState extends State<DashboardForm> {
 
     if (!mounted) return;
     setState(() {
-      _userName = (name != null && name.isNotEmpty) ? name : 'User';
+      _userName = (name != null && name.isNotEmpty) ? name : '';
       _avatarUrl = (avatar != null && avatar.isNotEmpty) ? avatar : null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     final content = ColoredBox(
       color: AppColors.background,
       child: SingleChildScrollView(

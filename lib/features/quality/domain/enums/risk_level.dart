@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 enum RiskLevel {
@@ -12,9 +13,9 @@ enum RiskLevel {
       };
 
   String get label => switch (this) {
-        low => 'منخفضة',
-        medium => 'متوسطة',
-        high => 'عالية',
+        low => 'riskLevelLow'.tr(),
+        medium => 'riskLevelMedium'.tr(),
+        high => 'riskLevelHigh'.tr(),
       };
 
   Color get color => switch (this) {

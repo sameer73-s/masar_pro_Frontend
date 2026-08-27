@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +40,7 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
   void _submit() {
     final parsed = int.tryParse(_controller.text.trim());
     if (parsed == null || parsed < 0) {
-      setState(() => _error = 'Enter a valid non-negative price');
+      setState(() => _error = 'enterValidNonNegativePrice'.tr());
       return;
     }
 
@@ -53,9 +54,9 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.background,
-      title: const Text(
-        'Quote Task',
-        style: TextStyle(
+      title: Text(
+        'quoteTask'.tr(),
+        style: const TextStyle(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
         ),
@@ -64,14 +65,14 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Enter the quoted price for this task.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          Text(
+            'enterQuotedPriceHint'.tr(),
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           CustomTextField(
             controller: _controller,
-            hintText: 'Price',
+            hintText: 'price',
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.done,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -91,13 +92,13 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: AppColors.textSecondary),
+          child: Text(
+            'cancel'.tr(),
+            style: const TextStyle(color: AppColors.textSecondary),
           ),
         ),
         SmallPillButton(
-          label: 'Submit Quote',
+          label: 'submitQuote'.tr(),
           onPressed: _submit,
         ),
       ],

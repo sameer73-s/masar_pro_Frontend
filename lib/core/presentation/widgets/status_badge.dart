@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../config/app_colors.dart';
@@ -21,17 +22,17 @@ class StatusBadge extends StatelessWidget {
       Status.done => (
           AppColors.surfacePurple,
           AppColors.accentPurple,
-          'Done',
+          'statusDone'.tr(),
         ),
       Status.inProgress => (
           AppColors.surfaceOrange,
           AppColors.accentOrange,
-          'In Progress',
+          'statusInProgress'.tr(),
         ),
       Status.toDo => (
           AppColors.surfaceBlue,
           AppColors.statusBlue,
-          'To-Do',
+          'statusToDo'.tr(),
         ),
     };
 

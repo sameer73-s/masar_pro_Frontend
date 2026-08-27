@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
@@ -25,7 +26,9 @@ class ActiveTasksSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     return Container(
+      key: ValueKey(locale.languageCode),
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 18, 14, 14),
       decoration: BoxDecoration(
@@ -53,10 +56,10 @@ class ActiveTasksSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Active Tasks',
-                  style: TextStyle(
+                  'activeTasks'.tr(),
+                  style: const TextStyle(
                     color: AppColors.primary,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -67,7 +70,9 @@ class ActiveTasksSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            '$activeCount Active • $processingCount Processing',
+            'activeTasksSummary'.tr(
+              args: ['$activeCount', '$processingCount'],
+            ),
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,
@@ -76,7 +81,7 @@ class ActiveTasksSection extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: TextButton(
               onPressed: () => _openActiveTasks(context),
               style: TextButton.styleFrom(
@@ -84,9 +89,9 @@ class ActiveTasksSection extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text(
-                'Open Active Tasks →',
-                style: TextStyle(
+              child: Text(
+                'openActiveTasks'.tr(),
+                style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),

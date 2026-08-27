@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../config/app_colors.dart';
@@ -27,12 +28,12 @@ class ResultsCard extends StatelessWidget {
       } else if (context.mounted) {
         AppErrorDialog.show(
           context,
-          message: 'عذراً، لم نتمكن من فتح رابط التحميل.',
+          message: 'downloadFailed'.tr(),
         );
       }
     } catch (e) {
       if (!context.mounted) return;
-      AppErrorDialog.show(context, message: 'خطأ أثناء فتح الرابط: $e');
+      AppErrorDialog.show(context, message: 'error'.tr(args: ['$e']));
     }
   }
 
@@ -70,7 +71,7 @@ class ResultsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  "تم إنشاء ${versions.length} نسخة بنجاح",
+                  'versionsCreatedSuccess'.tr(args: ['${versions.length}']),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -81,7 +82,7 @@ class ResultsCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              "زمن المعالجة: $processingTime ثانية",
+              'processingTimeSeconds'.tr(args: ['$processingTime']),
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.slateGray,
@@ -110,7 +111,7 @@ class ResultsCard extends StatelessWidget {
                       color: Colors.green,
                     ),
                     title: Directionality(
-                      textDirection: TextDirection.rtl,
+                      textDirection: Directionality.of(context),
                       child: Text(
                         version.name,
                         style: TextStyle(
@@ -132,7 +133,7 @@ class ResultsCard extends StatelessWidget {
             
             // ZIP download button
             PrimaryButton(
-              text: 'تحميل الكل (ZIP)',
+              text: 'downloadAllZip'.tr(),
               onPressed: () => _downloadUrl(context, zipUrl),
               icon: Icons.archive_outlined,
               width: double.infinity,
@@ -145,7 +146,7 @@ class ResultsCard extends StatelessWidget {
               onPressed: onReset,
               icon: Icon(Icons.refresh, color: AppColors.deepNavy),
               label: Text(
-                "إنشاء مجموعة جديدة",
+                'createNewSet'.tr(),
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.deepNavy),
               ),
               style: OutlinedButton.styleFrom(

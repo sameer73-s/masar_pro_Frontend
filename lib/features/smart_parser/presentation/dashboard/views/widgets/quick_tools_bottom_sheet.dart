@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,38 +56,38 @@ class QuickToolsBottomSheet extends StatelessWidget {
     return [
       _QuickToolItem(
         emoji: '📊',
-        label: 'Excel',
-        subtitle: 'Version and compare spreadsheets',
+        label: 'toolExcel'.tr(),
+        subtitle: 'toolExcelSubtitle'.tr(),
         onTap: () => _push(context, const ExcelVersionerPage()),
       ),
       _QuickToolItem(
         emoji: '🔍',
-        label: 'Audit',
-        subtitle: 'Quality and originality checks',
+        label: 'toolAudit'.tr(),
+        subtitle: 'toolAuditSubtitle'.tr(),
         onTap: () => _push(context, const AuditScreen()),
       ),
       _QuickToolItem(
         emoji: '✨',
-        label: 'Humanize',
-        subtitle: 'Make AI text sound natural',
+        label: 'toolHumanize'.tr(),
+        subtitle: 'toolHumanizeSubtitle'.tr(),
         onTap: () => _push(context, const HumanizeScreen()),
       ),
       _QuickToolItem(
         emoji: '🧠',
-        label: 'Parser',
-        subtitle: 'Smart order parsing',
+        label: 'toolParser'.tr(),
+        subtitle: 'toolParserSubtitle'.tr(),
         onTap: () => _push(context, const SmartParserScreen()),
       ),
       _QuickToolItem(
         emoji: '📝',
-        label: 'Content Creation',
-        subtitle: 'Create tasks and content workflows',
+        label: 'toolContentCreation'.tr(),
+        subtitle: 'toolContentCreationSubtitle'.tr(),
         onTap: () => _push(context, const TaskSelectionPage()),
       ),
       _QuickToolItem(
         emoji: '📚',
-        label: 'Research',
-        subtitle: 'Long-form research workspace',
+        label: 'toolResearch'.tr(),
+        subtitle: 'toolResearchSubtitle'.tr(),
         onTap: () {
           Navigator.of(context).pop();
           Navigator.of(context).push(
@@ -104,10 +105,12 @@ class QuickToolsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final tools = _tools(context);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return SafeArea(
+      key: ValueKey(locale.languageCode),
       child: Padding(
         padding: EdgeInsets.fromLTRB(20, 12, 20, 16 + bottomInset),
         child: Column(
@@ -125,18 +128,18 @@ class QuickToolsBottomSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'All Tools',
-              style: TextStyle(
+            Text(
+              'allTools'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Jump into any utility from here',
-              style: TextStyle(
+            Text(
+              'allToolsSubtitle'.tr(),
+              style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 13,
               ),
@@ -204,7 +207,7 @@ class QuickToolsBottomSheet extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right_rounded,
                             color: AppColors.textSecondary,
                           ),

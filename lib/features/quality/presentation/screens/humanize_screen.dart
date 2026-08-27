@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -44,11 +45,11 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
   bool _isLoading = false;
   int _loadingMessageIndex = 0;
   Timer? _loadingTimer;
-  final List<String> _loadingMessages = [
-    "جاري الفحص الأولي للنص... 🔍",
-    "نحسّن الأسلوب ونبعد عن الذكاء الاصطناعي... ✨",
-    "نفحص أصالة المحتوى بعد الأنسنة... 🛡️",
-    "نجهّز ملفك للتحميل... 📄"
+  static const _loadingMessageKeys = [
+    'humanizeLoadingMsg1',
+    'humanizeLoadingMsg2',
+    'humanizeLoadingMsg3',
+    'humanizeLoadingMsg4',
   ];
 
   bool _hasResult = false;
@@ -73,7 +74,8 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
     _loadingTimer?.cancel();
     _loadingTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       setState(() {
-        _loadingMessageIndex = (_loadingMessageIndex + 1) % _loadingMessages.length;
+        _loadingMessageIndex =
+            (_loadingMessageIndex + 1) % _loadingMessageKeys.length;
       });
     });
   }
@@ -100,7 +102,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
     if (text.isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'يرجى كتابة نص أو إدخال ملف أولاً',
+        message: 'pleaseEnterInput'.tr(),
       );
       return;
     }
@@ -125,7 +127,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
       });
       AppSuccessDialog.show(
         context,
-        message: 'تم استخراج النص من الملف بنجاح',
+        message: 'textExtractedSuccess'.tr(),
       );
       return;
     }
@@ -176,7 +178,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else if (mounted) {
-      AppErrorDialog.show(context, message: 'تعذر تحميل المستند.');
+      AppErrorDialog.show(context, message: 'downloadFailed'.tr());
     }
   }
 
@@ -185,12 +187,12 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
     return BlocListener<QualityBloc, QualityState>(
       listener: (context, state) => _onQualityState(state),
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: Directionality.of(context),
         child: Stack(
           children: [
             Scaffold(
               backgroundColor: AppColors.background,
-              appBar: const CustomAppBar(title: 'أنسنة وفحص النصوص الذكي'),
+              appBar: CustomAppBar(title: 'humanizeScreenTitle'),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -202,7 +204,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
                       _buildInputField(),
                       const SizedBox(height: 32),
                       PrimaryButton(
-                        text: 'فحص وأنسنة النص',
+                        text: 'checkAndHumanizeButton'.tr(),
                         onPressed: _runCheckThenHumanize,
                         icon: Icons.security,
                         width: double.infinity,
@@ -229,7 +231,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
                           ),
                         ),
                         child: Text(
-                          'إجراء فحص جديد',
+                          'newAuditButton'.tr(),
                           style: TextStyle(
                             color: AppColors.deepNavy,
                             fontWeight: FontWeight.bold,
@@ -257,7 +259,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),
                           child: Text(
-                            _loadingMessages[_loadingMessageIndex],
+                            _loadingMessageKeys[_loadingMessageIndex].tr(),
                             key: ValueKey<int>(_loadingMessageIndex),
                             style: const TextStyle(
                               color: Colors.white,
@@ -285,7 +287,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
         children: [
           Expanded(
             child: ChoiceChip(
-              label: const Text('كتابة النص'),
+              label: Text('writeTextTab'.tr()),
               selected: _selectedTab == 0,
               onSelected: (val) {
                 if (val) setState(() => _selectedTab = 0);
@@ -295,7 +297,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
           const SizedBox(width: 8),
           Expanded(
             child: ChoiceChip(
-              label: const Text('رفع ملف'),
+              label: Text('uploadFileTab'.tr()),
               selected: _selectedTab == 1,
               onSelected: (val) {
                 if (val) setState(() => _selectedTab = 1);
@@ -315,8 +317,8 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
         child: TextField(
           controller: _textController,
           maxLines: 10,
-          decoration: const InputDecoration(
-            hintText: 'أدخل النص المطلوب فحصه وتعديله هنا...',
+          decoration: InputDecoration(
+            hintText: 'humanizeTextHint'.tr(),
             border: InputBorder.none,
           ),
         ),
@@ -332,19 +334,19 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
             CircularProgressIndicator(color: AppColors.accentGold),
             const SizedBox(height: 16),
             Text(
-              'جاري تحليل ملفك واستخراج النصوص...',
+              'extractingFileText'.tr(),
               style: TextStyle(color: AppColors.slateGray),
             ),
           ] else ...[
             Icon(Icons.upload_file_outlined, size: 48, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'الملفات المدعومة: .txt / .docx / .pdf',
+              'qualitySupportedFileTypes'.tr(),
               style: TextStyle(color: AppColors.slateGray, fontSize: 13),
             ),
             const SizedBox(height: 16),
             PrimaryButton(
-              text: 'اختر ملفاً من جهازك',
+              text: 'chooseFileFromDevice'.tr(),
               onPressed: _pickFile,
               width: double.infinity,
               height: 48,
@@ -352,7 +354,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
             if (_extractedFileName != null) ...[
               const SizedBox(height: 16),
               Text(
-                'تم تحميل: $_extractedFileName ✅',
+                'fileUploadedNamed'.tr(args: [_extractedFileName!]),
                 style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ]
@@ -372,18 +374,18 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
             const Icon(Icons.verified_user_rounded, color: Colors.green, size: 64),
             const SizedBox(height: 16),
             Text(
-              'نسبة الانتحال: $_beforeScore% ✅',
+              'plagiarismPercentOk'.tr(args: ['$_beforeScore']),
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
             ),
             const SizedBox(height: 8),
             Text(
-              'النص مقبول وأصيل بالكامل ولا يحتاج لأي صياغة إضافية.',
+              'textAcceptedNoRewrite'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(color: AppColors.slateGray),
             ),
             const SizedBox(height: 24),
             PrimaryButton(
-              text: 'تحميل النص الأصلي (.docx)',
+              text: 'downloadOriginalDocx'.tr(),
               onPressed: () => _launchUrl(_downloadUrl),
               icon: Icons.download,
               width: double.infinity,
@@ -403,7 +405,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
           child: Column(
             children: [
               Text(
-                'مقارنة مستوى الانتحال والجودة',
+                'plagiarismQualityComparison'.tr(),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -416,7 +418,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
                 children: [
                   Column(
                     children: [
-                      Text('قبل الأنسنة', style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
+                      Text('beforeHumanize'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
                       const SizedBox(height: 6),
                       Text(
                         '$_beforeScore%',
@@ -431,7 +433,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
                   Icon(Icons.arrow_back_rounded, color: AppColors.slateGray, size: 28),
                   Column(
                     children: [
-                      Text('بعد الأنسنة', style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
+                      Text('afterHumanize'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
                       const SizedBox(height: 6),
                       Text(
                         '${_afterScore?.toStringAsFixed(1)}%',
@@ -456,7 +458,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'معاينة النص المؤنسن والمحسن:',
+                'humanizedTextPreview'.tr(),
                 style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.deepNavy),
               ),
               const SizedBox(height: 12),
@@ -477,7 +479,7 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
           children: [
               Expanded(
                 child: PrimaryButton(
-                  text: 'تحميل الملف المؤنسن (.docx)',
+                  text: 'downloadHumanizedDocx'.tr(),
                   onPressed: () => _launchUrl(_downloadUrl),
                   icon: Icons.description,
                   height: 48,
@@ -488,9 +490,9 @@ class _HumanizeScreenBodyState extends State<_HumanizeScreenBody> {
               child: OutlinedButton.icon(
                 onPressed: () => _launchUrl(_reportUrl),
                 icon: const Icon(Icons.picture_as_pdf, color: Colors.redAccent),
-                label: const Text(
-                  'تقرير الفحص (.pdf)',
-                  style: TextStyle(
+                label: Text(
+                  'auditReportPdf'.tr(),
+                  style: const TextStyle(
                     color: Colors.redAccent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

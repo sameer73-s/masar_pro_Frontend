@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../config/app_colors.dart';
@@ -124,7 +125,7 @@ class _SmartDateSelectorState extends State<SmartDateSelector> {
           ),
           const SizedBox(width: 4),
           IconButton(
-            tooltip: 'Jump to date',
+            tooltip: 'jumpToDate'.tr(),
             onPressed: _openDatePicker,
             icon: const Icon(Icons.calendar_month_outlined),
             color: AppColors.accentPurple,
@@ -158,7 +159,7 @@ class _TodayButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.center,
           child: Text(
-            'Today',
+            'today'.tr(),
             style: TextStyle(
               color: isSelected ? Colors.white : AppColors.accentPurple,
               fontSize: 13,

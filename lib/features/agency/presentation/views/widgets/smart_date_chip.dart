@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../config/app_colors.dart';
@@ -19,11 +20,19 @@ class SmartDateChip extends StatelessWidget {
   final DateStatusSummary summary;
   final VoidCallback onTap;
 
-  static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  static const _weekdayKeys = [
+    'weekdayMon',
+    'weekdayTue',
+    'weekdayWed',
+    'weekdayThu',
+    'weekdayFri',
+    'weekdaySat',
+    'weekdaySun',
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final weekday = _weekdays[date.weekday - 1];
+    final weekday = _weekdayKeys[date.weekday - 1].tr();
     final day = date.day.toString();
 
     final Color bg = isSelected ? AppColors.accentPurple : Colors.white;

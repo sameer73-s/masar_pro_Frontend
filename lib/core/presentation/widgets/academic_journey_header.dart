@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../config/app_colors.dart';
@@ -59,15 +60,16 @@ class AcademicJourneyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final stages = [
       (
         icon: '📋',
-        label: 'Proposal',
+        label: 'journeyProposal'.tr(),
         state: stageStateForProposal(proposalStatus),
       ),
       (
         icon: '📚',
-        label: 'Full Research',
+        label: 'journeyFullResearch'.tr(),
         state: stageStateForResearch(
           researchStatus,
           proposalStatus: proposalStatus,
@@ -75,7 +77,7 @@ class AcademicJourneyHeader extends StatelessWidget {
       ),
       (
         icon: '📖',
-        label: 'Publishing',
+        label: 'journeyPublishing'.tr(),
         state: stageStateForPublishing(
           publishingStatus,
           researchStatus: researchStatus,
@@ -84,6 +86,7 @@ class AcademicJourneyHeader extends StatelessWidget {
     ];
 
     return Row(
+      key: ValueKey(locale.languageCode),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var i = 0; i < stages.length; i++) ...[
@@ -189,8 +192,8 @@ class _JourneyStageNode extends StatelessWidget {
                         ),
                 ),
                 if (isActive)
-                  const Positioned(
-                    right: -1,
+                  const PositionedDirectional(
+                    end: -1,
                     top: -1,
                     child: _PulsingDot(),
                   ),

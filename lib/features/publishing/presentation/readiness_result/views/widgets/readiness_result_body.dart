@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/core/presentation/widgets/app_error_dialog.dart';
@@ -56,7 +57,7 @@ class _ReadinessResultBodyState extends State<ReadinessResultBody> {
     return report.checks
         .map(
           (item) => ReadinessCheck(
-            label: item.label,
+            label: item.label.tr(),
             status: _toCheckStatus(item.status),
           ),
         )
@@ -90,18 +91,18 @@ class _ReadinessResultBodyState extends State<ReadinessResultBody> {
         if (state is! PublishingFailure) return;
         AppErrorDialog.show(
           context,
-          message: state.error,
-          okButtonText: 'Retry',
+          message: state.error.tr(),
+          okButtonText: 'retry'.tr(),
           onOk: _retryAnalysis,
         );
       },
       child: BlocBuilder<PublishingBloc, PublishingState>(
         builder: (context, state) {
           if (state is PublishingLoading && _report == null) {
-            return const Padding(
-              padding: EdgeInsets.fromLTRB(20, 12, 20, 24),
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               child: AIWorkerCard(
-                taskTitle: 'Analyzing research...',
+                taskTitle: 'analyzingResearch'.tr(),
                 progress: 0.62,
                 state: AIWorkerState.processing,
               ),
@@ -125,10 +126,10 @@ class _ReadinessResultBodyState extends State<ReadinessResultBody> {
             return const SizedBox.shrink();
           }
 
-          return const Padding(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, 24),
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
             child: AIWorkerCard(
-              taskTitle: 'Analyzing research...',
+              taskTitle: 'analyzingResearch'.tr(),
               progress: 0.62,
               state: AIWorkerState.processing,
             ),
@@ -163,7 +164,7 @@ class _ReadinessSuccessView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         PrimaryButton(
-          text: 'Continue to Journal Matching',
+          text: 'continueToJournalMatching'.tr(),
           onPressed: onContinue,
           isLoading: isContinuing,
           width: double.infinity,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -45,11 +46,17 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
   bool _isHumanizing = false;
   int _loadingMessageIndex = 0;
   Timer? _loadingTimer;
-  final List<String> _loadingMessages = [
-    "جاري فحص أصالة النص وتحليل الاقتباسات... 🔍",
-    "نقوم بجمع ومطابقة المراجع العلمية... 📚",
-    "نجهّز تقرير الفحص للتحميل... 📄"
+  static const _auditLoadingKeys = [
+    'auditLoadingMsg1',
+    'auditLoadingMsg2',
+    'auditLoadingMsg3',
   ];
+  static const _humanizeLoadingKeys = [
+    'auditHumanizeLoadingMsg1',
+    'auditHumanizeLoadingMsg2',
+    'auditHumanizeLoadingMsg3',
+  ];
+  List<String> _activeLoadingKeys = _auditLoadingKeys;
 
   bool _hasChecked = false;
   double? _plagScore;
@@ -68,14 +75,16 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     super.dispose();
   }
 
-  void _startLoadingTimer(List<String> messages) {
+  void _startLoadingTimer(List<String> messageKeys) {
     setState(() {
+      _activeLoadingKeys = messageKeys;
       _loadingMessageIndex = 0;
     });
     _loadingTimer?.cancel();
     _loadingTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       setState(() {
-        _loadingMessageIndex = (_loadingMessageIndex + 1) % messages.length;
+        _loadingMessageIndex =
+            (_loadingMessageIndex + 1) % _activeLoadingKeys.length;
       });
     });
   }
@@ -102,7 +111,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     if (text.isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'يرجى إدخال نص أو رفع ملف أولاً',
+        message: 'pleaseEnterInput'.tr(),
       );
       return;
     }
@@ -110,7 +119,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     setState(() {
       _isLoading = true;
     });
-    _startLoadingTimer(_loadingMessages);
+    _startLoadingTimer(_auditLoadingKeys);
     context.read<QualityBloc>().add(AuditOnlyEvent(text: text));
   }
 
@@ -118,11 +127,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     setState(() {
       _isHumanizing = true;
     });
-    _startLoadingTimer([
-      "جاري الأنسنة وصياغة الأسلوب... ✨",
-      "نقوم بفحص النص المحسن مجدداً... 🛡️",
-      "نجهّز ملفات التحميل النهائية... 📄"
-    ]);
+    _startLoadingTimer(_humanizeLoadingKeys);
     context.read<QualityBloc>().add(
           CheckThenHumanizeEvent(text: _textController.text.trim()),
         );
@@ -141,7 +146,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
       });
       AppSuccessDialog.show(
         context,
-        message: 'تم استخراج النص من الملف بنجاح',
+        message: 'textExtractedSuccess'.tr(),
       );
       return;
     }
@@ -209,7 +214,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else if (mounted) {
-      AppErrorDialog.show(context, message: 'تعذر تحميل الملف.');
+      AppErrorDialog.show(context, message: 'downloadFailed'.tr());
     }
   }
 
@@ -218,12 +223,12 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
     return BlocListener<QualityBloc, QualityState>(
       listener: (context, state) => _onQualityState(state),
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: Directionality.of(context),
         child: Stack(
           children: [
             Scaffold(
               backgroundColor: AppColors.background,
-              appBar: const CustomAppBar(title: 'فحص انتحال واقتباس النصوص'),
+              appBar: CustomAppBar(title: 'auditScreenTitle'),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -235,7 +240,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                       _buildInputField(),
                       const SizedBox(height: 32),
                       PrimaryButton(
-                        text: 'افحص أصالة النص الآن',
+                        text: 'auditNowButton'.tr(),
                         onPressed: _runAudit,
                         icon: Icons.verified_outlined,
                         width: double.infinity,
@@ -263,7 +268,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                           ),
                         ),
                         child: Text(
-                          'إجراء فحص جديد',
+                          'newAuditButton'.tr(),
                           style: TextStyle(
                             color: AppColors.deepNavy,
                             fontWeight: FontWeight.bold,
@@ -291,9 +296,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),
                           child: Text(
-                            _isLoading
-                                ? _loadingMessages[_loadingMessageIndex]
-                                : "جاري الأنسنة وصياغة الأسلوب... ✨",
+                            _activeLoadingKeys[_loadingMessageIndex].tr(),
                             key: ValueKey<int>(_loadingMessageIndex),
                             style: const TextStyle(
                               color: Colors.white,
@@ -321,7 +324,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
         children: [
           Expanded(
             child: ChoiceChip(
-              label: const Text('كتابة النص'),
+              label: Text('writeTextTab'.tr()),
               selected: _selectedTab == 0,
               onSelected: (val) {
                 if (val) setState(() => _selectedTab = 0);
@@ -331,7 +334,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
           const SizedBox(width: 8),
           Expanded(
             child: ChoiceChip(
-              label: const Text('رفع ملف'),
+              label: Text('uploadFileTab'.tr()),
               selected: _selectedTab == 1,
               onSelected: (val) {
                 if (val) setState(() => _selectedTab = 1);
@@ -351,8 +354,8 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
         child: TextField(
           controller: _textController,
           maxLines: 10,
-          decoration: const InputDecoration(
-            hintText: 'أدخل النص المطلوب فحص انتحاله واقتباسه هنا...',
+          decoration: InputDecoration(
+            hintText: 'auditTextHint'.tr(),
             border: InputBorder.none,
           ),
         ),
@@ -368,19 +371,19 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
             CircularProgressIndicator(color: AppColors.accentGold),
             const SizedBox(height: 16),
             Text(
-              'جاري تحليل ملفك واستخراج النصوص...',
+              'extractingFileText'.tr(),
               style: TextStyle(color: AppColors.slateGray),
             ),
           ] else ...[
             Icon(Icons.upload_file_outlined, size: 48, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'الملفات المدعومة: .txt / .docx / .pdf',
+              'qualitySupportedFileTypes'.tr(),
               style: TextStyle(color: AppColors.slateGray, fontSize: 13),
             ),
             const SizedBox(height: 16),
             PrimaryButton(
-              text: 'اختر ملفاً من جهازك',
+              text: 'chooseFileFromDevice'.tr(),
               onPressed: _pickFile,
               width: double.infinity,
               height: 48,
@@ -388,7 +391,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
             if (_extractedFileName != null) ...[
               const SizedBox(height: 16),
               Text(
-                'تم تحميل: $_extractedFileName ✅',
+                'fileUploadedNamed'.tr(args: [_extractedFileName!]),
                 style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
               ),
             ]
@@ -409,7 +412,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
             child: Column(
               children: [
                 Text(
-                  'نتائج الأنسنة وتحسين الجودة',
+                  'humanizeResultsTitle'.tr(),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -422,7 +425,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                   children: [
                     Column(
                       children: [
-                        Text('نسبة الانتحال قبل', style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
+                        Text('plagiarismBefore'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
                         const SizedBox(height: 6),
                         Text(
                           '$_beforePlagScore%',
@@ -437,7 +440,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                     Icon(Icons.arrow_back_rounded, color: AppColors.slateGray, size: 28),
                     Column(
                       children: [
-                        Text('نسبة الانتحال بعد', style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
+                        Text('plagiarismAfter'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
                         const SizedBox(height: 6),
                         Text(
                           '${_afterPlagScore?.toStringAsFixed(1)}%',
@@ -462,7 +465,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'النص المحسن بالكامل:',
+                  'fullImprovedText'.tr(),
                   style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.deepNavy),
                 ),
                 const SizedBox(height: 12),
@@ -483,7 +486,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
             children: [
               Expanded(
                 child: PrimaryButton(
-                  text: 'تحميل الملف (.docx)',
+                  text: 'downloadDocxFile'.tr(),
                   onPressed: () => _launchUrl(_downloadUrl),
                   icon: Icons.description,
                   height: 48,
@@ -494,9 +497,9 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
                 child: OutlinedButton.icon(
                   onPressed: () => _launchUrl(_reportUrl),
                   icon: const Icon(Icons.picture_as_pdf, color: Colors.redAccent),
-                  label: const Text(
-                    'تقرير الفحص (.pdf)',
-                    style: TextStyle(
+                  label: Text(
+                    'auditReportPdf'.tr(),
+                    style: const TextStyle(
                       color: Colors.redAccent,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -521,16 +524,16 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
 
     if (score < 20.0) {
       badgeColor = const Color(0xFF16A34A);
-      badgeText = 'آمن ✅';
-      message = 'نسبة الانتحال ممتازة ومقبولة أكاديمياً.';
+      badgeText = 'riskBadgeSafe'.tr();
+      message = 'auditScoreSafeMsg'.tr();
     } else if (score <= 50.0) {
       badgeColor = const Color(0xFFD97706);
-      badgeText = 'متوسط ⚠️';
-      message = 'نسبة الانتحال مرتفعة، ننصح بشدة بتفعيل خيار أنسنة النص وصياغته بأسلوب بشري.';
+      badgeText = 'riskBadgeMedium'.tr();
+      message = 'auditScoreMediumMsg'.tr();
     } else {
       badgeColor = const Color(0xFFDC2626);
-      badgeText = 'مرتفع جداً 🔴';
-      message = 'نسبة الانتحال عالية جداً! خيار الأنسنة سيحسن النتيجة بشكل كبير، ولكن قد تحتاج إلى مراجعة وتعديل يدوي لاحقاً.';
+      badgeText = 'riskBadgeVeryHigh'.tr();
+      message = 'auditScoreHighMsg'.tr();
     }
 
     return Container(
@@ -557,7 +560,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
           ),
           const SizedBox(height: 24),
           PrimaryButton(
-            text: 'أنسنة وتعديل النص ✨',
+            text: 'humanizeAndEditText'.tr(),
             onPressed: _runHumanizeFlow,
             icon: Icons.auto_fix_high,
             width: double.infinity,
@@ -568,7 +571,7 @@ class _AuditScreenBodyState extends State<_AuditScreenBody> {
             onPressed: () => _launchUrl(_reportUrl),
             icon: Icon(Icons.download, color: AppColors.deepNavy),
             label: Text(
-              'تحميل تقرير الفحص (.pdf)',
+              'downloadAuditReportPdf'.tr(),
               style: TextStyle(color: AppColors.deepNavy, fontWeight: FontWeight.bold),
             ),
             style: OutlinedButton.styleFrom(

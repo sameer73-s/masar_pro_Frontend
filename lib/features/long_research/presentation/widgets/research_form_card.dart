@@ -45,7 +45,7 @@ class ResearchFormCard extends StatelessWidget {
                 leading: Icon(icon, color: kGoldAccent, size: 22),
                 title: Text(
                   title,
-                  textDirection: TextDirection.rtl,
+                  textDirection: Directionality.of(context),
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -62,7 +62,7 @@ class ResearchFormCard extends StatelessWidget {
                 children: [
                   // Header
                   Row(
-                    textDirection: TextDirection.rtl,
+                    textDirection: Directionality.of(context),
                     children: [
                       Icon(icon, color: kGoldAccent, size: 22),
                       const SizedBox(width: 8),

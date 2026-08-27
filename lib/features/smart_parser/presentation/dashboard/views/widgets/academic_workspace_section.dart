@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
@@ -19,7 +20,9 @@ class AcademicWorkspaceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     return Material(
+      key: ValueKey(locale.languageCode),
       color: Colors.transparent,
       child: InkWell(
         onTap: () => _openAcademicWorkspace(context),
@@ -58,23 +61,23 @@ class AcademicWorkspaceSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Academic Workspace',
-                            style: TextStyle(
+                            'academicWorkspace'.tr(),
+                            style: const TextStyle(
                               color: AppColors.primary,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               height: 1.2,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'Proposal → Research → Publishing in one journey',
-                            style: TextStyle(
+                            'academicWorkspaceSubtitle'.tr(),
+                            style: const TextStyle(
                               color: AppColors.textSecondary,
                               fontSize: 12,
                               height: 1.35,
@@ -87,7 +90,7 @@ class AcademicWorkspaceSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 PrimaryButton(
-                  text: 'Open Academic Workspace',
+                  text: 'openAcademicWorkspace'.tr(),
                   onPressed: () => _openAcademicWorkspace(context),
                   width: double.infinity,
                   height: 46,

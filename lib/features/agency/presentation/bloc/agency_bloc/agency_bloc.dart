@@ -95,7 +95,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
       (failure) async => emit(AgencyFailure(failure.message)),
       (task) async {
         _upsertTask(task);
-        emit(AgencyActionSuccess('Task quoted successfully', _tasks));
+        emit(AgencyActionSuccess('taskQuotedSuccessfully', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
       },
     );
@@ -112,7 +112,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
       (failure) async => emit(AgencyFailure(failure.message)),
       (task) async {
         _upsertTask(task);
-        emit(AgencyActionSuccess('Task approved successfully', _tasks));
+        emit(AgencyActionSuccess('taskApprovedSuccessfully', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
       },
     );
@@ -129,7 +129,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
       (failure) async => emit(AgencyFailure(failure.message)),
       (task) async {
         _upsertTask(task);
-        emit(AgencyActionSuccess('Task rejected successfully', _tasks));
+        emit(AgencyActionSuccess('taskRejectedSuccessfully', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
       },
     );
@@ -150,7 +150,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
       (failure) async => emit(AgencyFailure(failure.message)),
       (task) async {
         _upsertTask(task);
-        emit(AgencyActionSuccess('Task processing started', _tasks));
+        emit(AgencyActionSuccess('taskProcessingStarted', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
       },
     );
@@ -167,7 +167,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
       (failure) async => emit(AgencyFailure(failure.message)),
       (task) async {
         _upsertTask(task);
-        emit(AgencyActionSuccess('Task retry started', _tasks));
+        emit(AgencyActionSuccess('taskRetryStarted', _tasks));
         add(FetchAgencyTasksRequested(statusFilter: _statusFilter));
       },
     );
@@ -186,7 +186,7 @@ class AgencyBloc extends Bloc<AgencyEvent, AgencyState> {
         _tasks = List<AgencyTask>.unmodifiable(
           _tasks.where((t) => t.id != event.taskId),
         );
-        emit(AgencyActionSuccess('Task deleted successfully', _tasks));
+        emit(AgencyActionSuccess('taskDeletedSuccessfully', _tasks));
         _emitLoaded(emit);
       },
     );

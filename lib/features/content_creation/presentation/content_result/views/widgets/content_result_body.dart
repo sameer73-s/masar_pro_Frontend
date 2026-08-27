@@ -26,7 +26,7 @@ class ContentResultBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'نتيجة صناعة المحتوى'),
+      appBar: CustomAppBar(title: 'contentResultTitle'),
       body: ContentResultView(
         taskType: taskType,
         title: title,

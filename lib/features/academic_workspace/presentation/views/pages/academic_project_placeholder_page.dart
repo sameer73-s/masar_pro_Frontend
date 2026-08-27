@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../config/app_colors.dart';
@@ -17,9 +18,10 @@ class AcademicProjectPlaceholderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Project Details'),
+      appBar: const CustomAppBar(title: 'projectDetails'),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -51,7 +53,7 @@ class AcademicProjectPlaceholderPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Project detail screens are coming soon.\nID: $projectId',
+                  'projectDetailsComingSoon'.tr(args: [projectId]),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textSecondary,

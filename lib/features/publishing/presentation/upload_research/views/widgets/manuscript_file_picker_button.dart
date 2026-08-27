@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
@@ -10,9 +11,9 @@ class ManuscriptFilePickerButton extends StatelessWidget {
     required this.onPressed,
     this.fileName,
     this.enabled = true,
-    this.emptyTitle = 'Select manuscript',
-    this.emptySubtitle = 'PDF or DOCX · mocked picker',
-    this.selectedSubtitle = 'Tap to replace (mocked)',
+    this.emptyTitle = 'selectManuscript',
+    this.emptySubtitle = 'pdfOrDocxMockedPicker',
+    this.selectedSubtitle = 'tapToReplaceMocked',
   });
 
   final VoidCallback onPressed;
@@ -54,7 +55,7 @@ class ManuscriptFilePickerButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      hasFile ? fileName! : emptyTitle,
+                      hasFile ? fileName! : emptyTitle.tr(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -65,7 +66,7 @@ class ManuscriptFilePickerButton extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      hasFile ? selectedSubtitle : emptySubtitle,
+                      hasFile ? selectedSubtitle.tr() : emptySubtitle.tr(),
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,

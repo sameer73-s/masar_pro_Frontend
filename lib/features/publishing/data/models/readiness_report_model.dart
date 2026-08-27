@@ -97,11 +97,11 @@ class ReadinessReportModel extends ReadinessReport {
     }
 
     const dimensions = <String, String>{
-      'structure_score': 'Structure',
-      'abstract_score': 'Abstract',
-      'references_score': 'References',
-      'methodology_score': 'Methodology',
-      'formatting_score': 'Formatting',
+      'structure_score': 'checkStructure',
+      'abstract_score': 'checkAbstract',
+      'references_score': 'checkReferences',
+      'methodology_score': 'checkMethodology',
+      'formatting_score': 'checkFormatting',
     };
 
     final fromScores = <ReadinessCheckItem>[];
@@ -135,7 +135,7 @@ class ReadinessReportModel extends ReadinessReport {
 
     return [
       ReadinessCheckItemModel(
-        label: 'Overall readiness',
+        label: 'overallReadiness',
         status: ReadinessStatus.fromScore(overall),
         score: overall,
       ),

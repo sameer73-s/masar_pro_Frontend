@@ -17,7 +17,7 @@ class AcademicWorkspacePage extends StatelessWidget {
         ..add(const FetchAcademicProjectsRequested()),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(title: 'Academic Workspace'),
+        appBar: const CustomAppBar(title: 'academicWorkspace'),
         body: const SafeArea(
           child: AcademicWorkspaceBody(),
         ),

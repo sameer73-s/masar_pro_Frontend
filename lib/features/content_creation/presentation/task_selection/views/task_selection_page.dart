@@ -14,13 +14,10 @@ class TaskSelectionPage extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           di.locator<TaskSelectionBloc>()..add(const WatchSavedContents()),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          backgroundColor: AppColors.background,
-          appBar: const CustomAppBar(title: 'صناعة المحتوى الأكاديمي'),
-          body: const TaskSelectionBody(),
-        ),
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: CustomAppBar(title: 'contentCreationTitle'),
+        body: const TaskSelectionBody(),
       ),
     );
   }

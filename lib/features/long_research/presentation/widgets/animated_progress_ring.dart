@@ -76,7 +76,7 @@ class AnimatedProgressRing extends StatelessWidget {
                       child: Text(
                         subLabel!,
                         textAlign: TextAlign.center,
-                        textDirection: TextDirection.rtl,
+                        textDirection: Directionality.of(context),
                         style: const TextStyle(
                           fontSize: 11,
                           color: kTextSecondary,

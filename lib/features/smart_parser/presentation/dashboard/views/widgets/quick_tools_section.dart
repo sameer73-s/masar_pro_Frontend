@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
@@ -21,51 +22,53 @@ class QuickToolsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     final chips = <QuickToolChip>[
       QuickToolChip(
         icon: Icons.table_chart_rounded,
         emoji: '📊',
-        label: 'Excel',
+        label: 'toolExcel'.tr(),
         onTap: () => _push(context, const ExcelVersionerPage()),
       ),
       QuickToolChip(
         icon: Icons.search_rounded,
         emoji: '🔍',
-        label: 'Audit',
+        label: 'toolAudit'.tr(),
         onTap: () => _push(context, const AuditScreen()),
       ),
       QuickToolChip(
         icon: Icons.auto_awesome_rounded,
         emoji: '✨',
-        label: 'Humanize',
+        label: 'toolHumanize'.tr(),
         onTap: () => _push(context, const HumanizeScreen()),
       ),
       QuickToolChip(
         icon: Icons.psychology_rounded,
         emoji: '🧠',
-        label: 'Parser',
+        label: 'toolParser'.tr(),
         onTap: () => _push(context, const SmartParserScreen()),
       ),
       QuickToolChip(
         icon: Icons.create_new_folder_rounded,
         emoji: '📝',
-        label: 'Create',
+        label: 'toolCreate'.tr(),
         onTap: () => _push(context, const TaskSelectionPage()),
       ),
       QuickToolChip(
         icon: Icons.more_horiz_rounded,
         emoji: '⋯',
-        label: 'More',
+        label: 'toolMore'.tr(),
         onTap: () => QuickToolsBottomSheet.show(context),
       ),
     ];
 
     return Column(
+      key: ValueKey(locale.languageCode),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Tools',
-          style: TextStyle(
+        Text(
+          'quickTools'.tr(),
+          style: const TextStyle(
             color: AppColors.primary,
             fontSize: 16,
             fontWeight: FontWeight.w700,

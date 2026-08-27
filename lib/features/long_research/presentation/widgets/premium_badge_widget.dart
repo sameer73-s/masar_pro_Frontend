@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'animated_progress_ring.dart';
 
@@ -25,24 +26,24 @@ class PremiumBadgeWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
-        textDirection: TextDirection.rtl,
+      child: Row(
+        textDirection: Directionality.of(context),
         children: [
-          Text('✦', style: TextStyle(color: Colors.white, fontSize: 18)),
-          SizedBox(width: 8),
+          const Text('✦', style: TextStyle(color: Colors.white, fontSize: 18)),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'ميزة متميزة — بحوث من 15 حتى 50 صفحة',
-              textDirection: TextDirection.rtl,
-              style: TextStyle(
+              'researchPremiumBanner'.tr(),
+              textDirection: Directionality.of(context),
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
             ),
           ),
-          SizedBox(width: 8),
-          _PremiumBadge(),
+          const SizedBox(width: 8),
+          const _PremiumBadge(),
         ],
       ),
     );
@@ -61,9 +62,9 @@ class _PremiumBadge extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: const Text(
-        'PREMIUM',
-        style: TextStyle(
+      child: Text(
+        'researchPremiumBadge'.tr(),
+        style: const TextStyle(
           color: Color(0xFFD97706),
           fontSize: 10,
           fontWeight: FontWeight.w800,

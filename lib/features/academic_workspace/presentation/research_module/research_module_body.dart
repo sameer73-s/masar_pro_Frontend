@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
@@ -45,7 +46,7 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
       if (!mounted) return;
       await AppErrorDialog.show(
         context,
-        message: 'Could not access the selected file',
+        message: 'couldNotAccessSelectedFile'.tr(),
       );
       return;
     }
@@ -62,7 +63,7 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
   Future<void> _downloadResearch(String? fileUrl) async {
     final raw = (fileUrl ?? '').trim();
     if (raw.isEmpty) {
-      await AppErrorDialog.show(context, message: 'No research file available');
+      await AppErrorDialog.show(context, message: 'noResearchFileAvailable'.tr());
       return;
     }
 
@@ -71,7 +72,7 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
         : '${ApiConfig.normalizedBaseUrl}$raw';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid research file URL');
+      await AppErrorDialog.show(context, message: 'invalidResearchFileUrl'.tr());
       return;
     }
 
@@ -113,12 +114,12 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the research file',
+              : 'couldNotOpenResearchFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        await AppErrorDialog.show(context, message: 'Download failed');
+        await AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isDownloading = false);
@@ -150,6 +151,7 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return BlocConsumer<ResearchModuleBloc, ResearchModuleState>(
       listener: (context, state) {
         if (state is ResearchModuleFailure) {
@@ -191,7 +193,7 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
                   ),
                   const SizedBox(height: 16),
                   PrimaryButton(
-                    text: 'Retry',
+                    text: 'retry'.tr(),
                     onPressed: () {
                       context.read<ResearchModuleBloc>().add(
                             LoadResearchProjectRequested(widget.projectId),
@@ -249,9 +251,9 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
                 onGeneratePlaceholder: () {
                   AppErrorDialog.show(
                     context,
-                    title: 'تنبيه',
-                    message: 'AI generation will be available soon.',
-                    okButtonText: 'حسناً',
+                    title: 'alert'.tr(),
+                    message: 'aiGenerationComingSoon'.tr(),
+                    okButtonText: 'ok'.tr(),
                   );
                 },
                 onUpload: _pickAndUpload,
@@ -277,8 +279,8 @@ class _UploadSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Get started with full research',
+        Text(
+          'getStartedResearch'.tr(),
           style: TextStyle(
             color: AppColors.primary,
             fontSize: 15,
@@ -286,8 +288,8 @@ class _UploadSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
-          'Generate a draft with AI or upload an existing PDF/DOCX.',
+        Text(
+          'generateOrUploadHint'.tr(),
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 13,
@@ -297,15 +299,15 @@ class _UploadSection extends StatelessWidget {
         const SizedBox(height: 20),
         _ActionCard(
           icon: Icons.auto_awesome_outlined,
-          title: 'Generate with AI',
-          subtitle: 'Create a research draft from your proposal',
+          title: 'generateWithAi'.tr(),
+          subtitle: 'generateResearchSubtitle'.tr(),
           onTap: onGeneratePlaceholder,
         ),
         const SizedBox(height: 12),
         _ActionCard(
           icon: Icons.upload_file_outlined,
-          title: 'Upload Existing Research',
-          subtitle: 'PDF or DOCX — sent for review',
+          title: 'uploadExistingResearch'.tr(),
+          subtitle: 'uploadResearchSubtitle'.tr(),
           onTap: onUpload,
         ),
       ],
@@ -336,11 +338,11 @@ class _ReviewSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppShapes.cardRadius),
             border: Border.all(color: AppColors.border),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Research under review',
+                'researchUnderReview'.tr(),
                 style: TextStyle(
                   color: AppColors.primary,
                   fontSize: 15,
@@ -349,7 +351,7 @@ class _ReviewSection extends StatelessWidget {
               ),
               SizedBox(height: 6),
               Text(
-                'Download the file to verify, then approve to unlock Publishing.',
+                'researchReviewHint'.tr(),
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -361,7 +363,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: isDownloading ? 'Downloading…' : 'Download Research',
+          text: isDownloading ? 'downloading'.tr() : 'downloadResearch'.tr(),
           onPressed: isDownloading ? null : onDownload,
           width: double.infinity,
           height: 48,
@@ -372,7 +374,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         PrimaryButton(
-          text: 'Approve Research',
+          text: 'approveResearch'.tr(),
           onPressed: onApprove,
           width: double.infinity,
           height: 56,
@@ -407,8 +409,8 @@ class _ApprovedSection extends StatelessWidget {
             children: [
               Icon(Icons.verified_outlined, size: 40, color: AppColors.success),
               const SizedBox(height: 12),
-              const Text(
-                'Research Approved ✓',
+              Text(
+                'researchApproved'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.primary,
@@ -417,8 +419,8 @@ class _ApprovedSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Publishing is unlocked. Continue when you are ready.',
+              Text(
+                'researchApprovedHint'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -431,7 +433,7 @@ class _ApprovedSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: 'Proceed to Publishing',
+          text: 'proceedToPublishing'.tr(),
           onPressed: onProceed,
           width: double.infinity,
           height: 52,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/config/app_colors.dart';
@@ -55,7 +56,7 @@ class _ManuscriptPreparationBodyState extends State<ManuscriptPreparationBody> {
         : '${ApiConfig.normalizedBaseUrl}$packageUrl';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid package URL');
+      await AppErrorDialog.show(context, message: 'invalidPackageUrl'.tr());
       return;
     }
 
@@ -81,12 +82,12 @@ class _ManuscriptPreparationBodyState extends State<ManuscriptPreparationBody> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the file',
+              : 'couldNotOpenFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        await AppErrorDialog.show(context, message: 'Download failed');
+        await AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isDownloading = false);
@@ -113,8 +114,8 @@ class _ManuscriptPreparationBodyState extends State<ManuscriptPreparationBody> {
         if (state is! PublishingFailure) return;
         AppErrorDialog.show(
           context,
-          message: state.error,
-          okButtonText: 'Retry',
+          message: state.error.tr(),
+          okButtonText: 'retry'.tr(),
           onOk: _retry,
         );
       },
@@ -158,17 +159,17 @@ class _PreparationProgressView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AIWorkerCard(
-          taskTitle: 'Formatting Manuscript',
+          taskTitle: 'formattingManuscript'.tr(),
           progress: 0.62,
           state: AIWorkerState.processing,
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         AIWorkerCard(
-          taskTitle: 'Generating Cover Letter',
+          taskTitle: 'generatingCoverLetter'.tr(),
           progress: 0,
           state: AIWorkerState.waiting,
         ),
@@ -202,7 +203,7 @@ class _PackageReadyView extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Submission Package Ready!',
+          'submissionPackageReady'.tr(),
           textAlign: TextAlign.center,
           style: AppTypography.bodyTitle(color: AppColors.primary),
         ),
@@ -216,7 +217,7 @@ class _PackageReadyView extends StatelessWidget {
         ],
         const Spacer(),
         PrimaryButton(
-          text: 'Download Package',
+          text: 'downloadPackage'.tr(),
           onPressed: onDownload,
           isLoading: isDownloading,
           width: double.infinity,

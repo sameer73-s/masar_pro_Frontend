@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -33,13 +34,14 @@ class _TaskFormState extends State<TaskForm> {
   // Loading messages rotation
   int _loadingMessageIndex = 0;
   Timer? _loadingTimer;
-  final List<String> _loadingMessages = [
-    "جاري تحليل نصك... 🔍",
-    "نقوم بجمع المصادر الأكاديمية... 📚",
-    "نحسّن الأسلوب ونُبعد عن الذكاء الاصطناعي... ✨",
-    "نفحص أصالة المحتوى... 🛡️",
-    "نجهّز ملفك للتحميل... 📄"
-  ];
+
+  List<String> get _loadingMessages => [
+        'loadingAnalyzingYourText'.tr(),
+        'loadingGatheringSources'.tr(),
+        'loadingImprovingStyle'.tr(),
+        'loadingCheckingOriginality'.tr(),
+        'loadingPreparingFile'.tr(),
+      ];
 
   // Specific inputs state
   String _language = 'عربي';
@@ -125,7 +127,7 @@ class _TaskFormState extends State<TaskForm> {
         _selectedFile = null;
         _extractedFileName = null;
       });
-      _showErrorBottomSheet("فشل اختيار الملف. يرجى المحاولة لاحقاً.");
+      _showErrorBottomSheet('filePickFailed'.tr());
     }
   }
 
@@ -142,7 +144,7 @@ class _TaskFormState extends State<TaskForm> {
         });
       }
     } catch (e) {
-      _showErrorBottomSheet("فشل اختيار الملفات المرجعية.");
+      _showErrorBottomSheet('referenceFilesPickFailed'.tr());
     }
   }
 
@@ -236,11 +238,63 @@ class _TaskFormState extends State<TaskForm> {
     AppErrorDialog.show(
       context,
       message: message,
-      okButtonText: 'حاول مرة أخرى',
+      okButtonText: 'retry'.tr(),
       onOk: _generateContent,
-      secondaryButtonText: 'إغلاق',
+      secondaryButtonText: 'close'.tr(),
       onSecondaryAction: () {},
     );
+  }
+
+  String _languageLabel(String code) {
+    switch (code) {
+      case 'عربي':
+        return 'langArabic'.tr();
+      case 'إنجليزي':
+        return 'langEnglish'.tr();
+      case 'كلاهما':
+        return 'langBoth'.tr();
+      default:
+        return code;
+    }
+  }
+
+  String _reportTypeLabel(String code) {
+    switch (code) {
+      case 'تقني':
+        return 'reportTypeTechnical'.tr();
+      case 'إداري':
+        return 'reportTypeAdministrative'.tr();
+      case 'علمي':
+        return 'reportTypeScientific'.tr();
+      case 'ميداني':
+        return 'reportTypeField'.tr();
+      default:
+        return code;
+    }
+  }
+
+  String _focusLabel(String code) {
+    switch (code) {
+      case 'أفكار رئيسية':
+        return 'focusMainIdeas'.tr();
+      case 'نقد وتقييم':
+        return 'focusCritique'.tr();
+      case 'تحليل مقارن':
+        return 'focusComparative'.tr();
+      default:
+        return code;
+    }
+  }
+
+  String _citationLabel(String code) {
+    if (code == 'هارفارد') return 'citationHarvard'.tr();
+    return code;
+  }
+
+  String _paraphraseLevelLabel() {
+    if (_paraphraseLevel == 0.0) return 'paraphraseLight'.tr();
+    if (_paraphraseLevel == 1.0) return 'paraphraseFull'.tr();
+    return 'paraphraseMedium'.tr();
   }
 
   void _generateContent() {
@@ -269,7 +323,7 @@ class _TaskFormState extends State<TaskForm> {
                       _buildReferenceFilesSection(),
                        SizedBox(height: 40),
                       PrimaryButton(
-                        text: 'ابدأ التوليد والتحليل الذكي',
+                        text: 'startSmartGeneration'.tr(),
                         onPressed: _isTitleNotEmpty ? _generateContent : null,
                         width: double.infinity,
                         height: 54,
@@ -283,12 +337,12 @@ class _TaskFormState extends State<TaskForm> {
             SmartLoadingOverlay(
               isLoading: _isLoading,
               message: _loadingMessages[_loadingMessageIndex],
-              steps:  [
-                "تحليل الطلب",
-                "جمع المصادر",
-                "توليد وصياغة",
-                "فحص الجودة",
-                "جاهز"
+              steps: [
+                'stepAnalyzeRequest'.tr(),
+                'stepGatherSources'.tr(),
+                'stepGenerateDraft'.tr(),
+                'stepQualityCheck'.tr(),
+                'stepReady'.tr(),
               ],
               currentStepIndex: _loadingMessageIndex,
             ),
@@ -308,7 +362,10 @@ class _TaskFormState extends State<TaskForm> {
                         ),
                          SizedBox(height: 24),
                         Text(
-                          'جاري رفع الملفات المرجعية (${_currentUploadingIndex + 1}/${_referenceFiles.length})...',
+                          'uploadingReferenceFiles'.tr(args: [
+                            '${_currentUploadingIndex + 1}',
+                            '${_referenceFiles.length}',
+                          ]),
                           textAlign: TextAlign.center,
                           style:  TextStyle(
                             color: Colors.white,
@@ -342,7 +399,7 @@ class _TaskFormState extends State<TaskForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
          Text(
-          'الملفات المرجعية (اختياري)',
+          'referenceFilesOptional'.tr(),
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
@@ -362,7 +419,7 @@ class _TaskFormState extends State<TaskForm> {
             children: [
               if (_referenceFiles.isEmpty)
                 Text(
-                  'لم يتم اختيار أي ملفات مرجعية حتى الآن',
+                  'noReferenceFilesYet'.tr(),
                   style: TextStyle(color: Colors.grey[400], fontSize: 13),
                 )
               else
@@ -404,7 +461,7 @@ class _TaskFormState extends State<TaskForm> {
               OutlinedButton.icon(
                 onPressed: _pickReferenceFiles,
                 icon:  Icon(Icons.add, size: 18),
-                label:  Text('إضافة مستند مرجعي'),
+                label:  Text('addReferenceDocument'.tr()),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.deepNavy,
                   side: BorderSide(color: AppColors.deepNavy),
@@ -421,9 +478,9 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   Widget _buildMainTitleField() {
-    String label = "العنوان / الموضوع الرئيسي *";
-    if (widget.task.key == 'homework') label = "عنوان المادة *";
-    if (widget.task.key == 'cv') label = "الاسم الكامل *";
+    String label = 'mainTitleLabel'.tr();
+    if (widget.task.key == 'homework') label = 'subjectTitleLabel'.tr();
+    if (widget.task.key == 'cv') label = 'fullNameLabel'.tr();
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,7 +497,7 @@ class _TaskFormState extends State<TaskForm> {
         TextFormField(
           controller: _titleController,
           decoration: InputDecoration(
-            hintText: 'مثال: الذكاء الاصطناعي في التعليم الأكاديمي',
+            hintText: 'titleHintExample'.tr(),
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
@@ -467,90 +524,90 @@ class _TaskFormState extends State<TaskForm> {
     switch (widget.task.key) {
       case 'research':
         fields.addAll([
-          _buildTextField('pages', '(اختياري) عدد الصفحات المتوقع'),
+          _buildTextField('pages', 'optionalExpectedPages'.tr()),
           _buildLanguageField(),
           _buildCitationStyleField(),
-          _buildTextField('university', '(اختياري) اسم الجامعة'),
-          _buildTextField('course', '(اختياري) اسم المقرر'),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildTextField('university', 'optionalUniversityName'.tr()),
+          _buildTextField('course', 'optionalCourseName'.tr()),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'presentation':
         fields.addAll([
-          _buildTextField('slides_count', '(اختياري) عدد الشرائح (السلايدات)'),
-          _buildTextField('target_audience', '(اختياري) الجمهور المستهدف'),
+          _buildTextField('slides_count', 'optionalSlidesCount'.tr()),
+          _buildTextField('target_audience', 'optionalTargetAudience'.tr()),
           _buildToneToggleField(),
           _buildLanguageField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'case_study':
         fields.addAll([
-          _buildTextField('company_name', '(اختياري) اسم الشركة أو المنظمة'),
-          _buildTextField('sector', '(اختياري) القطاع الصناعي'),
-          _buildTextField('main_problem', '(اختياري) المشكلة الرئيسية'),
+          _buildTextField('company_name', 'optionalCompanyName'.tr()),
+          _buildTextField('sector', 'optionalIndustrySector'.tr()),
+          _buildTextField('main_problem', 'optionalMainProblem'.tr()),
           _buildLanguageField(),
           _buildCitationStyleField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'report':
         fields.addAll([
           _buildReportTypeField(),
-          _buildTextField('pages', '(اختياري) عدد الصفحات'),
-          _buildTextField('recipient', '(اختياري) الجهة المقدم لها'),
+          _buildTextField('pages', 'optionalPagesCount'.tr()),
+          _buildTextField('recipient', 'optionalRecipient'.tr()),
           _buildLanguageField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'essay':
         fields.addAll([
-          _buildTextField('word_count', '(اختياري) الحجم المطلوب بالكلمات'),
-          _buildTextField('thesis', '(اختياري) الحجة أو الفكرة الرئيسية للتحليل'),
+          _buildTextField('word_count', 'optionalWordCount'.tr()),
+          _buildTextField('thesis', 'optionalThesis'.tr()),
           _buildLanguageField(),
           _buildCitationStyleField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'summary':
         fields.addAll([
-          _buildTextField('author', '(اختياري) اسم الكاتب أو المؤلف'),
-          _buildTextField('pages', '(اختياري) عدد صفحات التلخيص المطلوبة'),
+          _buildTextField('author', 'optionalAuthorName'.tr()),
+          _buildTextField('pages', 'optionalSummaryPages'.tr()),
           _buildFocusDropdownField(),
           _buildLanguageField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'project':
         fields.addAll([
-          _buildTextField('major', '(اختياري) التخصص الدراسي للمشروع'),
-          _buildTextField('problem_solved', '(اختياري) المشكلة التي يحلها المشروع'),
-          _buildTextField('target_audience', '(اختياري) الفئة المستهدفة للمشروع'),
+          _buildTextField('major', 'optionalProjectMajor'.tr()),
+          _buildTextField('problem_solved', 'optionalProblemSolved'.tr()),
+          _buildTextField('target_audience', 'optionalProjectAudience'.tr()),
           _buildLanguageField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'literature_review':
         fields.addAll([
-          _buildTextField('sources_count', '(اختياري) عدد المصادر المطلوبة'),
-          _buildTextField('time_period', '(اختياري) الفترة الزمنية للمصادر (مثال: 2015-2024)'),
+          _buildTextField('sources_count', 'optionalSourcesCount'.tr()),
+          _buildTextField('time_period', 'optionalTimePeriod'.tr()),
           _buildLanguageField(),
           _buildCitationStyleField(),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'homework':
         fields.addAll([
-          _buildTextField('academic_level', '(اختياري) المستوى الدراسي (مثال: بكالوريوس)'),
+          _buildTextField('academic_level', 'optionalAcademicLevel'.tr()),
           _buildLanguageField(),
-          _buildLongTextField('questions', '(اختياري) الأسئلة أو نص الواجب الكامل (منطقة نصية كبيرة)', maxLines: 8),
-          _buildLongTextField('notes', '(اختياري) ملاحظات إضافية'),
+          _buildLongTextField('questions', 'optionalQuestions'.tr(), maxLines: 8),
+          _buildLongTextField('notes', 'optionalAdditionalNotes'.tr()),
         ]);
         break;
       case 'translation':
         fields.addAll([
-          _buildLanguageDropdown('source_lang', 'من لغة', ['عربي', 'إنجليزي']),
-          _buildLanguageDropdown('target_lang', 'إلى لغة', ['إنجليزي', 'عربي']),
+          _buildLanguageDropdown('source_lang', 'fromLanguage'.tr(), ['عربي', 'إنجليزي']),
+          _buildLanguageDropdown('target_lang', 'toLanguage'.tr(), ['إنجليزي', 'عربي']),
            SizedBox(height: 16),
           _buildTabsInputFields(),
            SizedBox(height: 16),
@@ -568,13 +625,13 @@ class _TaskFormState extends State<TaskForm> {
         break;
       case 'cv':
         fields.addAll([
-          _buildTextField('major', '(اختياري) التخصص العلمي'),
-          _buildTextField('university', '(اختياري) الجامعة الحالية أو المتخرج منها'),
-          _buildTextField('degree', '(اختياري) الدرجة العلمية (مثال: ماجستير)'),
+          _buildTextField('major', 'optionalScientificMajor'.tr()),
+          _buildTextField('university', 'optionalCurrentUniversity'.tr()),
+          _buildTextField('degree', 'optionalDegree'.tr()),
            SizedBox(height: 16),
           _buildSkillsChipsField(),
            SizedBox(height: 16),
-          _buildLongTextField('experience', '(اختياري) الخبرات والمسيرة المهنية والأكاديمية', maxLines: 6),
+          _buildLongTextField('experience', 'optionalExperience'.tr(), maxLines: 6),
           _buildLanguageField(),
         ]);
         break;
@@ -650,7 +707,7 @@ class _TaskFormState extends State<TaskForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('(اختياري) لغة الكتابة', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalWritingLanguage'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
            SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: _language,
@@ -661,7 +718,7 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
             ),
             items: ['عربي', 'إنجليزي', 'كلاهما'].map((lang) {
-              return DropdownMenuItem(value: lang, child: Text(lang));
+              return DropdownMenuItem(value: lang, child: Text(_languageLabel(lang)));
             }).toList(),
             onChanged: (val) {
               setState(() {
@@ -680,7 +737,7 @@ class _TaskFormState extends State<TaskForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('(اختياري) أسلوب التوثيق العلمي', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalCitationStyle'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
            SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: _citationStyle,
@@ -691,7 +748,7 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
             ),
             items: ['APA', 'MLA', 'Chicago', 'هارفارد'].map((style) {
-              return DropdownMenuItem(value: style, child: Text(style));
+              return DropdownMenuItem(value: style, child: Text(_citationLabel(style)));
             }).toList(),
             onChanged: (val) {
               setState(() {
@@ -710,7 +767,7 @@ class _TaskFormState extends State<TaskForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('(اختياري) نوع التقرير المطلوب', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalReportType'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
            SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: _reportType,
@@ -721,7 +778,7 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
             ),
             items: ['تقني', 'إداري', 'علمي', 'ميداني'].map((type) {
-              return DropdownMenuItem(value: type, child: Text(type));
+              return DropdownMenuItem(value: type, child: Text(_reportTypeLabel(type)));
             }).toList(),
             onChanged: (val) {
               setState(() {
@@ -740,7 +797,7 @@ class _TaskFormState extends State<TaskForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('(اختياري) تركيز التلخيص والتحليل', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalSummaryFocus'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
            SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: _focusType,
@@ -751,7 +808,7 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
             ),
             items: ['أفكار رئيسية', 'نقد وتقييم', 'تحليل مقارن'].map((focus) {
-              return DropdownMenuItem(value: focus, child: Text(focus));
+              return DropdownMenuItem(value: focus, child: Text(_focusLabel(focus)));
             }).toList(),
             onChanged: (val) {
               setState(() {
@@ -781,7 +838,7 @@ class _TaskFormState extends State<TaskForm> {
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
             ),
             items: list.map((item) {
-              return DropdownMenuItem(value: item, child: Text(item));
+              return DropdownMenuItem(value: item, child: Text(_languageLabel(item)));
             }).toList(),
             onChanged: (val) {
               _optionalValues[key] = val;
@@ -798,11 +855,11 @@ class _TaskFormState extends State<TaskForm> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('(اختياري) نبرة العرض والتوجيه', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalPresentationTone'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
           Row(
             children: [
               ChoiceChip(
-                label:  Text('رسمي'),
+                label:  Text('toneFormal'.tr()),
                 selected: _tone == 'رسمي',
                 onSelected: (selected) {
                   if (selected) setState(() => _tone = 'رسمي');
@@ -810,7 +867,7 @@ class _TaskFormState extends State<TaskForm> {
               ),
                SizedBox(width: 8),
               ChoiceChip(
-                label:  Text('غير رسمي'),
+                label:  Text('toneInformal'.tr()),
                 selected: _tone == 'غير رسمي',
                 onSelected: (selected) {
                   if (selected) setState(() => _tone = 'غير رسمي');
@@ -829,7 +886,7 @@ class _TaskFormState extends State<TaskForm> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('(اختياري) الحفاظ على التنسيق الأصلي للمستند', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+          Text('optionalPreserveFormatting'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
           Switch(
             value: _preserveFormatting,
             activeColor: AppColors.accentGold,
@@ -845,10 +902,6 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   Widget _buildParaphraseSliderField() {
-    String degreeLabel = "متوسطة";
-    if (_paraphraseLevel == 0.0) degreeLabel = "خفيفة";
-    if (_paraphraseLevel == 1.0) degreeLabel = "كاملة";
-
     return Padding(
       padding:  EdgeInsets.only(top: 16.0),
       child: Column(
@@ -857,9 +910,9 @@ class _TaskFormState extends State<TaskForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('(اختياري) درجة إعادة الصياغة المطلوبة', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+              Text('optionalParaphraseDegree'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
               Text(
-                degreeLabel,
+                _paraphraseLevelLabel(),
                 style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.accentGold),
               ),
             ],
@@ -884,13 +937,13 @@ class _TaskFormState extends State<TaskForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('إدخال النص الأساسي للتوليد', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w600)),
+        Text('primaryTextInput'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w600)),
          SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: ChoiceChip(
-                label:  Text('كتابة النص'),
+                label:  Text('writeText'.tr()),
                 selected: _selectedInputTab == 0,
                 onSelected: (selected) {
                   if (selected) setState(() => _selectedInputTab = 0);
@@ -900,7 +953,7 @@ class _TaskFormState extends State<TaskForm> {
              SizedBox(width: 12),
             Expanded(
               child: ChoiceChip(
-                label:  Text('رفع ملف مستند'),
+                label:  Text('uploadDocument'.tr()),
                 selected: _selectedInputTab == 1,
                 onSelected: (selected) {
                   if (selected) setState(() => _selectedInputTab = 1);
@@ -915,7 +968,7 @@ class _TaskFormState extends State<TaskForm> {
             maxLines: 8,
             initialValue: _textInputContent,
             decoration: InputDecoration(
-              hintText: 'أدخل أو ألصق النص هنا لكي يتم استخدامه...',
+              hintText: 'pasteTextHint'.tr(),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
@@ -939,14 +992,14 @@ class _TaskFormState extends State<TaskForm> {
                 if (_isFileExtracting) ...[
                   CircularProgressIndicator(color: AppColors.accentGold),
                    SizedBox(height: 16),
-                  Text('جاري قراءة واستخراج النص من الملف...', style: TextStyle(color: AppColors.slateGray)),
+                  Text('extractingTextFromFile'.tr(), style: TextStyle(color: AppColors.slateGray)),
                 ] else ...[
                   Icon(Icons.cloud_upload_outlined, size: 48, color: Colors.grey[400]),
                    SizedBox(height: 16),
-                  Text('يدعم ملفات: .txt / .docx / .pdf', style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
+                  Text('supportedFileTypes'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 13)),
                    SizedBox(height: 12),
                   PrimaryButton(
-                    text: 'اختر الملف',
+                    text: 'chooseFile'.tr(),
                     onPressed: _pickFile,
                     icon: Icons.folder_open,
                     height: 44,
@@ -954,7 +1007,7 @@ class _TaskFormState extends State<TaskForm> {
                   if (_extractedFileName != null) ...[
                      SizedBox(height: 12),
                     Text(
-                      'الملف المرفق: $_extractedFileName',
+                      'attachedFile'.tr(args: [_extractedFileName!]),
                       style:  TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
                     ),
                   ]
@@ -970,7 +1023,7 @@ class _TaskFormState extends State<TaskForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('(اختياري) المهارات والميزات الأكاديمية', style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
+        Text('optionalSkills'.tr(), style: TextStyle(fontSize: 14, color: AppColors.deepNavy, fontWeight: FontWeight.w500)),
          SizedBox(height: 8),
         Row(
           children: [
@@ -978,7 +1031,7 @@ class _TaskFormState extends State<TaskForm> {
               child: TextField(
                 controller: _skillController,
                 decoration: InputDecoration(
-                  hintText: 'أدخل المهارة ثم اضغط إضافة',
+                  hintText: 'skillHint'.tr(),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
@@ -988,7 +1041,7 @@ class _TaskFormState extends State<TaskForm> {
             ),
              SizedBox(width: 8),
             SmallPillButton(
-              label: 'إضافة',
+              label: 'add'.tr(),
               onPressed: () {
                 final text = _skillController.text.trim();
                 if (text.isNotEmpty) {

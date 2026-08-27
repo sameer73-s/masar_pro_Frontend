@@ -19,7 +19,7 @@ class ReadinessResultPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Research Readiness'),
+      appBar: CustomAppBar(title: 'researchReadiness'),
       body: BlocProvider(
         create: (_) => di.locator<PublishingBloc>()
           ..add(AnalyzeReadinessRequested(projectId)),

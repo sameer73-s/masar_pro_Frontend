@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
@@ -49,7 +50,7 @@ class AgencyTaskCard extends StatelessWidget {
 
   static String _taskTitle(AgencyTask task) {
     final folder = task.storageFolder.trim();
-    if (folder.isEmpty) return 'Long Research';
+    if (folder.isEmpty) return 'longResearch'.tr();
     final segment = folder.split(RegExp(r'[/\\]')).lastWhere(
           (s) => s.isNotEmpty,
           orElse: () => folder,
@@ -68,15 +69,21 @@ class AgencyTaskCard extends StatelessWidget {
   static String _taskSubtitle(AgencyTask task) {
     final shortId =
         task.id.length > 8 ? '${task.id.substring(0, 8)}…' : task.id;
-    final quote =
-        task.quotedPrice != null ? ' · Quote: ${task.quotedPrice}' : '';
-    return 'Client ${task.clientId} · #$shortId · ${_formatTime(task.createdAt)}$quote';
+    final quote = task.quotedPrice != null
+        ? 'quoteWithValue'.tr(args: ['${task.quotedPrice}'])
+        : '';
+    return 'agencyTaskSubtitle'.tr(args: [
+      task.clientId,
+      shortId,
+      _formatTime(task.createdAt),
+      quote,
+    ]);
   }
 
   static String _formatTime(DateTime date) {
     final local = date.toLocal();
     final hour24 = local.hour;
-    final period = hour24 >= 12 ? 'PM' : 'AM';
+    final period = hour24 >= 12 ? 'periodPm'.tr() : 'periodAm'.tr();
     final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
     final min = local.minute.toString().padLeft(2, '0');
     return '$hour12:$min $period';
@@ -104,21 +111,21 @@ class _TaskOverflowMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         onSelected: (action) => _handleAction(context, action),
         itemBuilder: (context) => [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: _TaskMenuAction.viewDetails,
             child: ListTile(
-              leading: Icon(Icons.info_outline, size: 20),
-              title: Text('View Details'),
+              leading: const Icon(Icons.info_outline, size: 20),
+              title: Text('viewDetails'.tr()),
               contentPadding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
             ),
           ),
           if (_canRetry)
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _TaskMenuAction.retry,
               child: ListTile(
-                leading: Icon(Icons.refresh, size: 20),
-                title: Text('Retry'),
+                leading: const Icon(Icons.refresh, size: 20),
+                title: Text('retry'.tr()),
                 contentPadding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               ),
@@ -128,7 +135,7 @@ class _TaskOverflowMenu extends StatelessWidget {
               value: _TaskMenuAction.delete,
               child: ListTile(
                 leading: Icon(Icons.delete_outline, size: 20, color: AppColors.error),
-                title: Text('Delete', style: TextStyle(color: AppColors.error)),
+                title: Text('delete'.tr(), style: TextStyle(color: AppColors.error)),
                 contentPadding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               ),
@@ -154,11 +161,11 @@ class _TaskOverflowMenu extends StatelessWidget {
         task.id.length > 8 ? '${task.id.substring(0, 8)}…' : task.id;
     AppErrorDialog.show(
       context,
-      title: 'Delete Task',
-      message: 'Task #$shortId will be removed. This action cannot be undone.',
-      okButtonText: 'Delete',
+      title: 'deleteTask'.tr(),
+      message: 'deleteTaskMessage'.tr(args: [shortId]),
+      okButtonText: 'delete'.tr(),
       onOk: () => context.read<AgencyBloc>().add(DeleteTaskRequested(task.id)),
-      secondaryButtonText: 'Cancel',
+      secondaryButtonText: 'cancel'.tr(),
       onSecondaryAction: () {},
     );
   }
@@ -181,29 +188,29 @@ class _TaskDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Task Details'),
+      title: Text('taskDetails'.tr()),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _detailRow('ID', task.id),
-            _detailRow('Client', task.clientId),
-            _detailRow('Status', task.status.apiValue),
-            _detailRow('Progress', '${task.progressPct}%'),
+            _detailRow('id'.tr(), task.id),
+            _detailRow('client'.tr(), task.clientId),
+            _detailRow('statusLabel'.tr(), task.status.apiValue),
+            _detailRow('progress'.tr(), '${task.progressPct}%'),
             if (task.quotedPrice != null)
-              _detailRow('Quote', '${task.quotedPrice}'),
-            _detailRow('Created', task.createdAt.toLocal().toString()),
-            _detailRow('Deadline', task.deadline.toLocal().toString()),
+              _detailRow('quote'.tr(), '${task.quotedPrice}'),
+            _detailRow('created'.tr(), task.createdAt.toLocal().toString()),
+            _detailRow('deadline'.tr(), task.deadline.toLocal().toString()),
             if (task.storageFolder.isNotEmpty)
-              _detailRow('Storage', task.storageFolder),
+              _detailRow('storage'.tr(), task.storageFolder),
           ],
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: Text('close'.tr()),
         ),
       ],
     );
@@ -246,43 +253,43 @@ class _AgencyTaskStatusBadge extends StatelessWidget {
           Icons.cloud_upload_outlined,
           AppColors.surfaceBlue,
           AppColors.statusBlue,
-          'Uploaded',
+          'taskStatusUploaded'.tr(),
         ),
       TaskStatus.pendingApproval => (
           Icons.hourglass_top_outlined,
           AppColors.surfaceOrange,
           AppColors.accentOrange,
-          'Pending Approval',
+          'taskStatusPendingApproval'.tr(),
         ),
       TaskStatus.approved => (
           Icons.check_circle_outline,
           AppColors.surfacePurple,
           AppColors.accentPurple,
-          'Approved',
+          'taskStatusApproved'.tr(),
         ),
       TaskStatus.processing => (
           Icons.autorenew,
           AppColors.surfaceOrange,
           AppColors.accentOrange,
-          'Processing',
+          'orderStatusProcessing'.tr(),
         ),
       TaskStatus.completed => (
           Icons.task_alt,
           AppColors.surfacePurple,
           AppColors.accentPurple,
-          'Completed',
+          'orderStatusCompleted'.tr(),
         ),
       TaskStatus.failed => (
           Icons.error_outline,
           AppColors.darkerRed.withValues(alpha: 0.12),
           AppColors.error,
-          'Failed',
+          'taskStatusFailed'.tr(),
         ),
       TaskStatus.rejected => (
           Icons.block,
           AppColors.darkerRed.withValues(alpha: 0.12),
           AppColors.error,
-          'Rejected',
+          'taskStatusRejected'.tr(),
         ),
     };
 
@@ -335,7 +342,7 @@ class _ActionRowState extends State<_ActionRow> {
         return Align(
           alignment: Alignment.centerRight,
           child: _TaskActionButton(
-            label: 'Quote & Approve',
+            label: 'quoteAndApprove'.tr(),
             onPressed: () => QuoteTaskDialog.show(context, taskId: task.id),
           ),
         );
@@ -343,7 +350,7 @@ class _ActionRowState extends State<_ActionRow> {
         return Align(
           alignment: Alignment.centerRight,
           child: _TaskActionButton(
-            label: 'Process',
+            label: 'process'.tr(),
             onPressed: () => context.read<AgencyBloc>().add(
                   ApproveTaskRequested(task.id),
                 ),
@@ -353,7 +360,7 @@ class _ActionRowState extends State<_ActionRow> {
         return Align(
           alignment: Alignment.centerRight,
           child: _TaskActionButton(
-            label: 'Start Processing',
+            label: 'startProcessing'.tr(),
             onPressed: () => context.read<AgencyBloc>().add(
                   ProcessTaskRequested(
                     task.id,
@@ -364,15 +371,15 @@ class _ActionRowState extends State<_ActionRow> {
           ),
         );
       case TaskStatus.processing:
-        return const _StatusProgressRow(label: 'Processing…');
+        return _StatusProgressRow(label: 'processingEllipsis'.tr());
       case TaskStatus.completed:
         if (_isDownloading) {
-          return const _StatusProgressRow(label: 'Downloading…');
+          return _StatusProgressRow(label: 'downloading'.tr());
         }
         return Align(
           alignment: Alignment.centerRight,
           child: _TaskActionButton(
-            label: 'Download Result',
+            label: 'downloadResult'.tr(),
             onPressed: () => _downloadAndOpenResult(task.aiResultRef),
           ),
         );
@@ -387,7 +394,7 @@ class _ActionRowState extends State<_ActionRow> {
                 ),
             icon: Icon(Icons.refresh, size: 18, color: AppColors.error),
             label: Text(
-              'Retry',
+              'retry'.tr(),
               style: TextStyle(
                 color: AppColors.error,
                 fontWeight: FontWeight.w600,
@@ -401,7 +408,7 @@ class _ActionRowState extends State<_ActionRow> {
 
   Future<void> _downloadAndOpenResult(String? ref) async {
     if (ref == null || ref.isEmpty) {
-      AppErrorDialog.show(context, message: 'No result available yet');
+      AppErrorDialog.show(context, message: 'noResultAvailableYet'.tr());
       return;
     }
 
@@ -410,7 +417,7 @@ class _ActionRowState extends State<_ActionRow> {
         : '${ApiConfig.normalizedBaseUrl}$ref';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      AppErrorDialog.show(context, message: 'Invalid result URL');
+      AppErrorDialog.show(context, message: 'invalidResultUrl'.tr());
       return;
     }
 
@@ -436,12 +443,12 @@ class _ActionRowState extends State<_ActionRow> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the file',
+              : 'couldNotOpenFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        AppErrorDialog.show(context, message: 'Download failed');
+        AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isDownloading = false);

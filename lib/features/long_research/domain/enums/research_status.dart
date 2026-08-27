@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum ResearchStatus {
   pending,
   outlining,
@@ -14,15 +16,15 @@ enum ResearchStatus {
           orElse: () => ResearchStatus.pending);
 
   String get label => switch (this) {
-        pending => 'في الانتظار',
-        outlining => 'بناء هيكل البحث',
-        researching => 'جمع المصادر الأكاديمية',
-        writing => 'كتابة المحتوى',
-        reviewing => 'مراجعة الترابط',
-        assembling => 'تجميع الملف',
-        completed => 'مكتمل ✓',
-        failed => 'فشل',
-        cancelled => 'تم الإيقاف',
+        pending => 'researchStatusPending'.tr(),
+        outlining => 'researchStatusOutlining'.tr(),
+        researching => 'researchStatusResearching'.tr(),
+        writing => 'researchStatusWriting'.tr(),
+        reviewing => 'researchStatusReviewing'.tr(),
+        assembling => 'researchStatusAssembling'.tr(),
+        completed => 'researchStatusCompleted'.tr(),
+        failed => 'researchStatusFailed'.tr(),
+        cancelled => 'researchStatusCancelled'.tr(),
       };
 
   bool get isActive =>

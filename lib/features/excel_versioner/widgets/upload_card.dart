@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../config/app_colors.dart';
@@ -100,10 +101,12 @@ class _UploadCardState extends State<UploadCard> {
   }
 
   String _formatSize(int bytes) {
-    if (bytes <= 0) return "0 B";
-    if (bytes < 1024) return "$bytes B";
-    if (bytes < 1024 * 1024) return "${(bytes / 1024).toStringAsFixed(1)} KB";
-    return "${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB";
+    if (bytes <= 0) return 'fileSizeBytes'.tr(args: ['0']);
+    if (bytes < 1024) return 'fileSizeBytes'.tr(args: ['$bytes']);
+    if (bytes < 1024 * 1024) {
+      return 'fileSizeKb'.tr(args: [(bytes / 1024).toStringAsFixed(1)]);
+    }
+    return 'fileSizeMb'.tr(args: [(bytes / (1024 * 1024)).toStringAsFixed(1)]);
   }
 
   Future<void> _pickExcelFile() async {
@@ -151,7 +154,7 @@ class _UploadCardState extends State<UploadCard> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "رفع ملف الإجابات",
+                  'uploadAnswersFile'.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -187,7 +190,7 @@ class _UploadCardState extends State<UploadCard> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        "اختر ملف Excel يحتوي على الحلول",
+                        'chooseExcelWithSolutions'.tr(),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -196,7 +199,7 @@ class _UploadCardState extends State<UploadCard> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "يقبل صيغة .xlsx فقط",
+                        'acceptsXlsxOnly'.tr(),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.slateGray,
@@ -276,7 +279,7 @@ class _UploadCardState extends State<UploadCard> {
                                       ),
                                     )
                                   : Text(
-                                      "$_sheetCount Sheets",
+                                      'sheetsCount'.tr(args: ['$_sheetCount']),
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: AppColors.slateGray,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/presentation/widgets/app_success_dialog.dart';
@@ -41,10 +42,10 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: Directionality.of(context),
       child: Scaffold(
         backgroundColor: kBgLight,
-        appBar: const CustomAppBar(title: 'بحوث التخرج'),
+        appBar: CustomAppBar(title: 'researchHubTitle'),
         body: BlocConsumer<ResearchBloc, ResearchState>(
           listener: (context, state) {
             // Navigate once when a job starts — not on every progress tick
@@ -77,9 +78,9 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
                   // Previous research section
                   if (state is ResearchFormReady &&
                       state.history.isNotEmpty) ...[
-                    const Text(
-                      'البحوث السابقة',
-                      style: TextStyle(
+                    Text(
+                      'researchPreviousSection'.tr(),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: kTextPrimary,
@@ -110,7 +111,7 @@ class _ResearchHubScreenState extends State<ResearchHubScreen> {
   void _openFile(String path) {
     AppSuccessDialog.show(
       context,
-      message: 'فتح الملف: $path',
+      message: 'researchOpenFile'.tr(args: [path]),
     );
   }
 }
@@ -161,18 +162,18 @@ class _HeroCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'ابدأ بحثك الأكاديمي الآن',
-            style: TextStyle(
+          Text(
+            'researchHeroTitle'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: kTextPrimary,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'أدخل العنوان واترك الباقي علينا',
-            style: TextStyle(
+          Text(
+            'researchHeroSubtitle'.tr(),
+            style: const TextStyle(
               fontSize: 13,
               color: kTextSecondary,
             ),
@@ -181,7 +182,7 @@ class _HeroCard extends StatelessWidget {
 
           // زر البدء
           PrimaryButton(
-            text: 'ابدأ بحثاً جديداً',
+            text: 'researchStartNew'.tr(),
             onPressed: onStart,
             icon: Icons.auto_awesome,
             width: double.infinity,

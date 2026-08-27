@@ -21,8 +21,8 @@ class RevisionWorkflowPage extends StatelessWidget {
       create: (_) => di.locator<PublishingBloc>(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(
-          title: 'Revision Workflow',
+        appBar: CustomAppBar(
+          title: 'revisionWorkflow',
           showBackButton: true,
         ),
         body: RevisionWorkflowBody(submissionId: submissionId),

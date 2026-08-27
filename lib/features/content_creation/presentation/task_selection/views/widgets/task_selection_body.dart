@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../../../config/app_colors.dart';
 import 'task_selection_form.dart';
@@ -13,7 +14,7 @@ class TaskSelectionBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'اختر نوع المهمة المطلوبة',
+            'selectTaskType'.tr(),
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -22,7 +23,7 @@ class TaskSelectionBody extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'سنقوم بتوليد المحتوى وفحصه من الانتحال وأنسنته ليكون طبيعياً 100%.',
+            'selectTaskTypeSubtitle'.tr(),
             style: TextStyle(
               fontSize: 14,
               color: AppColors.slateGray,

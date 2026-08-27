@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/presentation/widgets/unified_task_card.dart';
@@ -20,18 +21,18 @@ class PreviousResearchTile extends StatelessWidget {
   String _formatDate(DateTime dt) {
     final months = [
       '',
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر'
+      'monthJanuary'.tr(),
+      'monthFebruary'.tr(),
+      'monthMarch'.tr(),
+      'monthApril'.tr(),
+      'monthMay'.tr(),
+      'monthJune'.tr(),
+      'monthJuly'.tr(),
+      'monthAugust'.tr(),
+      'monthSeptember'.tr(),
+      'monthOctober'.tr(),
+      'monthNovember'.tr(),
+      'monthDecember'.tr(),
     ];
     return '${dt.day} ${months[dt.month]} ${dt.year}';
   }

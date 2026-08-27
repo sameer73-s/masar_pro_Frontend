@@ -45,7 +45,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     FetchResearchProjectsRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Loading publications...'));
+    emit(const PublishingLoading('loadingPublications'));
 
     final result = await repository.getResearchProjects();
     result.fold(
@@ -58,7 +58,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     CreateResearchRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Creating research...'));
+    emit(const PublishingLoading('creatingResearch'));
 
     final result = await repository.createResearch(event.title);
     result.fold(
@@ -72,7 +72,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     Emitter<PublishingState> emit,
   ) async {
     final previous = state;
-    emit(const PublishingLoading('Deleting project...'));
+    emit(const PublishingLoading('deletingProject'));
 
     final result = await repository.deleteResearchProject(event.projectId);
     await result.fold(
@@ -99,7 +99,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     UploadManuscriptRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Uploading manuscript...'));
+    emit(const PublishingLoading('uploadingManuscript'));
 
     final platformFile = await _toPlatformFile(event.file);
     final result = await repository.uploadManuscript(
@@ -116,7 +116,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     AnalyzeReadinessRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Analyzing research...'));
+    emit(const PublishingLoading('analyzingResearch'));
 
     final result = await repository.analyzeReadiness(event.projectId);
     result.fold(
@@ -129,7 +129,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     MatchJournalsRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Matching journals...'));
+    emit(const PublishingLoading('matchingJournals'));
 
     final result = await repository.matchJournals(event.projectId);
     result.fold(
@@ -142,7 +142,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     PrepareManuscriptRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Preparing manuscript...'));
+    emit(const PublishingLoading('preparingManuscript'));
 
     final result = await repository.prepareManuscript(
       event.projectId,
@@ -158,7 +158,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     CreateSubmissionRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Recording submission...'));
+    emit(const PublishingLoading('recordingSubmission'));
 
     final result = await repository.createSubmission(
       event.projectId,
@@ -175,7 +175,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     FetchSubmissionRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Loading submission...'));
+    emit(const PublishingLoading('loadingSubmission'));
 
     final result = await repository.getSubmissionDetails(event.projectId);
     result.fold(
@@ -197,7 +197,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     Emitter<PublishingState> emit,
   ) async {
     final previous = state;
-    emit(const PublishingLoading('Uploading evidence...'));
+    emit(const PublishingLoading('uploadingEvidence'));
 
     final platformFile = await _toPlatformFile(event.file);
     final result = await repository.addEvidence(
@@ -216,9 +216,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
           );
         } else {
           emit(
-            PublishingFailure(
-              'Evidence uploaded, but the submission could not be refreshed.',
-            ),
+            const PublishingFailure('evidenceUploadedRefreshFailed'),
           );
         }
       },
@@ -229,7 +227,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     FetchReviewerCommentsRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Loading comments...'));
+    emit(const PublishingLoading('loadingComments'));
 
     final result = await repository.getComments(event.submissionId);
     result.fold(
@@ -245,7 +243,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     AddReviewerCommentsRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Saving comments...'));
+    emit(const PublishingLoading('savingComments'));
 
     final result = await repository.addComments(
       event.submissionId,
@@ -268,7 +266,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     GenerateResponsesRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Generating responses...'));
+    emit(const PublishingLoading('generatingResponses'));
 
     final result = await repository.generateResponses(event.submissionId);
     result.fold(
@@ -284,7 +282,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     UploadRevisionRequested event,
     Emitter<PublishingState> emit,
   ) async {
-    emit(const PublishingLoading('Uploading revision...'));
+    emit(const PublishingLoading('uploadingRevision'));
 
     final platformFile = await _toPlatformFile(event.file);
     final result = await repository.uploadRevision(

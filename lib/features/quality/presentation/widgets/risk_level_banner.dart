@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../domain/enums/risk_level.dart';
 
@@ -46,7 +47,7 @@ class RiskLevelBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'مستوى الخطر: ${riskLevel.label}',
+                  'riskLevelTitle'.tr(args: [riskLevel.label]),
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: riskLevel.color,
@@ -55,7 +56,11 @@ class RiskLevelBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'التشابه الكلي $overallSimilarity% | الجمل المُعلَّمة $flaggedSentences/$totalSentences',
+                  'riskBannerStats'.tr(args: [
+                    '$overallSimilarity',
+                    '$flaggedSentences',
+                    '$totalSentences',
+                  ]),
                   style: const TextStyle(
                     color: Color(0xFF64748B),
                     fontSize: 13,

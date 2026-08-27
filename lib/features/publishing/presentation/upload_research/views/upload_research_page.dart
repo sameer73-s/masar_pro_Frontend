@@ -16,7 +16,7 @@ class UploadResearchPage extends StatelessWidget {
       create: (_) => di.locator<PublishingBloc>(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(title: 'New Research'),
+        appBar: CustomAppBar(title: 'newResearch'),
         body: const UploadResearchBody(),
       ),
     );

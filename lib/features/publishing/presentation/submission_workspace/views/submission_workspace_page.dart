@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/config/app_colors.dart';
@@ -28,12 +29,12 @@ class SubmissionWorkspacePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: CustomAppBar(
-          title: 'Submission Workspace',
+          title: 'submissionWorkspace',
           showBackButton: true,
           actions: [
             Builder(
               builder: (context) => IconButton(
-                tooltip: 'Revision Workflow',
+                tooltip: 'revisionWorkflow'.tr(),
                 onPressed: () => _openRevisionWorkflow(context),
                 icon: const Icon(
                   Icons.rate_review_outlined,
@@ -57,7 +58,7 @@ class SubmissionWorkspacePage extends StatelessWidget {
     if (state is! PublishingSubmissionLoaded) {
       AppErrorDialog.show(
         context,
-        message: 'Load the submission before opening the revision workflow.',
+        message: 'loadSubmissionBeforeRevision'.tr(),
       );
       return;
     }

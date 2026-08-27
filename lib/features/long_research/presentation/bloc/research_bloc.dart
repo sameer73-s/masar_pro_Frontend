@@ -67,7 +67,7 @@ class ResearchBloc extends Bloc<ResearchEvent, ResearchState> {
           jobId: jobId,
           status: ResearchStatus.failed,
           progressPct: _lastProgress?.progressPct ?? 0,
-          currentStep: 'انقطع الاتصال',
+          currentStep: 'researchConnectionLost',
           sectionsDone: _lastProgress?.sectionsDone ?? 0,
           sectionsTotal: _lastProgress?.sectionsTotal ?? 0,
           subAgents: _lastProgress?.subAgents ?? const [],
@@ -88,8 +88,8 @@ class ResearchBloc extends Bloc<ResearchEvent, ResearchState> {
         message: event.progress.currentStep.isNotEmpty
             ? event.progress.currentStep
             : (event.progress.status == ResearchStatus.cancelled
-                ? 'تم إيقاف البحث'
-                : 'فشل إنشاء البحث'),
+                ? 'researchStopped'
+                : 'researchCreateFailed'),
         jobId: event.progress.jobId,
       ));
       return;

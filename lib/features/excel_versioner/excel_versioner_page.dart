@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
@@ -59,13 +60,13 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
 
   void _submit(BuildContext context) {
     if (_selectedFile == null) {
-      AppErrorDialog.show(context, message: 'يرجى اختيار ملف Excel أولاً');
+      AppErrorDialog.show(context, message: 'pleaseSelectExcelFile'.tr());
       return;
     }
     if (_promptController.text.trim().isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'يرجى كتابة وصف التعديلات المطلوبة لإعادة الصياغة',
+        message: 'pleaseEnterModificationPrompt'.tr(),
       );
       return;
     }
@@ -85,7 +86,7 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'نسخ الحلول'),
+      appBar: CustomAppBar(title: 'excelVersionerTitle'),
       body: BlocConsumer<ExcelVersionerBloc, ExcelVersionerState>(
         listener: (context, state) {
           if (state is ExcelVersionerFailure) {
@@ -136,7 +137,7 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "وصف التعديلات المطلوبة",
+                              'modificationDescriptionTitle'.tr(),
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -147,15 +148,14 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
                         ),
                         const SizedBox(height: 16),
                         Directionality(
-                          textDirection: TextDirection.rtl,
+                          textDirection: Directionality.of(context),
                           child: TextField(
                             controller: _promptController,
                             maxLines: 5,
                             enabled: !isProcessing && !isSuccess,
                             textAlign: TextAlign.right,
                             decoration: InputDecoration(
-                              hintText:
-                                  "مثال: أعد صياغة الإجابات النصية فقط، لا تغير الأرقام وحافظ على المصطلحات العلمية...",
+                              hintText: 'modificationPromptHint'.tr(),
                               hintStyle: TextStyle(
                                 color: AppColors.slateGray.withValues(alpha: 0.5),
                                 fontSize: 13,
@@ -220,8 +220,11 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
                           if (isProcessing) ...[
                             Text(
                               state is ExcelVersionerUploading
-                                  ? "جاري رفع الملف وحساب الخلايا..."
-                                  : "جاري إنشاء النسخة ${(state as ExcelVersionerProcessing).currentVersion} من ${state.totalVersions}...",
+                                  ? 'uploadingFileCalculatingCells'.tr()
+                                  : 'creatingVersionOf'.tr(args: [
+                                      '${(state as ExcelVersionerProcessing).currentVersion}',
+                                      '${state.totalVersions}',
+                                    ]),
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -236,7 +239,7 @@ class _ExcelVersionerViewState extends State<_ExcelVersionerView> {
                             ),
                           ] else
                             PrimaryButton(
-                              text: 'إنشاء النسخ',
+                              text: 'createVersions'.tr(),
                               onPressed: () => _submit(context),
                               icon: Icons.rocket_launch_outlined,
                               width: double.infinity,

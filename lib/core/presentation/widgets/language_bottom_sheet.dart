@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/shared_preference.dart';
-import 'package:masar_pro/config/strings.dart';
 import 'package:masar_pro/core/presentation/widgets/closed_icon.dart';
 
 class LanguageBottomSheet extends StatelessWidget {
@@ -21,7 +20,7 @@ class LanguageBottomSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  Strings.changeLanguage.tr(),
+                  'changeLanguage'.tr(),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.primary,
                     fontSize: 20,

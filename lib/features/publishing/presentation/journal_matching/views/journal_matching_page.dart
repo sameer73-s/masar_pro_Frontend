@@ -16,7 +16,7 @@ class JournalMatchingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Recommended Journals'),
+      appBar: CustomAppBar(title: 'recommendedJournals'),
       body: JournalMatchingBody(projectId: projectId),
     );
   }

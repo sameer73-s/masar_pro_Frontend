@@ -73,7 +73,7 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
         if (state is AgencyActionSuccess) {
           AppSuccessDialog.show(
             context,
-            message: state.message,
+            message: state.message.tr(),
           );
         } else if (state is AgencyFailure) {
           AppErrorDialog.show(
@@ -113,8 +113,10 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
         }
 
         final tasks = state.filteredTasks;
-        final countLabel = tasks.length == 1 ? 'Task' : 'Tasks';
-        final dateLabel = DateFormat('d MMMM').format(state.selectedDate);
+        final countLabel =
+            tasks.length == 1 ? 'taskSingular'.tr() : 'taskPlural'.tr();
+        final dateLabel = DateFormat('d MMMM', context.locale.toString())
+            .format(state.selectedDate);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -135,7 +137,11 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
             ),
             const SizedBox(height: 16),
             Text(
-              '$dateLabel • ${tasks.length} $countLabel',
+              'agencyDateTaskCount'.tr(args: [
+                dateLabel,
+                '${tasks.length}',
+                countLabel,
+              ]),
               style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 16,
@@ -149,9 +155,11 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
                 child: tasks.isEmpty
                     ? ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        children: const [
-                          SizedBox(height: 80),
-                          EmptyWidget(message: 'No agency tasks for this date'),
+                        children: [
+                          const SizedBox(height: 80),
+                          EmptyWidget(
+                            message: 'noAgencyTasksForThisDate',
+                          ),
                         ],
                       )
                     : ListView.separated(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/core/presentation/widgets/primary_button.dart';
@@ -54,10 +55,10 @@ class _JournalMatchingBodyState extends State<JournalMatchingBody> {
     return BlocBuilder<PublishingBloc, PublishingState>(
       builder: (context, state) {
         if (state is PublishingLoading || state is PublishingInitial) {
-          return const Padding(
-            padding: EdgeInsets.fromLTRB(20, 12, 20, 24),
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
             child: AIWorkerCard(
-              taskTitle: 'Matching journals...',
+              taskTitle: 'matchingJournals'.tr(),
               progress: 0.62,
               state: AIWorkerState.processing,
             ),
@@ -67,16 +68,16 @@ class _JournalMatchingBodyState extends State<JournalMatchingBody> {
         if (state is PublishingFailure) {
           return EmptyState(
             message: state.error.isEmpty
-                ? 'No matching journals found.'
-                : state.error,
+                ? 'noMatchingJournalsFound'.tr()
+                : state.error.tr(),
           );
         }
 
         if (state is PublishingJournalsMatched) {
           final matches = state.matches;
           if (matches.isEmpty) {
-            return const EmptyState(
-              message: 'No matching journals found.',
+            return EmptyState(
+              message: 'noMatchingJournalsFound'.tr(),
             );
           }
 
@@ -88,8 +89,8 @@ class _JournalMatchingBodyState extends State<JournalMatchingBody> {
           );
         }
 
-        return const EmptyState(
-          message: 'No matching journals found.',
+        return EmptyState(
+          message: 'noMatchingJournalsFound'.tr(),
         );
       },
     );
@@ -135,7 +136,7 @@ class _JournalMatchesView extends StatelessWidget {
         SafeArea(
           minimum: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: PrimaryButton(
-            text: 'Prepare Manuscript for this Journal',
+            text: 'prepareManuscriptForThisJournal'.tr(),
             onPressed: onPrepare,
             width: double.infinity,
             height: 52,
@@ -146,7 +147,7 @@ class _JournalMatchesView extends StatelessWidget {
   }
 
   static String _formatApc(double apc) {
-    if (apc <= 0) return 'Free';
+    if (apc <= 0) return 'apcFree'.tr();
     if (apc == apc.roundToDouble()) return '\$${apc.round()}';
     return '\$${apc.toStringAsFixed(2)}';
   }

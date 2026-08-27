@@ -130,7 +130,7 @@ class _SmartParserFormState extends State<SmartParserForm> {
                 const CircularProgressIndicator.adaptive(),
                 const SizedBox(height: 16),
                 Text(
-                  'جاري تحليل النص...',
+                  'analyzingText'.tr(),
                   style: const TextStyle(fontFamily: 'Cairo'),
                 ),
               ],
@@ -170,7 +170,7 @@ class _SmartParserFormState extends State<SmartParserForm> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'جاري الرفع... $percentage%',
+                    'uploadingProgress'.tr(args: [percentage]),
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.bold,
@@ -190,7 +190,10 @@ class _SmartParserFormState extends State<SmartParserForm> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ملف ${_currentUploadingIndex + 1} من ${_selectedFiles.length}',
+                    'fileOfTotal'.tr(args: [
+                      '${_currentUploadingIndex + 1}',
+                      '${_selectedFiles.length}',
+                    ]),
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       color: AppColors.slateGray,

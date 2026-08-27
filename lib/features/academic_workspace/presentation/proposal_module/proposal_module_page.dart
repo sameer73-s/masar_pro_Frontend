@@ -22,7 +22,7 @@ class ProposalModulePage extends StatelessWidget {
         ..add(LoadProposalProjectRequested(projectId)),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const CustomAppBar(title: 'Proposal'),
+        appBar: const CustomAppBar(title: 'proposal'),
         body: SafeArea(
           child: ProposalModuleBody(projectId: projectId),
         ),

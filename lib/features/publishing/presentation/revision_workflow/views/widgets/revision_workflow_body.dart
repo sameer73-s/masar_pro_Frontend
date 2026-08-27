@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,7 +66,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
     if (text.isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'Paste a reviewer comment before adding it.',
+        message: 'pasteReviewerCommentBeforeAdding'.tr(),
       );
       return;
     }
@@ -80,7 +81,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
     if (_comments.isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'Add at least one reviewer comment first.',
+        message: 'addAtLeastOneReviewerComment'.tr(),
       );
       return;
     }
@@ -105,7 +106,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
       if (!mounted) return;
       await AppErrorDialog.show(
         context,
-        message: 'Could not read the selected file.',
+        message: 'couldNotReadSelectedFile'.tr(),
       );
       return;
     }
@@ -125,8 +126,10 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
     final requiredChange = response.requiredChange.trim();
     if (suggested.isEmpty && requiredChange.isEmpty) return null;
     if (requiredChange.isEmpty) return suggested;
-    if (suggested.isEmpty) return 'Required change: $requiredChange';
-    return '$suggested\n\nRequired change: $requiredChange';
+    final requiredLine =
+        'requiredChangePrefix'.tr(args: [requiredChange]);
+    if (suggested.isEmpty) return requiredLine;
+    return '$suggested\n\n$requiredLine';
   }
 
   List<ReviewerComment> _mergeResponses(
@@ -158,7 +161,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
           _awaitingAdd = false;
           _awaitingRevisionUpload = false;
           if (_hasLoaded) {
-            AppErrorDialog.show(context, message: state.error);
+            AppErrorDialog.show(context, message: state.error.tr());
           }
           return;
         }
@@ -176,7 +179,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
             _awaitingRevisionUpload = false;
             AppSuccessDialog.show(
               context,
-              message: 'Revised manuscript uploaded.',
+              message: 'revisedManuscriptUploaded'.tr(),
             );
           }
           return;
@@ -194,7 +197,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
           if (!_hasLoaded) {
             if (state is PublishingFailure) {
               return AppErrorWidget(
-                message: state.error,
+                message: state.error.tr(),
                 onRetry: _fetch,
               );
             }
@@ -212,9 +215,9 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
               children: [
                 LabeledWidget(
                   labelPadding: const EdgeInsets.only(bottom: 8),
-                  label: const Text(
-                    'Reviewer comment',
-                    style: TextStyle(
+                  label: Text(
+                    'reviewerComment'.tr(),
+                    style: const TextStyle(
                       color: AppColors.primary,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -222,7 +225,7 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
                   ),
                   widget: CustomTextField(
                     controller: _commentController,
-                    hintText: 'Paste a reviewer comment',
+                    hintText: 'pasteAReviewerComment',
                     maxLines: 4,
                     keyboardType: TextInputType.multiline,
                     textInputAction: TextInputAction.newline,
@@ -235,9 +238,9 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
                 Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: PrimaryButton(
-                    text: 'Add',
+                    text: 'add'.tr(),
                     onPressed: isBusy ? null : _addComment,
-                    isLoading: loadingMessage == 'Saving comments...',
+                    isLoading: loadingMessage == 'savingComments',
                     width: 96,
                     height: 44,
                   ),
@@ -245,8 +248,8 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
                 const SizedBox(height: 16),
                 Expanded(
                   child: _comments.isEmpty
-                      ? const EmptyState(
-                          message: 'No reviewer comments yet. Paste one above.',
+                      ? EmptyState(
+                          message: 'noReviewerCommentsYet'.tr(),
                         )
                       : ListView.separated(
                           itemCount: _comments.length,
@@ -263,16 +266,16 @@ class _RevisionWorkflowBodyState extends State<RevisionWorkflowBody> {
                 ),
                 const SizedBox(height: 16),
                 PrimaryButton(
-                  text: 'Generate AI Responses',
+                  text: 'generateAiResponses'.tr(),
                   onPressed: isBusy ? null : _generateResponses,
-                  isLoading: loadingMessage == 'Generating responses...',
+                  isLoading: loadingMessage == 'generatingResponses',
                   width: double.infinity,
                   height: 52,
                   icon: Icons.auto_awesome,
                 ),
                 const SizedBox(height: 12),
                 SmallPillButton(
-                  label: 'Upload Revised Manuscript',
+                  label: 'uploadRevisedManuscript'.tr(),
                   width: double.infinity,
                   onPressed: _pickAndUploadRevision,
                 ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
@@ -53,12 +54,13 @@ class _ContentResultViewState extends State<ContentResultView> {
   bool _isLoading = false;
   int _loadingMessageIndex = 0;
   Timer? _loadingTimer;
-  final List<String> _loadingMessages = [
-    "جاري فحص النص المحسن... 🔍",
-    "نحسّن الأسلوب ونبعد عن الذكاء الاصطناعي... ✨",
-    "نفحص أصالة المحتوى... 🛡️",
-    "نجهّز ملفك الجديد للتحميل... 📄"
-  ];
+
+  List<String> get _loadingMessages => [
+        'loadingCheckingImprovedText'.tr(),
+        'loadingImprovingStyle'.tr(),
+        'loadingCheckingOriginality'.tr(),
+        'loadingPreparingNewFile'.tr(),
+      ];
 
   Future<void> _downloadAndOpenFile(String? relativeUrl) async {
     if (relativeUrl == null) return;
@@ -84,8 +86,8 @@ class _ContentResultViewState extends State<ContentResultView> {
 
       await AppSuccessDialog.show(
         context,
-        message: 'تم تحميل الملف بنجاح: $fileName',
-        okButtonText: 'فتح',
+        message: 'fileDownloadedSuccess'.tr(args: [fileName]),
+        okButtonText: 'open'.tr(),
         onOk: () {
           OpenFilex.open(savePath);
         },
@@ -95,7 +97,7 @@ class _ContentResultViewState extends State<ContentResultView> {
       setState(() {
         _isLoading = false;
       });
-      AppErrorDialog.show(context, message: 'فشل تحميل الملف: $e');
+      AppErrorDialog.show(context, message: 'fileDownloadFailed'.tr(args: ['$e']));
     }
   }
 
@@ -107,13 +109,13 @@ class _ContentResultViewState extends State<ContentResultView> {
     try {
       final boundary = _shareCardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) {
-        throw Exception("عنصر الرسم غير متوفر");
+        throw Exception('renderElementUnavailable'.tr());
       }
 
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
-        throw Exception("فشل تحويل الصورة إلى بيانات ثنائية");
+        throw Exception('imageConversionFailed'.tr());
       }
       final pngBytes = byteData.buffer.asUint8List();
 
@@ -129,8 +131,8 @@ class _ContentResultViewState extends State<ContentResultView> {
 
       await AppSuccessDialog.show(
         context,
-        message: 'تم حفظ الصورة بنجاح: $fileName',
-        okButtonText: 'عرض',
+        message: 'imageSavedSuccess'.tr(args: [fileName]),
+        okButtonText: 'view'.tr(),
         onOk: () {
           OpenFilex.open(savePath);
         },
@@ -140,7 +142,7 @@ class _ContentResultViewState extends State<ContentResultView> {
       setState(() {
         _isLoading = false;
       });
-      AppErrorDialog.show(context, message: 'فشل حفظ بطاقة النسبة كصورة: $e');
+      AppErrorDialog.show(context, message: 'saveShareCardFailed'.tr(args: ['$e']));
     }
   }
 
@@ -189,7 +191,7 @@ class _ContentResultViewState extends State<ContentResultView> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Masar Pro',
+                    'appTitle'.tr(),
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       color: AppColors.accentGold,
@@ -201,7 +203,7 @@ class _ContentResultViewState extends State<ContentResultView> {
                 ],
               ),
               Text(
-                'وثيقة أصالة المحتوى',
+                'contentAuthenticityDocument'.tr(),
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   color: Colors.white38,
@@ -265,7 +267,7 @@ class _ContentResultViewState extends State<ContentResultView> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'نسبة الاقتباس والانتحال الإجمالية',
+                      'totalPlagiarismRate'.tr(),
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 12,
@@ -286,8 +288,8 @@ class _ContentResultViewState extends State<ContentResultView> {
                       ),
                       child: Text(
                         _currentPlagScore < limit
-                            ? '✅ محتوى أصيل معتمد'
-                            : '⚠️ يتجاوز الحد الأكاديمي',
+                            ? 'contentApprovedAuthentic'.tr()
+                            : 'exceedsAcademicLimit'.tr(),
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 11,
@@ -312,7 +314,7 @@ class _ContentResultViewState extends State<ContentResultView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'الحد المسموح للمهمة: ${limit.toStringAsFixed(0)}%',
+                'allowedLimitForTask'.tr(args: [limit.toStringAsFixed(0)]),
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   color: Colors.white38,
@@ -321,7 +323,7 @@ class _ContentResultViewState extends State<ContentResultView> {
                 ),
               ),
               Text(
-                'تحقق ذكي بواسطة منصة مسار',
+                'verifiedByMasar'.tr(),
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   color: Colors.white38,
@@ -425,7 +427,7 @@ class _ContentResultViewState extends State<ContentResultView> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
-      AppErrorDialog.show(context, message: 'تعذر تحميل الملف من الخادم.');
+      AppErrorDialog.show(context, message: 'couldNotDownloadFromServer'.tr());
     }
   }
 
@@ -433,9 +435,7 @@ class _ContentResultViewState extends State<ContentResultView> {
   Widget build(BuildContext context) {
     final plagColor = _getPlagColor(_currentPlagScore);
     
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: BlocListener<ContentResultBloc, ContentResultState>(
+    return BlocListener<ContentResultBloc, ContentResultState>(
         listener: (context, state) {
           if (state is ContentImprovementLoading) {
             setState(() {
@@ -460,7 +460,7 @@ class _ContentResultViewState extends State<ContentResultView> {
 
             AppSuccessDialog.show(
               context,
-              message: 'تمت عملية الأنسنة والتحسين الإضافي بنجاح',
+              message: 'humanizationSuccess'.tr(),
             );
           } else if (state is ContentResultFailure) {
             setState(() {
@@ -506,17 +506,16 @@ class _ContentResultViewState extends State<ContentResultView> {
             SmartLoadingOverlay(
               isLoading: _isLoading,
               message: _loadingMessages[_loadingMessageIndex],
-              steps: const [
-                "تحليل النص",
-                "تحسين الصياغة",
-                "فحص الجودة",
-                "جاهز"
+              steps: [
+                'stepAnalyzeText'.tr(),
+                'stepImproveWording'.tr(),
+                'stepQualityCheck'.tr(),
+                'stepReady'.tr(),
               ],
               currentStepIndex: _loadingMessageIndex,
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -557,14 +556,14 @@ class _ContentResultViewState extends State<ContentResultView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'مؤشر الانتحال وأصالة النص',
+                  'plagiarismIndexTitle'.tr(),
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.deepNavy),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _currentPlagScore < limit 
-                      ? '✅ نسبة ممتازة ومقبولة أكاديمياً (الحد: $limit%)' 
-                      : '⚠️ نسبة مرتفعة قليلاً، ننصح بطلب أنسنة إضافية',
+                      ? 'plagScoreExcellent'.tr(args: [limit.toString()]) 
+                      : 'plagScoreHigh'.tr(),
                   style: TextStyle(fontSize: 12, color: color),
                 ),
               ],
@@ -572,7 +571,7 @@ class _ContentResultViewState extends State<ContentResultView> {
           ),
           IconButton(
             icon: Icon(Icons.share_outlined, color: AppColors.deepNavy),
-            tooltip: 'تحميل كصورة للمشاركة',
+            tooltip: 'downloadAsImageShare'.tr(),
             onPressed: _captureAndSaveCard,
           ),
         ],
@@ -592,7 +591,7 @@ class _ContentResultViewState extends State<ContentResultView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'نسب التحسن بعد الأنسنة:',
+            'improvementAfterHumanization'.tr(),
             style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.deepNavy, fontSize: 14),
           ),
           const SizedBox(height: 12),
@@ -601,7 +600,7 @@ class _ContentResultViewState extends State<ContentResultView> {
             children: [
               Column(
                 children: [
-                  Text('قبل الأنسنة', style: TextStyle(color: AppColors.slateGray, fontSize: 12)),
+                  Text('beforeHumanization'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 12)),
                   const SizedBox(height: 4),
                   Text('${_beforePlagScore!.toStringAsFixed(1)}%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.redAccent)),
                 ],
@@ -609,7 +608,7 @@ class _ContentResultViewState extends State<ContentResultView> {
               Icon(Icons.arrow_back_rounded, color: AppColors.slateGray),
               Column(
                 children: [
-                  Text('بعد الأنسنة', style: TextStyle(color: AppColors.slateGray, fontSize: 12)),
+                  Text('afterHumanization'.tr(), style: TextStyle(color: AppColors.slateGray, fontSize: 12)),
                   const SizedBox(height: 4),
                   Text('${_currentPlagScore.toStringAsFixed(1)}%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green)),
                 ],
@@ -637,7 +636,7 @@ class _ContentResultViewState extends State<ContentResultView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'المحتوى الأكاديمي المُولَّد',
+                'generatedAcademicContent'.tr(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.deepNavy),
               ),
               IconButton(
@@ -646,7 +645,7 @@ class _ContentResultViewState extends State<ContentResultView> {
                   Clipboard.setData(ClipboardData(text: _currentContent));
                   AppSuccessDialog.show(
                     context,
-                    message: 'تم نسخ النص إلى الحافظة',
+                    message: 'textCopiedToClipboard'.tr(),
                   );
                 },
               )
@@ -675,7 +674,7 @@ class _ContentResultViewState extends State<ContentResultView> {
           children: [
             Expanded(
               child: PrimaryButton(
-                text: 'تحميل Word',
+                text: 'downloadWord'.tr(),
                 onPressed: () => _downloadAndOpenFile(_downloadUrl),
                 icon: Icons.description_outlined,
                 height: 48,
@@ -684,7 +683,7 @@ class _ContentResultViewState extends State<ContentResultView> {
             const SizedBox(width: 12),
             Expanded(
               child: PrimaryButton(
-                text: 'تحميل PDF',
+                text: 'downloadPdf'.tr(),
                 onPressed: () => _downloadAndOpenFile(_contentPdfUrl),
                 icon: Icons.picture_as_pdf,
                 height: 48,
@@ -698,7 +697,7 @@ class _ContentResultViewState extends State<ContentResultView> {
           child: OutlinedButton.icon(
             onPressed: () => _downloadAndOpenFile(_reportUrl),
             icon: Icon(Icons.analytics_outlined, color: Colors.redAccent),
-            label: Text('تحميل تقرير الجودة', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
+            label: Text('downloadQualityReport'.tr(), style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.redAccent),
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -715,7 +714,7 @@ class _ContentResultViewState extends State<ContentResultView> {
       width: double.infinity,
       margin: const EdgeInsets.only(top: 12),
       child: PrimaryButton(
-        text: 'تحسين وأنسنة أكثر ✨',
+        text: 'improveHumanizeMore'.tr(),
         onPressed: _improveMore,
         icon: Icons.auto_fix_high,
         width: double.infinity,
@@ -737,7 +736,7 @@ class _ContentResultViewState extends State<ContentResultView> {
         ),
         const SizedBox(height: 24),
         Text(
-          'فشل فحص الجودة الأكاديمية والمحتوى',
+          'qualityCheckFailed'.tr(),
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -758,7 +757,7 @@ class _ContentResultViewState extends State<ContentResultView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'السبب المكتشف من السيرفر:',
+                'rejectionReasonLabel'.tr(),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -767,7 +766,7 @@ class _ContentResultViewState extends State<ContentResultView> {
               ),
               const SizedBox(height: 8),
               Text(
-                widget.rejectionReason ?? 'النص المولد لم يجتز فحص الجودة، يرجى المحاولة بصياغة مختلفة للعنوان أو الملاحظات المرفقة.',
+                widget.rejectionReason ?? 'defaultRejectionReason'.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.5,
@@ -779,13 +778,13 @@ class _ContentResultViewState extends State<ContentResultView> {
         ),
         const SizedBox(height: 32),
         Text(
-          'يرجى المحاولة بصياغة مختلفة للعنوان، أو تغيير أسلوب التوليد/الملاحظات المضافة لتخطي معايير الرفض الذاتي.',
+          'tryDifferentWordingHint'.tr(),
           style: TextStyle(fontSize: 14, color: AppColors.slateGray),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 40),
         PrimaryButton(
-          text: 'الرجوع وتعديل الطلب',
+          text: 'goBackAndEdit'.tr(),
           onPressed: () => Navigator.pop(context),
           width: double.infinity,
           height: 54,

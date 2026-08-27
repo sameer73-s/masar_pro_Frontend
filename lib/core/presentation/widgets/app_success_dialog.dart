@@ -84,7 +84,7 @@ class AppSuccessDialog extends StatelessWidget {
             ),
             SizedBox(height: h(16)),
             Text(
-              title ?? 'نجاح',
+              title ?? 'successTitle'.tr(),
               style: AppTypography.title(fontSize: 16, color: AppColors.black),
             ),
             SizedBox(height: h(8)),

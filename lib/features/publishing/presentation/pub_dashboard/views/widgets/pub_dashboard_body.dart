@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:masar_pro/config/app_colors.dart';
@@ -56,7 +57,7 @@ class _PubDashboardContent extends StatelessWidget {
           const PublishingProgressHeader(currentStage: 0),
           const SizedBox(height: 20),
           Text(
-            'In progress',
+            'inProgress'.tr(),
             style: AppTypography.bodyTitle(color: AppColors.primary),
           ),
           const SizedBox(height: 12),
@@ -80,7 +81,7 @@ class _ProjectsList extends StatelessWidget {
 
         if (state is PublishingFailure) {
           return AppErrorWidget(
-            message: state.error,
+            message: state.error.tr(),
             onRetry: () => context.read<PublishingBloc>().add(
                   const FetchResearchProjectsRequested(),
                 ),
@@ -89,8 +90,8 @@ class _ProjectsList extends StatelessWidget {
 
         if (state is PublishingProjectsLoaded) {
           if (state.projects.isEmpty) {
-            return const EmptyState(
-              message: 'No active publications yet. Start a new research!',
+            return EmptyState(
+              message: 'noActivePublicationsYet'.tr(),
             );
           }
 
@@ -138,13 +139,13 @@ class _PublishingProjectCard extends StatelessWidget {
 
   static String _categoryFor(ResearchProjectStatus status) {
     return switch (status) {
-      ResearchProjectStatus.draft => 'Draft',
-      ResearchProjectStatus.analyzing => 'Analyzing',
-      ResearchProjectStatus.readyForJournal => 'Ready for journal',
-      ResearchProjectStatus.needsRevision => 'Needs revision',
-      ResearchProjectStatus.submitted => 'Submitted',
-      ResearchProjectStatus.accepted => 'Accepted',
-      ResearchProjectStatus.rejected => 'Rejected',
+      ResearchProjectStatus.draft => 'statusDraft'.tr(),
+      ResearchProjectStatus.analyzing => 'statusAnalyzing'.tr(),
+      ResearchProjectStatus.readyForJournal => 'statusReadyForJournal'.tr(),
+      ResearchProjectStatus.needsRevision => 'statusNeedsRevision'.tr(),
+      ResearchProjectStatus.submitted => 'statusSubmitted'.tr(),
+      ResearchProjectStatus.accepted => 'statusAccepted'.tr(),
+      ResearchProjectStatus.rejected => 'statusRejected'.tr(),
     };
   }
 
@@ -178,7 +179,7 @@ class _ProjectOverflowMenu extends StatelessWidget {
                 color: AppColors.error,
               ),
               title: Text(
-                'Delete',
+                'delete'.tr(),
                 style: TextStyle(color: AppColors.error),
               ),
               contentPadding: EdgeInsets.zero,
@@ -200,13 +201,13 @@ class _ProjectOverflowMenu extends StatelessWidget {
   void _confirmDelete(BuildContext context) {
     AppErrorDialog.show(
       context,
-      title: 'Delete Project',
-      message: 'This project will be permanently removed.',
-      okButtonText: 'Delete',
+      title: 'deleteProject'.tr(),
+      message: 'deleteProjectConfirmMessage'.tr(),
+      okButtonText: 'delete'.tr(),
       onOk: () => context.read<PublishingBloc>().add(
             DeletePublishingProjectRequested(project.id),
           ),
-      secondaryButtonText: 'Cancel',
+      secondaryButtonText: 'cancel'.tr(),
       onSecondaryAction: () {},
     );
   }

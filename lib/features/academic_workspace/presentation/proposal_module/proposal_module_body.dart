@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
@@ -47,7 +48,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
       if (!mounted) return;
       await AppErrorDialog.show(
         context,
-        message: 'Could not access the selected file',
+        message: 'couldNotAccessSelectedFile'.tr(),
       );
       return;
     }
@@ -64,7 +65,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
   Future<void> _downloadProposal(String? fileUrl) async {
     final raw = (fileUrl ?? '').trim();
     if (raw.isEmpty) {
-      await AppErrorDialog.show(context, message: 'No proposal file available');
+      await AppErrorDialog.show(context, message: 'noProposalFileAvailable'.tr());
       return;
     }
 
@@ -73,7 +74,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         : '${ApiConfig.normalizedBaseUrl}$raw';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid proposal file URL');
+      await AppErrorDialog.show(context, message: 'invalidProposalFileUrl'.tr());
       return;
     }
 
@@ -115,12 +116,12 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the proposal file',
+              : 'couldNotOpenProposalFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        await AppErrorDialog.show(context, message: 'Download failed');
+        await AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isDownloading = false);
@@ -166,6 +167,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return BlocConsumer<ProposalModuleBloc, ProposalModuleState>(
       listener: (context, state) {
         if (state is ProposalModuleFailure) {
@@ -181,13 +183,13 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
       },
       builder: (context, state) {
         if (state is ProposalModuleGenerating) {
-          return const Padding(
-            padding: EdgeInsets.fromLTRB(20, 24, 20, 32),
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 AIWorkerCard(
-                  taskTitle: 'Generating proposal…',
+                  taskTitle: 'generatingProposal'.tr(),
                   progress: 0.55,
                   state: AIWorkerState.processing,
                 ),
@@ -219,7 +221,7 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
                   ),
                   const SizedBox(height: 16),
                   PrimaryButton(
-                    text: 'Retry',
+                    text: 'retry'.tr(),
                     onPressed: () {
                       context.read<ProposalModuleBloc>().add(
                             LoadProposalProjectRequested(widget.projectId),
@@ -301,8 +303,8 @@ class _UploadSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Get started with your proposal',
+        Text(
+          'getStartedProposal'.tr(),
           style: TextStyle(
             color: AppColors.primary,
             fontSize: 15,
@@ -310,8 +312,8 @@ class _UploadSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
-          'Generate a draft with AI or upload an existing PDF/DOCX.',
+        Text(
+          'generateOrUploadHint'.tr(),
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 13,
@@ -321,15 +323,15 @@ class _UploadSection extends StatelessWidget {
         const SizedBox(height: 20),
         _ActionCard(
           icon: Icons.auto_awesome_outlined,
-          title: 'Generate with AI',
-          subtitle: 'Create a proposal draft from your project details',
+          title: 'generateWithAi'.tr(),
+          subtitle: 'generateProposalSubtitle'.tr(),
           onTap: onGenerate,
         ),
         const SizedBox(height: 12),
         _ActionCard(
           icon: Icons.upload_file_outlined,
-          title: 'Upload Existing Proposal',
-          subtitle: 'PDF or DOCX — sent for admin review',
+          title: 'uploadExistingProposal'.tr(),
+          subtitle: 'uploadProposalSubtitle'.tr(),
           onTap: onUpload,
         ),
         const SizedBox(height: 20),
@@ -343,8 +345,8 @@ class _UploadSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppShapes.cardRadius),
             ),
           ),
-          child: const Text(
-            'Skip Proposal (I have the Research)',
+          child: Text(
+            'skipProposal'.tr(),
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -379,11 +381,11 @@ class _ReviewSection extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppShapes.cardRadius),
             border: Border.all(color: AppColors.border),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Proposal under review',
+                'proposalUnderReview'.tr(),
                 style: TextStyle(
                   color: AppColors.primary,
                   fontSize: 15,
@@ -392,7 +394,7 @@ class _ReviewSection extends StatelessWidget {
               ),
               SizedBox(height: 6),
               Text(
-                'Download the file to verify, then approve to unlock Full Research.',
+                'proposalReviewHint'.tr(),
                 style: TextStyle(
                   color: AppColors.textSecondary,
                   fontSize: 13,
@@ -404,7 +406,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: isDownloading ? 'Downloading…' : 'Download Proposal',
+          text: isDownloading ? 'downloading'.tr() : 'downloadProposal'.tr(),
           onPressed: isDownloading ? null : onDownload,
           width: double.infinity,
           height: 48,
@@ -415,7 +417,7 @@ class _ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         PrimaryButton(
-          text: 'Approve Proposal',
+          text: 'approveProposal'.tr(),
           onPressed: onApprove,
           width: double.infinity,
           height: 56,
@@ -450,8 +452,8 @@ class _ApprovedSection extends StatelessWidget {
             children: [
               Icon(Icons.verified_outlined, size: 40, color: AppColors.success),
               const SizedBox(height: 12),
-              const Text(
-                'Proposal Approved ✓',
+              Text(
+                'proposalApproved'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.primary,
@@ -460,8 +462,8 @@ class _ApprovedSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'Full Research is unlocked. Continue when you are ready.',
+              Text(
+                'proposalApprovedHint'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.textSecondary,
@@ -474,7 +476,7 @@ class _ApprovedSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         PrimaryButton(
-          text: 'Proceed to Full Research',
+          text: 'proceedToFullResearch'.tr(),
           onPressed: onProceed,
           width: double.infinity,
           height: 52,

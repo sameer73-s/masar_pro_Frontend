@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,7 +82,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
     if (journalId.isEmpty) {
       AppErrorDialog.show(
         context,
-        message: 'A journal must be selected before recording a submission.',
+        message: 'journalMustBeSelected'.tr(),
       );
       return;
     }
@@ -108,7 +109,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
       if (!mounted) return;
       await AppErrorDialog.show(
         context,
-        message: 'Could not read the selected file.',
+        message: 'couldNotReadSelectedFile'.tr(),
       );
       return;
     }
@@ -125,20 +126,20 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
     if (url == null) {
       await AppErrorDialog.show(
         context,
-        message: 'No download URL is available for this file.',
+        message: 'noDownloadUrlAvailable'.tr(),
       );
       return;
     }
 
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid file URL.');
+      await AppErrorDialog.show(context, message: 'invalidFileUrl'.tr());
       return;
     }
 
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && mounted) {
-      await AppErrorDialog.show(context, message: 'Could not open the file.');
+      await AppErrorDialog.show(context, message: 'couldNotOpenFile'.tr());
     }
   }
 
@@ -149,14 +150,14 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
     if (url == null) {
       await AppErrorDialog.show(
         context,
-        message: 'No download URL is available for this file.',
+        message: 'noDownloadUrlAvailable'.tr(),
       );
       return;
     }
 
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid file URL.');
+      await AppErrorDialog.show(context, message: 'invalidFileUrl'.tr());
       return;
     }
 
@@ -182,12 +183,12 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the file',
+              : 'couldNotOpenFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        await AppErrorDialog.show(context, message: 'Download failed');
+        await AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isOpeningFile = false);
@@ -220,7 +221,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
           current is PublishingSubmissionLoaded,
       listener: (context, state) {
         if (state is PublishingFailure) {
-          AppErrorDialog.show(context, message: state.error);
+          AppErrorDialog.show(context, message: state.error.tr());
         } else if (state is PublishingSubmissionLoaded) {
           _trackingController.text = state.submission.submissionId;
         }
@@ -247,7 +248,7 @@ class _SubmissionWorkspaceBodyState extends State<SubmissionWorkspaceBody> {
 
           if (state is PublishingFailure) {
             return AppErrorWidget(
-              message: state.error,
+              message: state.error.tr(),
               onRetry: _fetch,
             );
           }
@@ -287,12 +288,12 @@ class _CreateSubmissionForm extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         children: [
           Text(
-            'No submission recorded yet',
+            'noSubmissionRecordedYet'.tr(),
             style: AppTypography.bodyTitle(color: AppColors.primary),
           ),
           const SizedBox(height: 8),
           Text(
-            'Enter the journal’s submission ID to start tracking this research.',
+            'enterJournalSubmissionIdHint'.tr(),
             style: AppTypography.body(color: AppColors.textSecondary),
           ),
           if (journal != null && journal.isNotEmpty) ...[
@@ -305,9 +306,9 @@ class _CreateSubmissionForm extends StatelessWidget {
           const SizedBox(height: 24),
           LabeledWidget(
             labelPadding: const EdgeInsets.only(bottom: 8),
-            label: const Text(
-              'Journal Submission ID',
-              style: TextStyle(
+            label: Text(
+              'journalSubmissionId'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -315,14 +316,14 @@ class _CreateSubmissionForm extends StatelessWidget {
             ),
             widget: CustomTextField(
               controller: controller,
-              hintText: 'e.g. JES-2026-0142',
-              validationMessage: 'Please enter a journal submission ID',
+              hintText: 'journalSubmissionIdExample',
+              validationMessage: 'pleaseEnterJournalSubmissionId'.tr(),
               textInputAction: TextInputAction.done,
             ),
           ),
           const SizedBox(height: 32),
           PrimaryButton(
-            text: 'Create Submission',
+            text: 'createSubmission'.tr(),
             onPressed: onSubmit,
             width: double.infinity,
             height: 52,
@@ -362,7 +363,7 @@ class _LoadedWorkspace extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       children: [
         Text(
-          'Submission status',
+          'submissionStatus'.tr(),
           style: AppTypography.bodyTitle(color: AppColors.primary),
         ),
         if (journal != null && journal.isNotEmpty) ...[
@@ -379,9 +380,9 @@ class _LoadedWorkspace extends StatelessWidget {
         const SizedBox(height: 24),
         LabeledWidget(
           labelPadding: const EdgeInsets.only(bottom: 8),
-          label: const Text(
-            'Tracking number',
-            style: TextStyle(
+          label: Text(
+            'trackingNumber'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -389,16 +390,16 @@ class _LoadedWorkspace extends StatelessWidget {
           ),
           widget: CustomTextField(
             controller: trackingController,
-            hintText: 'Tracking number',
+            hintText: 'trackingNumber',
             readOnly: true,
           ),
         ),
         const SizedBox(height: 24),
         LabeledWidget(
           labelPadding: const EdgeInsets.only(bottom: 8),
-          label: const Text(
-            'Upload Evidence',
-            style: TextStyle(
+          label: Text(
+            'uploadEvidence'.tr(),
+            style: const TextStyle(
               color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -407,20 +408,20 @@ class _LoadedWorkspace extends StatelessWidget {
           widget: ManuscriptFilePickerButton(
             fileName: pickedEvidenceName,
             onPressed: onUploadEvidence,
-            emptyTitle: 'Select image or PDF',
-            emptySubtitle: 'Screenshot or email confirmation',
-            selectedSubtitle: 'Tap to upload another file',
+            emptyTitle: 'selectImageOrPdf',
+            emptySubtitle: 'screenshotOrEmailConfirmation',
+            selectedSubtitle: 'tapToUploadAnotherFile',
           ),
         ),
         const SizedBox(height: 24),
         Text(
-          'Uploaded evidence',
+          'uploadedEvidence'.tr(),
           style: AppTypography.bodyTitle(color: AppColors.primary),
         ),
         const SizedBox(height: 12),
         if (evidence.isEmpty)
           Text(
-            'No evidence uploaded yet.',
+            'noEvidenceUploadedYet'.tr(),
             style: AppTypography.body(color: AppColors.textSecondary),
           )
         else
@@ -465,8 +466,8 @@ class _LoadedWorkspace extends StatelessWidget {
               : i == resolvedIndex
                   ? _formatTimestamp(submission.updatedAt)
                   : i < resolvedIndex
-                      ? 'Completed'
-                      : 'Pending',
+                      ? 'completed'.tr()
+                      : 'pending'.tr(),
           state: i < resolvedIndex
               ? TimelineEventState.completed
               : i == resolvedIndex
@@ -478,23 +479,23 @@ class _LoadedWorkspace extends StatelessWidget {
 
   static String _formatTimestamp(DateTime value) {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'monthJan',
+      'monthFeb',
+      'monthMar',
+      'monthApr',
+      'monthMayShort',
+      'monthJun',
+      'monthJul',
+      'monthAug',
+      'monthSep',
+      'monthOct',
+      'monthNov',
+      'monthDec',
     ];
     final local = value.toLocal();
     final hour = local.hour.toString().padLeft(2, '0');
     final minute = local.minute.toString().padLeft(2, '0');
-    return '${local.day} ${months[local.month - 1]} ${local.year} · $hour:$minute';
+    return '${local.day} ${months[local.month - 1].tr()} ${local.year} · $hour:$minute';
   }
 }
 
@@ -557,7 +558,7 @@ class _EvidenceTile extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'View',
+              tooltip: 'view'.tr(),
               onPressed: onView,
               icon: const Icon(
                 Icons.visibility_outlined,
@@ -565,7 +566,7 @@ class _EvidenceTile extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Download',
+              tooltip: 'download'.tr(),
               onPressed: onDownload,
               icon: const Icon(
                 Icons.download_rounded,

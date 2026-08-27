@@ -36,6 +36,7 @@ class _AcademicWorkspaceBodyState extends State<AcademicWorkspaceBody> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
     return BlocConsumer<AcademicWorkspaceBloc, AcademicWorkspaceState>(
       listener: (context, state) {
         if (state is AcademicWorkspaceFailure) {
@@ -55,7 +56,7 @@ class _AcademicWorkspaceBodyState extends State<AcademicWorkspaceBody> {
               );
           AppSuccessDialog.show(
             context,
-            message: 'Academic project created successfully',
+            message: 'academicProjectCreated'.tr(),
           );
         } else if (state is AcademicPhaseStatusUpdated) {
           context.read<AcademicWorkspaceBloc>().add(
@@ -70,6 +71,7 @@ class _AcademicWorkspaceBodyState extends State<AcademicWorkspaceBody> {
             state is AcademicWorkspaceLoading || state is AcademicWorkspaceInitial;
 
         return Column(
+          key: ValueKey(locale.languageCode),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
@@ -89,7 +91,7 @@ class _AcademicWorkspaceBodyState extends State<AcademicWorkspaceBody> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: PrimaryButton(
-                text: 'New Academic Project',
+                text: 'newAcademicProject'.tr(),
                 icon: Icons.add_rounded,
                 onPressed: () => CreateAcademicProjectSheet.show(context),
                 width: double.infinity,
@@ -124,7 +126,7 @@ class _ProjectsList extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               children: const [
                 SizedBox(height: 80),
-                EmptyWidget(message: 'No academic projects yet'),
+                EmptyWidget(message: 'noAcademicProjectsYet'),
               ],
             )
           : Stack(

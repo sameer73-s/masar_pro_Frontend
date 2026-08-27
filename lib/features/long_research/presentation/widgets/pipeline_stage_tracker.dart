@@ -1,15 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../domain/enums/research_status.dart';
 import 'animated_progress_ring.dart';
 
 /// مرحلة واحدة في خط أنابيب البحث
 class _PipelineStage {
-  final String label;
+  final String labelKey;
   final IconData icon;
   final ResearchStatus status;
 
   const _PipelineStage({
-    required this.label,
+    required this.labelKey,
     required this.icon,
     required this.status,
   });
@@ -17,27 +18,27 @@ class _PipelineStage {
 
 const _stages = [
   _PipelineStage(
-    label: 'بناء الهيكل',
+    labelKey: 'researchStageOutlining',
     icon: Icons.account_tree_outlined,
     status: ResearchStatus.outlining,
   ),
   _PipelineStage(
-    label: 'جمع المصادر الأكاديمية',
+    labelKey: 'researchStageResearching',
     icon: Icons.search_outlined,
     status: ResearchStatus.researching,
   ),
   _PipelineStage(
-    label: 'كتابة المحتوى',
+    labelKey: 'researchStageWriting',
     icon: Icons.edit_note_outlined,
     status: ResearchStatus.writing,
   ),
   _PipelineStage(
-    label: 'مراجعة الترابط',
+    labelKey: 'researchStageReviewing',
     icon: Icons.fact_check_outlined,
     status: ResearchStatus.reviewing,
   ),
   _PipelineStage(
-    label: 'تجميع الملف',
+    labelKey: 'researchStageAssembling',
     icon: Icons.folder_zip_outlined,
     status: ResearchStatus.assembling,
   ),
@@ -91,7 +92,7 @@ class PipelineStageTracker extends StatelessWidget {
       ),
       padding: cardPadding,
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: Directionality.of(context),
         child: Column(
           children: [
             for (int i = 0; i < _stages.length; i++) ...[
@@ -193,7 +194,7 @@ class _StageStepTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                stage.label,
+                stage.labelKey.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight:
@@ -202,17 +203,17 @@ class _StageStepTile extends StatelessWidget {
                 ),
               ),
               if (isActive)
-                const Text(
-                  'جارٍ التنفيذ الآن...',
-                  style: TextStyle(
+                Text(
+                  'researchStageInProgress'.tr(),
+                  style: const TextStyle(
                     fontSize: 11,
                     color: kGoldAccent,
                   ),
                 ),
               if (isCompleted)
-                const Text(
-                  'مكتمل ✓',
-                  style: TextStyle(
+                Text(
+                  'researchStageDone'.tr(),
+                  style: const TextStyle(
                     fontSize: 11,
                     color: kPrimaryGreen,
                   ),

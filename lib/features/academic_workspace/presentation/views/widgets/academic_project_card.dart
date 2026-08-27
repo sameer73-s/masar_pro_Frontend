@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_filex/open_filex.dart';
@@ -31,6 +32,19 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
   bool _awaitingFeedback = false;
   bool _isDownloading = false;
 
+  String _localizedAcademicLevel(String level) {
+    switch (level) {
+      case 'Bachelor':
+        return 'levelBachelor'.tr();
+      case 'Master':
+        return 'levelMaster'.tr();
+      case 'PhD':
+        return 'levelPhD'.tr();
+      default:
+        return level;
+    }
+  }
+
   Future<void> _downloadAndOpenRevisedFile(String fileUrl) async {
     if (_isDownloading) return;
 
@@ -39,7 +53,10 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
         : '${ApiConfig.normalizedBaseUrl}$fileUrl';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'Invalid revised file URL');
+      await AppErrorDialog.show(
+        context,
+        message: 'invalidRevisedFileUrl'.tr(),
+      );
       return;
     }
 
@@ -65,12 +82,12 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
           context,
           message: openResult.message.isNotEmpty
               ? openResult.message
-              : 'Could not open the revised file',
+              : 'couldNotOpenRevisedFile'.tr(),
         );
       }
     } catch (_) {
       if (mounted) {
-        await AppErrorDialog.show(context, message: 'Download failed');
+        await AppErrorDialog.show(context, message: 'downloadFailed'.tr());
       }
     } finally {
       if (mounted) setState(() => _isDownloading = false);
@@ -108,6 +125,7 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
 
   @override
   Widget build(BuildContext context) {
+    Localizations.localeOf(context);
     return BlocConsumer<AcademicWorkspaceBloc, AcademicWorkspaceState>(
       listenWhen: (previous, current) =>
           _awaitingFeedback &&
@@ -117,20 +135,15 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
           setState(() => _awaitingFeedback = false);
           AppSuccessDialog.show(
             context,
-            title: 'Revision Ready',
-            message: 'Your AI-revised document is ready to download.',
-            okButtonText: 'Download Revised File',
+            title: 'revisionReady'.tr(),
+            message: 'revisionReadyMessage'.tr(),
+            okButtonText: 'downloadRevisedFile'.tr(),
             onOk: () => _downloadAndOpenRevisedFile(state.fileUrl),
           );
         } else if (state is AcademicWorkspaceFailure) {
           setState(() => _awaitingFeedback = false);
         }
       },
-      buildWhen: (previous, current) =>
-          current is AcademicWorkspaceLoading ||
-          current is FeedbackProcessed ||
-          current is AcademicWorkspaceFailure ||
-          current is AcademicProjectsLoaded,
       builder: (context, state) {
         final showWorker =
             _awaitingFeedback && state is AcademicWorkspaceLoading;
@@ -164,7 +177,7 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
                   const SizedBox(width: 4),
                   StatusBadge(
                     status: Status.toDo,
-                    label: widget.project.academicLevel,
+                    label: _localizedAcademicLevel(widget.project.academicLevel),
                   ),
                   _ProjectOverflowMenu(projectId: widget.project.id),
                 ],
@@ -177,15 +190,15 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
               ),
               const SizedBox(height: 16),
               if (showWorker) ...[
-                const AIWorkerCard(
-                  taskTitle: 'Generating AI Revision',
+                AIWorkerCard(
+                  taskTitle: 'generatingAiRevision'.tr(),
                   progress: 0.55,
                   state: AIWorkerState.processing,
                 ),
                 const SizedBox(height: 12),
               ],
               PrimaryButton(
-                text: 'View Project',
+                text: 'viewProject'.tr(),
                 onPressed: showWorker
                     ? null
                     : () {
@@ -205,7 +218,7 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
               ),
               const SizedBox(height: 10),
               PrimaryButton(
-                text: 'Add Feedback',
+                text: 'addFeedback'.tr(),
                 onPressed:
                     showWorker || _isDownloading ? null : _openFeedbackSheet,
                 width: double.infinity,
@@ -244,7 +257,7 @@ class _ProjectOverflowMenu extends StatelessWidget {
                 color: AppColors.error,
               ),
               title: Text(
-                'Delete',
+                'delete'.tr(),
                 style: TextStyle(color: AppColors.error),
               ),
               contentPadding: EdgeInsets.zero,
@@ -266,14 +279,13 @@ class _ProjectOverflowMenu extends StatelessWidget {
   void _confirmDelete(BuildContext context) {
     AppErrorDialog.show(
       context,
-      title: 'Delete Project',
-      message:
-          'This academic project and all its files will be permanently removed.',
-      okButtonText: 'Delete',
+      title: 'deleteProject'.tr(),
+      message: 'deleteProjectMessage'.tr(),
+      okButtonText: 'delete'.tr(),
       onOk: () => context.read<AcademicWorkspaceBloc>().add(
             DeleteAcademicProjectRequested(projectId),
           ),
-      secondaryButtonText: 'Cancel',
+      secondaryButtonText: 'cancel'.tr(),
       onSecondaryAction: () {},
     );
   }

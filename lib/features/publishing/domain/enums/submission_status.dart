@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum SubmissionStatus {
   submitted,
   withEditor,
@@ -33,12 +35,12 @@ enum SubmissionStatus {
       };
 
   String get label => switch (this) {
-        SubmissionStatus.submitted => 'Submitted',
-        SubmissionStatus.withEditor => 'With Editor',
-        SubmissionStatus.underReview => 'Under Review',
-        SubmissionStatus.revisionRequired => 'Revision Required',
-        SubmissionStatus.resubmitted => 'Resubmitted',
-        SubmissionStatus.accepted => 'Accepted',
-        SubmissionStatus.rejected => 'Rejected',
+        SubmissionStatus.submitted => 'statusSubmitted'.tr(),
+        SubmissionStatus.withEditor => 'statusWithEditor'.tr(),
+        SubmissionStatus.underReview => 'statusUnderReview'.tr(),
+        SubmissionStatus.revisionRequired => 'statusRevisionRequired'.tr(),
+        SubmissionStatus.resubmitted => 'statusResubmitted'.tr(),
+        SubmissionStatus.accepted => 'statusAccepted'.tr(),
+        SubmissionStatus.rejected => 'statusRejected'.tr(),
       };
 }

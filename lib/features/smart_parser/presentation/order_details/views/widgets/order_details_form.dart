@@ -87,7 +87,7 @@ class _OrderDetailsFormState extends State<OrderDetailsForm> {
       } else {
         AppErrorDialog.show(
           context,
-          message: 'يرجى إكمال الحقول المطلوبة',
+          message: 'pleaseCompleteRequiredFields'.tr(),
         );
       }
     }

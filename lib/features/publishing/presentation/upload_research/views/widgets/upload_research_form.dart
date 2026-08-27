@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/core/presentation/widgets/custom_text_field.dart';
@@ -33,9 +34,9 @@ class UploadResearchForm extends StatelessWidget {
         children: [
           LabeledWidget(
             labelPadding: const EdgeInsets.only(bottom: 8),
-            label: const Text(
-              'Research Title',
-              style: TextStyle(
+            label: Text(
+              'researchTitle'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -43,8 +44,8 @@ class UploadResearchForm extends StatelessWidget {
             ),
             widget: CustomTextField(
               controller: titleController,
-              hintText: 'Enter your research title',
-              validationMessage: 'Please enter a research title',
+              hintText: 'enterYourResearchTitle',
+              validationMessage: 'pleaseEnterResearchTitle'.tr(),
               textInputAction: TextInputAction.done,
               readOnly: !enabled,
             ),
@@ -52,9 +53,9 @@ class UploadResearchForm extends StatelessWidget {
           const SizedBox(height: 20),
           LabeledWidget(
             labelPadding: const EdgeInsets.only(bottom: 8),
-            label: const Text(
-              'Manuscript',
-              style: TextStyle(
+            label: Text(
+              'manuscript'.tr(),
+              style: const TextStyle(
                 color: AppColors.primary,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -68,7 +69,7 @@ class UploadResearchForm extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           PrimaryButton(
-            text: 'Submit & Analyze',
+            text: 'submitAndAnalyze'.tr(),
             onPressed: enabled ? onSubmit : null,
             width: double.infinity,
             height: 52,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../config/app_colors.dart';
 
@@ -45,7 +46,7 @@ class OptionsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  "تخصيص الخيارات",
+                  'customizeOptions'.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class OptionsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "عدد النسخ المطلوبة",
+                  'requiredVersionsCount'.tr(),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -111,7 +112,7 @@ class OptionsCard extends StatelessWidget {
             // ── Style changes Switch ──────────────────────────────────────────
             SwitchListTile.adaptive(
               title: Text(
-                "تغيير الألوان والتنسيق",
+                'changeColorsFormatting'.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -119,7 +120,7 @@ class OptionsCard extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                "يغير الألوان وحجم ونوع الخطوط بشكل عشوائي ومميز لكل نسخة",
+                'changeColorsFormattingDesc'.tr(),
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.slateGray,
@@ -135,7 +136,7 @@ class OptionsCard extends StatelessWidget {
             // ── Number changes Switch ─────────────────────────────────────────
             SwitchListTile.adaptive(
               title: Text(
-                "تغيير الأرقام بنسب طفيفة",
+                'changeNumbersSlightly'.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -143,7 +144,7 @@ class OptionsCard extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                "يغير القيم الرقمية عشوائياً بنسبة ±5% مع الحفاظ على الخانات العشرية والمعادلات",
+                'changeNumbersSlightlyDesc'.tr(),
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.slateGray,
