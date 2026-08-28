@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../../core/errors/app_failure.dart';
-import '../../../../../../core/shared/content_generation/domain/exceptions/content_generation_exceptions.dart';
+import '../../../../../core/errors/app_failure.dart';
+import '../../../../../core/shared/content_generation/domain/exceptions/content_generation_exceptions.dart';
 
 import '../../../domain/usecases/save_order_usecase.dart';
-import '../../../../../../core/shared/content_generation/domain/usecases/generate_content_usecase.dart';
+import '../../../../../core/shared/content_generation/domain/usecases/generate_content_usecase.dart';
 import 'order_details_event.dart';
 import 'order_details_state.dart';
 

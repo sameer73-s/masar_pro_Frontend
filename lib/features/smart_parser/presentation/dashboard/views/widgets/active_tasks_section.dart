@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
 import '../../../../../../config/app_theme.dart';
+import '../../../../../../core/presentation/widgets/premium_page_route.dart';
+import '../../../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../../agency/presentation/views/pages/agency_dashboard_page.dart';
 
 /// Compact operational card summarizing active / processing task counts.
@@ -17,11 +19,9 @@ class ActiveTasksSection extends StatelessWidget {
   final int processingCount;
 
   void _openActiveTasks(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const AgencyDashboardPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(premiumPageRoute<void>(const AgencyDashboardPage()));
   }
 
   @override
@@ -32,7 +32,7 @@ class ActiveTasksSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(18, 18, 14, 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(AppShapes.cardRadius),
         border: Border.all(color: AppColors.border),
         boxShadow: AppShadows.subtleCard,
@@ -70,9 +70,7 @@ class ActiveTasksSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'activeTasksSummary'.tr(
-              args: ['$activeCount', '$processingCount'],
-            ),
+            'activeTasksSummary'.tr(args: ['$activeCount', '$processingCount']),
             style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 13,
@@ -82,20 +80,15 @@ class ActiveTasksSection extends StatelessWidget {
           const SizedBox(height: 4),
           Align(
             alignment: AlignmentDirectional.centerStart,
-            child: TextButton(
+            child: PrimaryButton(
+              text: 'openActiveTasks'.tr(),
               onPressed: () => _openActiveTasks(context),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.accentPurple,
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
-                'openActiveTasks'.tr(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
+              width: 190,
+              height: 42,
+              backgroundColor: AppColors.surfacePurple,
+              textColor: AppColors.accentPurple,
+              borderRadius: 12,
+              icon: Icons.arrow_forward_rounded,
             ),
           ),
         ],

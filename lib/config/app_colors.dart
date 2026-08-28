@@ -19,6 +19,17 @@ class AppColors {
 
   static const Color accentOrange = Color(0xFFEA6C00);
 
+  // Shared presentation tokens for consistent premium surfaces and states.
+  static const Color uiBorder = Color(0xFFE8E5F0);
+  static const Color uiPending = Color(0xFFC5C0D3);
+  static const Color uiPurpleTrack = Color(0xFFEEE9FF);
+  static const Color uiPurpleProgress = Color(0xFF8764FF);
+  static const Color uiSuccess = Color(0xFF22C55E);
+  static const Color uiWarning = Color(0xFFD97706);
+  static const Color uiDanger = Color(0xFFEF4444);
+  static const Color uiMutedText = Color(0xFF4A4758);
+  static const Color uiFabShadow = Color(0x7D5F33E1);
+
   /// Light purple background
   static const Color surfacePurple = Color(0xFFF3F0FF);
 
@@ -136,7 +147,8 @@ class AppColors {
       locator<Configuration>().colors.leaveListItemBg;
   static Color get leaveListItemBorder =>
       locator<Configuration>().colors.leaveListItemBorder;
-  static Color get leaveTabTrack => locator<Configuration>().colors.leaveTabTrack;
+  static Color get leaveTabTrack =>
+      locator<Configuration>().colors.leaveTabTrack;
   static Color get leaveTabTrackBorder =>
       locator<Configuration>().colors.leaveTabTrackBorder;
   static Color get olive => locator<Configuration>().colors.olive;

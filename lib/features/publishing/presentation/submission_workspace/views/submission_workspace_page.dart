@@ -8,6 +8,7 @@ import 'package:masar_pro/injection/injection_container.dart' as di;
 
 import '../../bloc/publishing_bloc/publishing_bloc.dart';
 import '../../revision_workflow/views/revision_workflow_page.dart';
+import '../../submission_monitor/submission_monitor_page.dart';
 import 'widgets/submission_workspace_body.dart';
 
 class SubmissionWorkspacePage extends StatelessWidget {
@@ -16,11 +17,15 @@ class SubmissionWorkspacePage extends StatelessWidget {
     required this.projectId,
     required this.journalId,
     this.journalName,
+    this.targetUrl,
+    this.fileId,
   });
 
   final String projectId;
   final String journalId;
   final String? journalName;
+  final String? targetUrl;
+  final String? fileId;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +53,34 @@ class SubmissionWorkspacePage extends StatelessWidget {
           projectId: projectId,
           journalId: journalId,
           journalName: journalName,
+          targetUrl: targetUrl,
+          fileId: fileId,
+          onStartAutomatedSubmission: () => _openSubmissionMonitor(context),
+        ),
+      ),
+    );
+  }
+
+  void _openSubmissionMonitor(BuildContext context) {
+    final target = targetUrl?.trim() ?? '';
+    final manuscriptFileId = fileId?.trim() ?? '';
+    if (target.isEmpty || manuscriptFileId.isEmpty) {
+      AppErrorDialog.show(
+        context,
+        message:
+            'Automated submission needs the journal submission URL and manuscript file ID.',
+      );
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SubmissionMonitorPage(
+          projectId: projectId,
+          journalId: journalId,
+          targetUrl: target,
+          fileId: manuscriptFileId,
+          journalName: journalName,
         ),
       ),
     );
@@ -65,9 +98,7 @@ class SubmissionWorkspacePage extends StatelessWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => RevisionWorkflowPage(
-          submissionId: state.submission.id,
-        ),
+        builder: (_) => RevisionWorkflowPage(submissionId: state.submission.id),
       ),
     );
   }

@@ -1,30 +1,30 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:masar_pro/main.dart';
+import 'package:masar_pro/core/network/api_client.dart';
+import 'package:masar_pro/features/agency/domain/enums/task_status.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Masar Pro core smoke tests', () {
+    test('buildRequestUri joins the configured API root safely', () {
+      final uri = ApiClient.buildRequestUri(
+        serverURL: 'https://masar-pro-backend.onrender.com/',
+        endPoint: '/api/v1/tasks',
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(
+        uri.toString(),
+        'https://masar-pro-backend.onrender.com/api/v1/tasks',
+      );
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('TaskStatus maps backend wire values without losing states', () {
+      expect(
+        TaskStatus.fromApi('PENDING_APPROVAL'),
+        TaskStatus.pendingApproval,
+      );
+      expect(TaskStatus.fromApi('PROCESSING'), TaskStatus.processing);
+      expect(TaskStatus.fromApi('COMPLETED'), TaskStatus.completed);
+      expect(TaskStatus.completed.apiValue, 'COMPLETED');
+    });
   });
 }

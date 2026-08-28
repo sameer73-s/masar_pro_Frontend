@@ -20,6 +20,48 @@ class PublishingLoading extends PublishingState {
   List<Object?> get props => [message];
 }
 
+class PublishingSubmissionStarted extends PublishingState {
+  final AutomatedSubmissionJob job;
+
+  const PublishingSubmissionStarted(this.job);
+
+  @override
+  List<Object?> get props => [job];
+}
+
+class SubmissionStepProgress extends PublishingState {
+  final String state;
+  final String message;
+  final double progress;
+
+  const SubmissionStepProgress({
+    required this.state,
+    required this.message,
+    required this.progress,
+  });
+
+  @override
+  List<Object?> get props => [state, message, progress];
+}
+
+class HumanActionRequired extends PublishingState {
+  final String challengeType;
+
+  const HumanActionRequired(this.challengeType);
+
+  @override
+  List<Object?> get props => [challengeType];
+}
+
+class SubmissionCompleted extends PublishingState {
+  final String message;
+
+  const SubmissionCompleted([this.message = 'Submission dry run completed.']);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class PublishingProjectsLoaded extends PublishingState {
   final List<ResearchProject> projects;
 

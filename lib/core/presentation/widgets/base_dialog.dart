@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:masar_pro/config/strings.dart';
+import 'primary_button.dart';
 
 class BaseDialog extends StatelessWidget {
   const BaseDialog({
@@ -22,11 +23,14 @@ class BaseDialog extends StatelessWidget {
       actions:
           actions ??
           [
-            TextButton(
+            PrimaryButton(
+              text: Strings.ok.tr(),
               onPressed: () {
                 Navigator.of(dialogContext, rootNavigator: true).pop();
               },
-              child: Text(Strings.ok.tr()),
+              width: 96,
+              height: 40,
+              borderRadius: 10,
             ),
           ],
     );

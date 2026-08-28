@@ -21,21 +21,13 @@ class AppShadows {
 
   /// Subtle cards — offset (0, 4), blur 10
   static List<BoxShadow> get subtleCard => [
-        BoxShadow(
-          color: _shadow,
-          offset: const Offset(0, 4),
-          blurRadius: 10,
-        ),
-      ];
+    BoxShadow(color: _shadow, offset: const Offset(0, 4), blurRadius: 10),
+  ];
 
   /// Floating elements — offset (30, 20), blur 50
   static List<BoxShadow> get floating => [
-        BoxShadow(
-          color: _shadow,
-          offset: const Offset(30, 20),
-          blurRadius: 50,
-        ),
-      ];
+    BoxShadow(color: _shadow, offset: const Offset(30, 20), blurRadius: 50),
+  ];
 }
 
 ThemeData appTheme(BuildContext context) {
@@ -51,12 +43,10 @@ ThemeData appTheme(BuildContext context) {
     scaffoldBackgroundColor: AppColors.background,
     focusColor: AppColors.surfacePurple,
     cardColor: AppColors.background,
-    dividerColor: Colors.grey,
+    dividerColor: AppColors.uiBorder,
     hintColor: AppColors.hint,
     fontFamily: fontFamily,
-    tabBarTheme: const TabBarThemeData(
-      indicatorColor: AppColors.accentPurple,
-    ),
+    tabBarTheme: const TabBarThemeData(indicatorColor: AppColors.accentPurple),
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       primary: AppColors.primary,
@@ -95,7 +85,10 @@ ThemeData appTheme(BuildContext context) {
         backgroundColor: AppColors.accentPurple,
         foregroundColor: AppColors.white,
         elevation: 0,
-        textStyle: AppTypography.button(context: context, color: AppColors.white),
+        textStyle: AppTypography.button(
+          context: context,
+          color: AppColors.white,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppShapes.buttonRadius),
         ),
@@ -107,7 +100,10 @@ ThemeData appTheme(BuildContext context) {
         backgroundColor: AppColors.accentPurple,
         foregroundColor: AppColors.white,
         elevation: 0,
-        textStyle: AppTypography.button(context: context, color: AppColors.white),
+        textStyle: AppTypography.button(
+          context: context,
+          color: AppColors.white,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppShapes.buttonRadius),
         ),
@@ -154,23 +150,19 @@ ThemeData appTheme(BuildContext context) {
       fillColor: AppColors.background,
       contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
       border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(AppShapes.secondaryContainerRadius),
+        borderRadius: BorderRadius.circular(AppShapes.secondaryContainerRadius),
         borderSide: BorderSide(color: AppColors.gray),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(AppShapes.secondaryContainerRadius),
+        borderRadius: BorderRadius.circular(AppShapes.secondaryContainerRadius),
         borderSide: BorderSide(color: AppColors.gray),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(AppShapes.secondaryContainerRadius),
+        borderRadius: BorderRadius.circular(AppShapes.secondaryContainerRadius),
         borderSide: const BorderSide(color: AppColors.accentPurple),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(AppShapes.secondaryContainerRadius),
+        borderRadius: BorderRadius.circular(AppShapes.secondaryContainerRadius),
         borderSide: BorderSide(color: AppColors.error),
       ),
       hintStyle: AppTypography.body(color: AppColors.gray, context: context),
@@ -183,8 +175,9 @@ ThemeData appTheme(BuildContext context) {
       shape: WidgetStatePropertyAll(
         RoundedRectangleBorder(
           side: BorderSide(color: AppColors.gray, width: .5),
-          borderRadius:
-              BorderRadius.circular(AppShapes.secondaryContainerRadius),
+          borderRadius: BorderRadius.circular(
+            AppShapes.secondaryContainerRadius,
+          ),
         ),
       ),
       hintStyle: WidgetStatePropertyAll(

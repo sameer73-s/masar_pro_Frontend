@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
+import '../../../../../../config/constants.dart';
 import '../../../../../../config/app_theme.dart';
+import '../../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../../academic_workspace/presentation/views/pages/academic_workspace_page.dart';
 
@@ -11,11 +13,9 @@ class AcademicWorkspaceSection extends StatelessWidget {
   const AcademicWorkspaceSection({super.key});
 
   void _openAcademicWorkspace(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const AcademicWorkspacePage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(premiumPageRoute<void>(const AcademicWorkspacePage()));
   }
 
   @override
@@ -23,7 +23,7 @@ class AcademicWorkspaceSection extends StatelessWidget {
     final locale = Localizations.localeOf(context);
     return Material(
       key: ValueKey(locale.languageCode),
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: () => _openAcademicWorkspace(context),
         borderRadius: BorderRadius.circular(AppShapes.cardRadius),
@@ -33,12 +33,9 @@ class AcademicWorkspaceSection extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.surfacePurple,
-                Color(0xFFE8E1FF),
-              ],
+              colors: [AppColors.surfacePurple, AppColors.surfacePurple],
             ),
-            border: Border.all(color: const Color(0xFFE8E5F0)),
+            border: Border.all(color: AppColors.border),
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
@@ -56,11 +53,11 @@ class AcademicWorkspaceSection extends StatelessWidget {
                       ),
                       child: const Icon(
                         Icons.school_rounded,
-                        color: Colors.white,
+                        color: AppColors.background,
                         size: 26,
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: kSpacing16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +85,7 @@ class AcademicWorkspaceSection extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: kSpacing16),
                 PrimaryButton(
                   text: 'openAcademicWorkspace'.tr(),
                   onPressed: () => _openAcademicWorkspace(context),

@@ -3,19 +3,16 @@ import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 import 'package:masar_pro/core/presentation/widgets/custom_circular_progress.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
+const Color _kPubBorder = AppColors.uiBorder;
 
-const Color _kSuccessGreen = Color(0xFF22C55E);
-const Color _kWarningYellow = Color(0xFFD97706);
-const Color _kBlockerRed = Color(0xFFEF4444);
+const Color _kSuccessGreen = AppColors.uiSuccess;
+const Color _kWarningYellow = AppColors.uiWarning;
+const Color _kBlockerRed = AppColors.uiDanger;
 
 enum ReadinessCheckStatus { ready, warning, blocker }
 
 class ReadinessCheck {
-  const ReadinessCheck({
-    required this.label,
-    required this.status,
-  });
+  const ReadinessCheck({required this.label, required this.status});
 
   final String label;
   final ReadinessCheckStatus status;
@@ -110,20 +107,20 @@ class _ReadinessStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (Color bg, Color fg, String label) = switch (status) {
       ReadinessCheckStatus.ready => (
-          _kSuccessGreen.withValues(alpha: 0.12),
-          _kSuccessGreen,
-          'READY',
-        ),
+        _kSuccessGreen.withValues(alpha: 0.12),
+        _kSuccessGreen,
+        'READY',
+      ),
       ReadinessCheckStatus.warning => (
-          AppColors.surfaceYellow,
-          _kWarningYellow,
-          'WARNING',
-        ),
+        AppColors.surfaceYellow,
+        _kWarningYellow,
+        'WARNING',
+      ),
       ReadinessCheckStatus.blocker => (
-          _kBlockerRed.withValues(alpha: 0.12),
-          _kBlockerRed,
-          'BLOCKER',
-        ),
+        _kBlockerRed.withValues(alpha: 0.12),
+        _kBlockerRed,
+        'BLOCKER',
+      ),
     };
 
     return Container(
@@ -153,11 +150,14 @@ class _CheckRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (IconData icon, Color color) = switch (check.status) {
-      ReadinessCheckStatus.ready => (Icons.check_circle_rounded, _kSuccessGreen),
+      ReadinessCheckStatus.ready => (
+        Icons.check_circle_rounded,
+        _kSuccessGreen,
+      ),
       ReadinessCheckStatus.warning => (
-          Icons.warning_amber_rounded,
-          _kWarningYellow,
-        ),
+        Icons.warning_amber_rounded,
+        _kWarningYellow,
+      ),
       ReadinessCheckStatus.blocker => (Icons.cancel_rounded, _kBlockerRed),
     };
 

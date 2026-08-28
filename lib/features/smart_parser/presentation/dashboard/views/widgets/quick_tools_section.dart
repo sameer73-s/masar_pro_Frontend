@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../config/app_colors.dart';
+import '../../../../../../config/constants.dart';
+import '../../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../../content_creation/presentation/task_selection/views/task_selection_page.dart';
 import '../../../../../excel_versioner/excel_versioner_page.dart';
 import '../../../../../quality/presentation/screens/audit_screen.dart';
@@ -15,9 +17,7 @@ class QuickToolsSection extends StatelessWidget {
   const QuickToolsSection({super.key});
 
   void _push(BuildContext context, Widget page) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
+    Navigator.of(context).push(premiumPageRoute<void>(page));
   }
 
   @override
@@ -74,13 +74,13 @@ class QuickToolsSection extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: kSpacing12),
         SizedBox(
           height: 88,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: chips.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            separatorBuilder: (_, _) => const SizedBox(width: kSpacing12),
             itemBuilder: (context, index) => chips[index],
           ),
         ),

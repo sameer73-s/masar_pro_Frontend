@@ -55,7 +55,7 @@ class InProgressCard extends StatelessWidget {
                 height: 16,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.background,
                   shape: BoxShape.circle,
                 ),
                 child: Text(
@@ -73,7 +73,7 @@ class InProgressCard extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              color: Colors.black,
+              color: AppColors.primary,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -85,7 +85,7 @@ class InProgressCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress.clamp(0.0, 1.0),
               minHeight: 6,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.background,
               valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             ),
           ),

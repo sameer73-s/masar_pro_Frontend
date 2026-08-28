@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/errors/either.dart';
+import '../entities/automated_submission.dart';
 import '../entities/evidence.dart';
 import '../entities/journal_match.dart';
 import '../entities/manuscript_version.dart';
@@ -24,9 +25,13 @@ abstract class PublishingRepository {
     PlatformFile file,
   );
 
-  Future<Either<AppFailure, ReadinessReport>> analyzeReadiness(String projectId);
+  Future<Either<AppFailure, ReadinessReport>> analyzeReadiness(
+    String projectId,
+  );
 
-  Future<Either<AppFailure, List<JournalMatch>>> matchJournals(String projectId);
+  Future<Either<AppFailure, List<JournalMatch>>> matchJournals(
+    String projectId,
+  );
 
   Future<Either<AppFailure, String>> prepareManuscript(
     String projectId,
@@ -65,4 +70,15 @@ abstract class PublishingRepository {
     String submissionId,
     PlatformFile file,
   );
+
+  Future<Either<AppFailure, AutomatedSubmissionJob>> startAutomatedSubmission({
+    required String projectId,
+    required String journalId,
+    required String targetUrl,
+    required String fileId,
+  });
+
+  Stream<SubmissionProgressUpdate> watchAutomatedSubmission(String jobId);
+
+  Future<void> closeAutomatedSubmissionWatch();
 }

@@ -13,6 +13,7 @@ import '../../../../config/app_colors.dart';
 import '../../../../config/app_theme.dart';
 import '../../../../core/network/api_config.dart';
 import '../../../../core/presentation/widgets/academic_journey_header.dart';
+import '../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../core/presentation/widgets/pub/ai_worker_card.dart';
@@ -21,10 +22,7 @@ import '../research_module/research_module_page.dart';
 import 'bloc/proposal_module_bloc.dart';
 
 class ProposalModuleBody extends StatefulWidget {
-  const ProposalModuleBody({
-    super.key,
-    required this.projectId,
-  });
+  const ProposalModuleBody({super.key, required this.projectId});
 
   final String projectId;
 
@@ -55,17 +53,17 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
 
     if (!mounted) return;
     context.read<ProposalModuleBloc>().add(
-          UploadProposalRequested(
-            projectId: widget.projectId,
-            file: File(path),
-          ),
-        );
+      UploadProposalRequested(projectId: widget.projectId, file: File(path)),
+    );
   }
 
   Future<void> _downloadProposal(String? fileUrl) async {
     final raw = (fileUrl ?? '').trim();
     if (raw.isEmpty) {
-      await AppErrorDialog.show(context, message: 'noProposalFileAvailable'.tr());
+      await AppErrorDialog.show(
+        context,
+        message: 'noProposalFileAvailable'.tr(),
+      );
       return;
     }
 
@@ -74,7 +72,10 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         : '${ApiConfig.normalizedBaseUrl}$raw';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'invalidProposalFileUrl'.tr());
+      await AppErrorDialog.show(
+        context,
+        message: 'invalidProposalFileUrl'.tr(),
+      );
       return;
     }
 
@@ -141,28 +142,26 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
 
   void _approve() {
     context.read<ProposalModuleBloc>().add(
-          ApproveProposalRequested(widget.projectId),
-        );
+      ApproveProposalRequested(widget.projectId),
+    );
   }
 
   void _generateWithAi() {
     context.read<ProposalModuleBloc>().add(
-          GenerateProposalRequested(widget.projectId),
-        );
+      GenerateProposalRequested(widget.projectId),
+    );
   }
 
   void _skipProposal() {
     context.read<ProposalModuleBloc>().add(
-          SkipProposalRequested(widget.projectId),
-        );
+      SkipProposalRequested(widget.projectId),
+    );
   }
 
   void _proceedToResearch(AcademicProject project) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ResearchModulePage(projectId: project.id),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(premiumPageRoute<void>(ResearchModulePage(projectId: project.id)));
   }
 
   @override
@@ -175,8 +174,8 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
         }
         if (state is ProposalModuleSkipSuccess) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute<void>(
-              builder: (_) => ResearchModulePage(projectId: state.project.id),
+            premiumPageRoute<void>(
+              ResearchModulePage(projectId: state.project.id),
             ),
           );
         }
@@ -224,8 +223,8 @@ class _ProposalModuleBodyState extends State<ProposalModuleBody> {
                     text: 'retry'.tr(),
                     onPressed: () {
                       context.read<ProposalModuleBloc>().add(
-                            LoadProposalProjectRequested(widget.projectId),
-                          );
+                        LoadProposalProjectRequested(widget.projectId),
+                      );
                     },
                     width: 160,
                     height: 42,
@@ -335,23 +334,14 @@ class _UploadSection extends StatelessWidget {
           onTap: onUpload,
         ),
         const SizedBox(height: 20),
-        OutlinedButton(
+        PrimaryButton(
+          text: 'skipProposal'.tr(),
           onPressed: onSkip,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textSecondary,
-            side: BorderSide(color: AppColors.border),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppShapes.cardRadius),
-            ),
-          ),
-          child: Text(
-            'skipProposal'.tr(),
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          backgroundColor: AppColors.surfacePurple,
+          textColor: AppColors.textSecondary,
+          width: double.infinity,
+          height: 48,
+          borderRadius: AppShapes.cardRadius,
         ),
       ],
     );

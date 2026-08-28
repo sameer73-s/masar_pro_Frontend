@@ -12,28 +12,28 @@ enum UnifiedTaskType {
   generic;
 
   IconData get icon => switch (this) {
-        research => Icons.menu_book,
-        permit => Icons.assignment_turned_in,
-        report => Icons.description,
-        publishing => Icons.publish,
-        generic => Icons.task_alt,
-      };
+    research => Icons.menu_book,
+    permit => Icons.assignment_turned_in,
+    report => Icons.description,
+    publishing => Icons.publish,
+    generic => Icons.task_alt,
+  };
 
   Color get iconBackground => switch (this) {
-        research => AppColors.surfacePurple,
-        permit => AppColors.surfaceBlue,
-        report => AppColors.surfaceOrange,
-        publishing => AppColors.surfaceYellow,
-        generic => AppColors.surfacePink,
-      };
+    research => AppColors.surfacePurple,
+    permit => AppColors.surfaceBlue,
+    report => AppColors.surfaceOrange,
+    publishing => AppColors.surfaceYellow,
+    generic => AppColors.surfacePink,
+  };
 
   Color get iconColor => switch (this) {
-        research => AppColors.accentPurple,
-        permit => AppColors.statusBlue,
-        report => AppColors.accentOrange,
-        publishing => AppColors.accentYellow,
-        generic => AppColors.primary,
-      };
+    research => AppColors.accentPurple,
+    permit => AppColors.statusBlue,
+    report => AppColors.accentOrange,
+    publishing => AppColors.accentYellow,
+    generic => AppColors.primary,
+  };
 
   Color get progressColor => iconColor;
 
@@ -59,8 +59,8 @@ enum UnifiedTaskType {
   }
 }
 
-/// Standard task list card: category icon, title/subtitle, circular progress.
-class UnifiedTaskCard extends StatelessWidget {
+/// Standard task card with a subtle entrance and press interaction.
+class UnifiedTaskCard extends StatefulWidget {
   const UnifiedTaskCard({
     super.key,
     required this.title,
@@ -79,81 +79,116 @@ class UnifiedTaskCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
+  State<UnifiedTaskCard> createState() => _UnifiedTaskCardState();
+}
+
+class _UnifiedTaskCardState extends State<UnifiedTaskCard> {
+  bool _isPressed = false;
+
+  void _setPressed(bool value) {
+    if (_isPressed == value || !mounted) return;
+    setState(() => _isPressed = value);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      elevation: 1,
-      shadowColor: AppColors.shadowColor.withValues(alpha: 0.15),
-      borderRadius: BorderRadius.circular(15),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
+    final type = widget.taskType;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) => Opacity(
+        opacity: value,
+        child: Transform.scale(scale: 0.98 + (value * 0.02), child: child),
+      ),
+      child: Listener(
+        onPointerDown: (_) => _setPressed(true),
+        onPointerUp: (_) => _setPressed(false),
+        onPointerCancel: (_) => _setPressed(false),
+        child: AnimatedScale(
+          scale: _isPressed ? 0.985 : 1,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          child: Material(
+            color: AppColors.background,
+            elevation: 1,
+            shadowColor: AppColors.shadowColor.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(15),
+            child: InkWell(
+              onTap: widget.onTap,
+              borderRadius: BorderRadius.circular(15),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: taskType.iconBackground,
-                        borderRadius: BorderRadius.circular(9),
-                      ),
-                      alignment: Alignment.center,
-                      child: Icon(
-                        taskType.icon,
-                        size: 20,
-                        color: taskType.iconColor,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
+                      child: Row(
                         children: [
-                          Text(
-                            title,
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              color: type.iconBackground,
+                              borderRadius: BorderRadius.circular(9),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            alignment: Alignment.center,
+                            child: Icon(
+                              type.icon,
+                              size: 20,
+                              color: type.iconColor,
+                            ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            subtitle,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w400,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.title,
+                                  style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  widget.subtitle,
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(width: 12),
+                    CustomCircularProgress(
+                      progress: widget.progress,
+                      size: 42,
+                      strokeWidth: 4,
+                      trackColor: type.progressColor.withValues(alpha: 0.15),
+                      progressColor: type.progressColor,
+                      textColor: AppColors.primary,
+                      textSize: 11,
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
-              CustomCircularProgress(
-                progress: progress,
-                size: 42,
-                strokeWidth: 4,
-                trackColor: taskType.progressColor.withValues(alpha: 0.15),
-                progressColor: taskType.progressColor,
-                textColor: AppColors.primary,
-                textSize: 11,
-              ),
-            ],
+            ),
           ),
         ),
       ),

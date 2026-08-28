@@ -79,9 +79,7 @@ class AppErrorDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(r(15)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(r(15))),
       child: Padding(
         padding: EdgeInsets.fromLTRB(w(24), h(28), w(24), h(16)),
         child: Column(
@@ -150,22 +148,14 @@ class AppErrorDialog extends StatelessWidget {
             ),
             if (secondaryButtonText != null && onSecondaryAction != null) ...[
               SizedBox(height: h(12)),
-              TextButton(
+              PrimaryButton(
+                text: secondaryButtonText!,
                 onPressed: onSecondaryAction,
-                style: TextButton.styleFrom(
-                  minimumSize: Size(double.infinity, h(36)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(r(8)),
-                  ),
-                  foregroundColor: AppColors.grayStatus,
-                ),
-                child: Text(
-                  secondaryButtonText!,
-                  style: AppTypography.body(
-                    fontSize: 14,
-                    color: AppColors.grayStatus,
-                  ),
-                ),
+                width: double.infinity,
+                height: h(36),
+                borderRadius: r(8),
+                backgroundColor: AppColors.surfacePurple,
+                textColor: AppColors.grayStatus,
               ),
             ],
           ],

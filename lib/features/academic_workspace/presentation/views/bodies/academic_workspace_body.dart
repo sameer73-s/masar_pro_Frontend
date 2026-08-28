@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../../config/app_colors.dart';
+import '../../../../../config/constants.dart';
 import '../../../../../config/app_theme.dart';
 import '../../../../../config/strings.dart';
 import '../../../../../core/presentation/widgets/app_error_dialog.dart';
@@ -45,60 +46,78 @@ class _AcademicWorkspaceBodyState extends State<AcademicWorkspaceBody> {
             message: state.error.tr(),
             okButtonText: Strings.retry.tr(),
             onOk: () => context.read<AcademicWorkspaceBloc>().add(
-                  const FetchAcademicProjectsRequested(),
-                ),
+              const FetchAcademicProjectsRequested(),
+            ),
             secondaryButtonText: Strings.ok.tr(),
             onSecondaryAction: () {},
           );
         } else if (state is AcademicProjectCreated) {
           context.read<AcademicWorkspaceBloc>().add(
-                const FetchAcademicProjectsRequested(),
-              );
+            const FetchAcademicProjectsRequested(),
+          );
           AppSuccessDialog.show(
             context,
             message: 'academicProjectCreated'.tr(),
           );
         } else if (state is AcademicPhaseStatusUpdated) {
           context.read<AcademicWorkspaceBloc>().add(
-                const FetchAcademicProjectsRequested(),
-              );
+            const FetchAcademicProjectsRequested(),
+          );
         } else if (state is AcademicProjectsLoaded) {
           _projects = state.projects;
         }
       },
       builder: (context, state) {
         final isLoading =
-            state is AcademicWorkspaceLoading || state is AcademicWorkspaceInitial;
+            state is AcademicWorkspaceLoading ||
+            state is AcademicWorkspaceInitial;
 
-        return Column(
-          key: ValueKey(locale.languageCode),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: isLoading && _projects.isEmpty
-                    ? const _AcademicProjectsSkeleton()
-                    : _ProjectsList(
-                        projects: state is AcademicProjectsLoaded
-                            ? state.projects
-                            : _projects,
-                        onRefresh: _onRefresh,
-                        showInlineLoading: isLoading && _projects.isNotEmpty,
-                      ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-              child: PrimaryButton(
-                text: 'newAcademicProject'.tr(),
-                icon: Icons.add_rounded,
-                onPressed: () => CreateAcademicProjectSheet.show(context),
-                width: double.infinity,
-                height: 48,
-              ),
-            ),
-          ],
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final horizontalPadding = constraints.maxWidth >= 1100
+                ? 32.0
+                : constraints.maxWidth >= 650
+                ? 28.0
+                : 20.0;
+            return Column(
+              key: ValueKey(locale.languageCode),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
+                    child: isLoading && _projects.isEmpty
+                        ? const _AcademicProjectsSkeleton()
+                        : _ProjectsList(
+                            projects: state is AcademicProjectsLoaded
+                                ? state.projects
+                                : _projects,
+                            onRefresh: _onRefresh,
+                            showInlineLoading:
+                                isLoading && _projects.isNotEmpty,
+                          ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    kSpacing8,
+                    horizontalPadding,
+                    kSpacing16,
+                  ),
+                  child: PrimaryButton(
+                    text: 'newAcademicProject'.tr(),
+                    icon: Icons.add_rounded,
+                    onPressed: () => CreateAcademicProjectSheet.show(context),
+                    width: double.infinity,
+                    height: 48,
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -124,20 +143,47 @@ class _ProjectsList extends StatelessWidget {
       child: projects.isEmpty
           ? ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              children: const [
-                SizedBox(height: 80),
-                EmptyWidget(message: 'noAcademicProjectsYet'),
+              children: [
+                const SizedBox(height: 120),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: EmptyWidget(message: 'noAcademicProjectsYet'),
+                  ),
+                ),
               ],
             )
           : Stack(
               children: [
-                ListView.separated(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(top: 8, bottom: 16),
-                  itemCount: projects.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) =>
-                      AcademicProjectCard(project: projects[index]),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 900;
+                    if (isWide) {
+                      final columns = constraints.maxWidth >= 1180 ? 2 : 1;
+                      return GridView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 8, bottom: 16),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          mainAxisSpacing: kSpacing16,
+                          crossAxisSpacing: kSpacing16,
+                          mainAxisExtent: 340,
+                        ),
+                        itemCount: projects.length,
+                        itemBuilder: (context, index) =>
+                            AcademicProjectCard(project: projects[index]),
+                      );
+                    }
+                    return ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.only(top: 8, bottom: 16),
+                      itemCount: projects.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: kSpacing12),
+                      itemBuilder: (context, index) =>
+                          AcademicProjectCard(project: projects[index]),
+                    );
+                  },
                 ),
                 if (showInlineLoading)
                   const Positioned(

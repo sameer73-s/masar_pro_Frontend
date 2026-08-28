@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
-const Color _kPendingGrey = Color(0xFFC5C0D3);
+const Color _kPubBorder = AppColors.uiBorder;
+const Color _kPendingGrey = AppColors.uiPending;
 
 /// Horizontal stepper for the five academic-publishing stages.
 class PublishingProgressHeader extends StatelessWidget {
@@ -158,16 +158,17 @@ class _StageNode extends StatelessWidget {
         width: 28,
         height: 28,
         alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: fill,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
         child: isCompleted
-            ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
+            ? const Icon(
+                Icons.check_rounded,
+                size: 16,
+                color: AppColors.background,
+              )
             : Text(
                 '${index + 1}',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.background,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   height: 1,
@@ -192,10 +193,7 @@ class _Connector extends StatelessWidget {
       ),
       duration: const Duration(milliseconds: 350),
       builder: (context, color, _) {
-        return Container(
-          height: 2,
-          color: color,
-        );
+        return Container(height: 2, color: color);
       },
     );
   }

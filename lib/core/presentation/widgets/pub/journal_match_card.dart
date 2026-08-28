@@ -3,7 +3,7 @@ import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 import 'package:masar_pro/core/presentation/widgets/custom_circular_progress.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
+const Color _kPubBorder = AppColors.uiBorder;
 
 /// Recommended-journal card with quartile, APC, and match score.
 class JournalMatchCard extends StatelessWidget {
@@ -102,7 +102,9 @@ class JournalMatchCard extends StatelessWidget {
                       progress: value,
                       size: 48,
                       strokeWidth: 5,
-                      trackColor: AppColors.accentPurple.withValues(alpha: 0.15),
+                      trackColor: AppColors.accentPurple.withValues(
+                        alpha: 0.15,
+                      ),
                       progressColor: AppColors.accentPurple,
                       textColor: AppColors.primary,
                       textSize: 11,
@@ -119,10 +121,7 @@ class JournalMatchCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                _SelectPill(
-                  isSelected: isSelected,
-                  onSelect: onSelect,
-                ),
+                _SelectPill(isSelected: isSelected, onSelect: onSelect),
               ],
             ),
           ],
@@ -159,10 +158,7 @@ class _QuartileBadge extends StatelessWidget {
 }
 
 class _SelectPill extends StatelessWidget {
-  const _SelectPill({
-    required this.isSelected,
-    required this.onSelect,
-  });
+  const _SelectPill({required this.isSelected, required this.onSelect});
 
   final bool isSelected;
   final VoidCallback onSelect;
@@ -180,7 +176,7 @@ class _SelectPill extends StatelessWidget {
           child: Text(
             isSelected ? 'Selected' : 'Select',
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.accentPurple,
+              color: isSelected ? AppColors.background : AppColors.accentPurple,
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),

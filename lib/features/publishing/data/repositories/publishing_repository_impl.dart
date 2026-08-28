@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../../core/base/base_repository.dart';
 import '../../../../core/errors/app_failure.dart';
 import '../../../../core/errors/either.dart';
+import '../../domain/entities/automated_submission.dart';
 import '../../domain/entities/evidence.dart';
 import '../../domain/entities/journal_match.dart';
 import '../../domain/entities/manuscript_version.dart';
@@ -25,7 +26,8 @@ class PublishingRepositoryImpl extends BaseRepository
   });
 
   @override
-  Future<Either<AppFailure, List<ResearchProject>>> getResearchProjects() async {
+  Future<Either<AppFailure, List<ResearchProject>>>
+  getResearchProjects() async {
     return guardedCall(() async {
       final result = await remoteDataSource.getResearchProjects();
       return result.fold(
@@ -202,6 +204,39 @@ class PublishingRepositoryImpl extends BaseRepository
         (models) => Either.right(models),
       );
     });
+  }
+
+  @override
+  Future<Either<AppFailure, AutomatedSubmissionJob>> startAutomatedSubmission({
+    required String projectId,
+    required String journalId,
+    required String targetUrl,
+    required String fileId,
+  }) async {
+    return guardedCall(() async {
+      final result = await remoteDataSource.startAutomatedSubmission(
+        projectId: projectId,
+        journalId: journalId,
+        targetUrl: targetUrl,
+        fileId: fileId,
+      );
+      return result.fold(
+        (failure) => Either.left(failure),
+        (model) => Either.right(model.toEntity()),
+      );
+    });
+  }
+
+  @override
+  Stream<SubmissionProgressUpdate> watchAutomatedSubmission(String jobId) {
+    return remoteDataSource
+        .watchAutomatedSubmission(jobId)
+        .map((model) => model.toEntity());
+  }
+
+  @override
+  Future<void> closeAutomatedSubmissionWatch() {
+    return remoteDataSource.closeAutomatedSubmissionWatch();
   }
 
   @override

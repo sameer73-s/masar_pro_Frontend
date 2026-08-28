@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -5,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/errors/app_failure.dart';
+import '../../../domain/entities/automated_submission.dart';
 import '../../../domain/entities/evidence.dart';
 import '../../../domain/entities/journal_match.dart';
 import '../../../domain/entities/manuscript_version.dart';
@@ -22,7 +24,7 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
   final PublishingRepository repository;
 
   PublishingBloc({required this.repository})
-      : super(const PublishingInitial()) {
+    : super(const PublishingInitial()) {
     on<FetchResearchProjectsRequested>(_onFetchResearchProjectsRequested);
     on<CreateResearchRequested>(_onCreateResearchRequested);
     on<DeletePublishingProjectRequested>(_onDeletePublishingProjectRequested);
@@ -37,9 +39,16 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     on<AddReviewerCommentsRequested>(_onAddReviewerCommentsRequested);
     on<GenerateResponsesRequested>(_onGenerateResponsesRequested);
     on<UploadRevisionRequested>(_onUploadRevisionRequested);
+    on<StartAutomatedSubmissionRequested>(_onStartAutomatedSubmissionRequested);
+    on<SubmissionProgressReceived>(_onSubmissionProgressReceived);
+    on<SubmissionProgressStreamFailed>(_onSubmissionProgressStreamFailed);
+    on<StopAutomatedSubmissionMonitoringRequested>(
+      _onStopAutomatedSubmissionMonitoringRequested,
+    );
   }
 
   List<ReviewerComment> _comments = const [];
+  StreamSubscription<SubmissionProgressUpdate>? _submissionProgressSubscription;
 
   Future<void> _onFetchResearchProjectsRequested(
     FetchResearchProjectsRequested event,
@@ -204,23 +213,20 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
       event.submissionId,
       platformFile,
     );
-    result.fold(
-      (failure) => emit(PublishingFailure(failure.message)),
-      (evidence) {
-        if (previous is PublishingSubmissionLoaded) {
-          emit(
-            PublishingSubmissionLoaded(
-              previous.submission,
-              [...previous.evidence, evidence],
-            ),
-          );
-        } else {
-          emit(
-            const PublishingFailure('evidenceUploadedRefreshFailed'),
-          );
-        }
-      },
-    );
+    result.fold((failure) => emit(PublishingFailure(failure.message)), (
+      evidence,
+    ) {
+      if (previous is PublishingSubmissionLoaded) {
+        emit(
+          PublishingSubmissionLoaded(previous.submission, [
+            ...previous.evidence,
+            evidence,
+          ]),
+        );
+      } else {
+        emit(const PublishingFailure('evidenceUploadedRefreshFailed'));
+      }
+    });
   }
 
   Future<void> _onFetchReviewerCommentsRequested(
@@ -230,13 +236,12 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     emit(const PublishingLoading('loadingComments'));
 
     final result = await repository.getComments(event.submissionId);
-    result.fold(
-      (failure) => emit(PublishingFailure(failure.message)),
-      (comments) {
-        _comments = comments;
-        emit(PublishingCommentsLoaded(List.unmodifiable(_comments)));
-      },
-    );
+    result.fold((failure) => emit(PublishingFailure(failure.message)), (
+      comments,
+    ) {
+      _comments = comments;
+      emit(PublishingCommentsLoaded(List.unmodifiable(_comments)));
+    });
   }
 
   Future<void> _onAddReviewerCommentsRequested(
@@ -249,17 +254,14 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
       event.submissionId,
       event.comments,
     );
-    result.fold(
-      (failure) => emit(PublishingFailure(failure.message)),
-      (added) {
-        final existingIds = _comments.map((item) => item.id).toSet();
-        final uniqueAdded = added
-            .where((item) => item.id.isEmpty || !existingIds.contains(item.id))
-            .toList();
-        _comments = [..._comments, ...uniqueAdded];
-        emit(PublishingCommentsLoaded(List.unmodifiable(_comments)));
-      },
-    );
+    result.fold((failure) => emit(PublishingFailure(failure.message)), (added) {
+      final existingIds = _comments.map((item) => item.id).toSet();
+      final uniqueAdded = added
+          .where((item) => item.id.isEmpty || !existingIds.contains(item.id))
+          .toList();
+      _comments = [..._comments, ...uniqueAdded];
+      emit(PublishingCommentsLoaded(List.unmodifiable(_comments)));
+    });
   }
 
   Future<void> _onGenerateResponsesRequested(
@@ -269,13 +271,89 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
     emit(const PublishingLoading('generatingResponses'));
 
     final result = await repository.generateResponses(event.submissionId);
-    result.fold(
-      (failure) => emit(PublishingFailure(failure.message)),
-      (responses) {
-        _comments = _mergeResponses(_comments, responses);
-        emit(PublishingResponsesGenerated(responses));
+    result.fold((failure) => emit(PublishingFailure(failure.message)), (
+      responses,
+    ) {
+      _comments = _mergeResponses(_comments, responses);
+      emit(PublishingResponsesGenerated(responses));
+    });
+  }
+
+  Future<void> _onStartAutomatedSubmissionRequested(
+    StartAutomatedSubmissionRequested event,
+    Emitter<PublishingState> emit,
+  ) async {
+    await _closeSubmissionProgressWatch();
+    emit(const PublishingLoading('Starting automated submission dry run...'));
+
+    final result = await repository.startAutomatedSubmission(
+      projectId: event.projectId,
+      journalId: event.journalId,
+      targetUrl: event.targetUrl,
+      fileId: event.fileId,
+    );
+    await result.fold(
+      (failure) async => emit(PublishingFailure(failure.message)),
+      (job) async {
+        emit(PublishingSubmissionStarted(job));
+        _submissionProgressSubscription = repository
+            .watchAutomatedSubmission(job.jobId)
+            .listen(
+              (progress) => add(SubmissionProgressReceived(progress)),
+              onError: (Object error, StackTrace stackTrace) {
+                add(SubmissionProgressStreamFailed(error.toString()));
+              },
+            );
       },
     );
+  }
+
+  Future<void> _onSubmissionProgressReceived(
+    SubmissionProgressReceived event,
+    Emitter<PublishingState> emit,
+  ) async {
+    final progress = event.progress;
+    if (progress.isHumanActionRequired) {
+      emit(HumanActionRequired(progress.challengeType ?? progress.message));
+      return;
+    }
+    if (progress.isCompleted) {
+      emit(SubmissionCompleted(progress.message));
+      return;
+    }
+    emit(
+      SubmissionStepProgress(
+        state: progress.state,
+        message: progress.message,
+        progress: progress.progress,
+      ),
+    );
+  }
+
+  Future<void> _onSubmissionProgressStreamFailed(
+    SubmissionProgressStreamFailed event,
+    Emitter<PublishingState> emit,
+  ) async {
+    emit(PublishingFailure(event.error));
+  }
+
+  Future<void> _onStopAutomatedSubmissionMonitoringRequested(
+    StopAutomatedSubmissionMonitoringRequested event,
+    Emitter<PublishingState> emit,
+  ) async {
+    await _closeSubmissionProgressWatch();
+  }
+
+  Future<void> _closeSubmissionProgressWatch() async {
+    await _submissionProgressSubscription?.cancel();
+    _submissionProgressSubscription = null;
+    await repository.closeAutomatedSubmissionWatch();
+  }
+
+  @override
+  Future<void> close() async {
+    await _closeSubmissionProgressWatch();
+    return super.close();
   }
 
   Future<void> _onUploadRevisionRequested(
@@ -321,10 +399,6 @@ class PublishingBloc extends Bloc<PublishingEvent, PublishingState> {
   Future<PlatformFile> _toPlatformFile(File file) async {
     final segments = file.uri.pathSegments;
     final name = segments.isNotEmpty ? segments.last : file.path;
-    return PlatformFile(
-      name: name,
-      path: file.path,
-      size: await file.length(),
-    );
+    return PlatformFile(name: name, path: file.path, size: await file.length());
   }
 }

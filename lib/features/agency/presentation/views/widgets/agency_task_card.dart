@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../../../../config/app_colors.dart';
 import '../../../../../core/network/api_config.dart';
 import '../../../../../core/presentation/widgets/app_error_dialog.dart';
+import '../../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../../core/presentation/widgets/unified_task_card.dart';
 import '../../../domain/entities/agency_task.dart';
 import '../../../domain/enums/task_status.dart';
@@ -33,11 +34,7 @@ class AgencyTaskCard extends StatelessWidget {
               progress: task.progress,
               taskType: UnifiedTaskType.research,
             ),
-            Positioned(
-              top: 4,
-              right: 4,
-              child: _TaskOverflowMenu(task: task),
-            ),
+            Positioned(top: 4, right: 4, child: _TaskOverflowMenu(task: task)),
           ],
         ),
         const SizedBox(height: 8),
@@ -51,10 +48,9 @@ class AgencyTaskCard extends StatelessWidget {
   static String _taskTitle(AgencyTask task) {
     final folder = task.storageFolder.trim();
     if (folder.isEmpty) return 'longResearch'.tr();
-    final segment = folder.split(RegExp(r'[/\\]')).lastWhere(
-          (s) => s.isNotEmpty,
-          orElse: () => folder,
-        );
+    final segment = folder
+        .split(RegExp(r'[/\\]'))
+        .lastWhere((s) => s.isNotEmpty, orElse: () => folder);
     return segment
         .replaceAll(RegExp(r'[_-]+'), ' ')
         .split(' ')
@@ -67,17 +63,15 @@ class AgencyTaskCard extends StatelessWidget {
   }
 
   static String _taskSubtitle(AgencyTask task) {
-    final shortId =
-        task.id.length > 8 ? '${task.id.substring(0, 8)}…' : task.id;
+    final shortId = task.id.length > 8
+        ? '${task.id.substring(0, 8)}…'
+        : task.id;
     final quote = task.quotedPrice != null
         ? 'quoteWithValue'.tr(args: ['${task.quotedPrice}'])
         : '';
-    return 'agencyTaskSubtitle'.tr(args: [
-      task.clientId,
-      shortId,
-      _formatTime(task.createdAt),
-      quote,
-    ]);
+    return 'agencyTaskSubtitle'.tr(
+      args: [task.clientId, shortId, _formatTime(task.createdAt), quote],
+    );
   }
 
   static String _formatTime(DateTime date) {
@@ -134,8 +128,15 @@ class _TaskOverflowMenu extends StatelessWidget {
             PopupMenuItem(
               value: _TaskMenuAction.delete,
               child: ListTile(
-                leading: Icon(Icons.delete_outline, size: 20, color: AppColors.error),
-                title: Text('delete'.tr(), style: TextStyle(color: AppColors.error)),
+                leading: Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: AppColors.error,
+                ),
+                title: Text(
+                  'delete'.tr(),
+                  style: TextStyle(color: AppColors.error),
+                ),
                 contentPadding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
               ),
@@ -157,8 +158,9 @@ class _TaskOverflowMenu extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
-    final shortId =
-        task.id.length > 8 ? '${task.id.substring(0, 8)}…' : task.id;
+    final shortId = task.id.length > 8
+        ? '${task.id.substring(0, 8)}…'
+        : task.id;
     AppErrorDialog.show(
       context,
       title: 'deleteTask'.tr(),
@@ -208,9 +210,14 @@ class _TaskDetailsDialog extends StatelessWidget {
         ),
       ),
       actions: [
-        TextButton(
+        PrimaryButton(
+          text: 'close'.tr(),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('close'.tr()),
+          width: 96,
+          height: 42,
+          backgroundColor: AppColors.surfacePurple,
+          textColor: AppColors.accentPurple,
+          borderRadius: 10,
         ),
       ],
     );
@@ -250,47 +257,47 @@ class _AgencyTaskStatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (IconData icon, Color bg, Color fg, String label) = switch (status) {
       TaskStatus.uploaded => (
-          Icons.cloud_upload_outlined,
-          AppColors.surfaceBlue,
-          AppColors.statusBlue,
-          'taskStatusUploaded'.tr(),
-        ),
+        Icons.cloud_upload_outlined,
+        AppColors.surfaceBlue,
+        AppColors.statusBlue,
+        'taskStatusUploaded'.tr(),
+      ),
       TaskStatus.pendingApproval => (
-          Icons.hourglass_top_outlined,
-          AppColors.surfaceOrange,
-          AppColors.accentOrange,
-          'taskStatusPendingApproval'.tr(),
-        ),
+        Icons.hourglass_top_outlined,
+        AppColors.surfaceOrange,
+        AppColors.accentOrange,
+        'taskStatusPendingApproval'.tr(),
+      ),
       TaskStatus.approved => (
-          Icons.check_circle_outline,
-          AppColors.surfacePurple,
-          AppColors.accentPurple,
-          'taskStatusApproved'.tr(),
-        ),
+        Icons.check_circle_outline,
+        AppColors.surfacePurple,
+        AppColors.accentPurple,
+        'taskStatusApproved'.tr(),
+      ),
       TaskStatus.processing => (
-          Icons.autorenew,
-          AppColors.surfaceOrange,
-          AppColors.accentOrange,
-          'orderStatusProcessing'.tr(),
-        ),
+        Icons.autorenew,
+        AppColors.surfaceOrange,
+        AppColors.accentOrange,
+        'orderStatusProcessing'.tr(),
+      ),
       TaskStatus.completed => (
-          Icons.task_alt,
-          AppColors.surfacePurple,
-          AppColors.accentPurple,
-          'orderStatusCompleted'.tr(),
-        ),
+        Icons.task_alt,
+        AppColors.surfacePurple,
+        AppColors.accentPurple,
+        'orderStatusCompleted'.tr(),
+      ),
       TaskStatus.failed => (
-          Icons.error_outline,
-          AppColors.darkerRed.withValues(alpha: 0.12),
-          AppColors.error,
-          'taskStatusFailed'.tr(),
-        ),
+        Icons.error_outline,
+        AppColors.darkerRed.withValues(alpha: 0.12),
+        AppColors.error,
+        'taskStatusFailed'.tr(),
+      ),
       TaskStatus.rejected => (
-          Icons.block,
-          AppColors.darkerRed.withValues(alpha: 0.12),
-          AppColors.error,
-          'taskStatusRejected'.tr(),
-        ),
+        Icons.block,
+        AppColors.darkerRed.withValues(alpha: 0.12),
+        AppColors.error,
+        'taskStatusRejected'.tr(),
+      ),
     };
 
     return Align(
@@ -351,9 +358,8 @@ class _ActionRowState extends State<_ActionRow> {
           alignment: Alignment.centerRight,
           child: _TaskActionButton(
             label: 'process'.tr(),
-            onPressed: () => context.read<AgencyBloc>().add(
-                  ApproveTaskRequested(task.id),
-                ),
+            onPressed: () =>
+                context.read<AgencyBloc>().add(ApproveTaskRequested(task.id)),
           ),
         );
       case TaskStatus.approved:
@@ -362,12 +368,12 @@ class _ActionRowState extends State<_ActionRow> {
           child: _TaskActionButton(
             label: 'startProcessing'.tr(),
             onPressed: () => context.read<AgencyBloc>().add(
-                  ProcessTaskRequested(
-                    task.id,
-                    'long_research',
-                    const <String, dynamic>{},
-                  ),
-                ),
+              ProcessTaskRequested(
+                task.id,
+                'long_research',
+                const <String, dynamic>{},
+              ),
+            ),
           ),
         );
       case TaskStatus.processing:
@@ -388,19 +394,16 @@ class _ActionRowState extends State<_ActionRow> {
       case TaskStatus.failed:
         return Align(
           alignment: Alignment.centerRight,
-          child: TextButton.icon(
-            onPressed: () => context.read<AgencyBloc>().add(
-                  RetryTaskRequested(task.id),
-                ),
-            icon: Icon(Icons.refresh, size: 18, color: AppColors.error),
-            label: Text(
-              'retry'.tr(),
-              style: TextStyle(
-                color: AppColors.error,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
+          child: PrimaryButton(
+            text: 'retry'.tr(),
+            onPressed: () =>
+                context.read<AgencyBloc>().add(RetryTaskRequested(task.id)),
+            icon: Icons.refresh,
+            width: 104,
+            height: 42,
+            backgroundColor: AppColors.uiDanger.withValues(alpha: 0.1),
+            textColor: AppColors.error,
+            borderRadius: 10,
           ),
         );
     }
@@ -500,34 +503,21 @@ class _StatusProgressRow extends StatelessWidget {
 
 /// Content-sized pill matching SmallPillButton tokens without fixed width.
 class _TaskActionButton extends StatelessWidget {
-  const _TaskActionButton({
-    required this.label,
-    required this.onPressed,
-  });
+  const _TaskActionButton({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surfacePurple,
-      borderRadius: BorderRadius.circular(9),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(9),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.accentPurple,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ),
+    return PrimaryButton(
+      text: label,
+      onPressed: onPressed,
+      height: 42,
+      backgroundColor: AppColors.surfacePurple,
+      textColor: AppColors.accentPurple,
+      borderRadius: 10,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
     );
   }
 }

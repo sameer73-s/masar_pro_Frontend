@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
-const Color _kSuccessGreen = Color(0xFF22C55E);
-const Color _kPendingGrey = Color(0xFFC5C0D3);
+const Color _kPubBorder = AppColors.uiBorder;
+const Color _kSuccessGreen = AppColors.uiSuccess;
+const Color _kPendingGrey = AppColors.uiPending;
 
 enum AIWorkerState { processing, completed, waiting }
 
@@ -102,15 +102,15 @@ class _StateIcon extends StatelessWidget {
     return switch (state) {
       AIWorkerState.processing => const _RotatingSparkle(),
       AIWorkerState.completed => const Icon(
-          Icons.check_circle_rounded,
-          size: 20,
-          color: _kSuccessGreen,
-        ),
+        Icons.check_circle_rounded,
+        size: 20,
+        color: _kSuccessGreen,
+      ),
       AIWorkerState.waiting => const Icon(
-          Icons.hourglass_empty_rounded,
-          size: 20,
-          color: _kPendingGrey,
-        ),
+        Icons.hourglass_empty_rounded,
+        size: 20,
+        color: _kPendingGrey,
+      ),
     };
   }
 }

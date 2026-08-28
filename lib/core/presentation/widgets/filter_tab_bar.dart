@@ -61,7 +61,7 @@ class _FilterTab extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.accentPurple,
+              color: isSelected ? AppColors.background : AppColors.accentPurple,
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),

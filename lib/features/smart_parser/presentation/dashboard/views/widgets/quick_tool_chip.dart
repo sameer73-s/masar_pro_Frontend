@@ -23,7 +23,7 @@ class QuickToolChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppShapes.secondaryContainerRadius),
@@ -31,9 +31,10 @@ class QuickToolChip extends StatelessWidget {
           width: 88,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius:
-                BorderRadius.circular(AppShapes.secondaryContainerRadius),
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(
+              AppShapes.secondaryContainerRadius,
+            ),
             border: Border.all(color: AppColors.border),
             boxShadow: AppShadows.subtleCard,
           ),
