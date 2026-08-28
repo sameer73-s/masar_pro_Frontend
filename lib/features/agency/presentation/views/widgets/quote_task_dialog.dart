@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../config/app_colors.dart';
 import '../../../../../core/presentation/widgets/custom_text_field.dart';
-import '../../../../../core/presentation/widgets/small_pill_button.dart';
+import '../../../../../core/presentation/widgets/primary_button.dart';
 import '../../bloc/agency_bloc/agency_bloc.dart';
 
 class QuoteTaskDialog extends StatefulWidget {
@@ -44,9 +44,7 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
       return;
     }
 
-    context.read<AgencyBloc>().add(
-          QuoteTaskRequested(widget.taskId, parsed),
-        );
+    context.read<AgencyBloc>().add(QuoteTaskRequested(widget.taskId, parsed));
     Navigator.of(context).pop();
   }
 
@@ -67,7 +65,10 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
         children: [
           Text(
             'enterQuotedPriceHint'.tr(),
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
           ),
           const SizedBox(height: 12),
           CustomTextField(
@@ -90,16 +91,21 @@ class _QuoteTaskDialogState extends State<QuoteTaskDialog> {
         ],
       ),
       actions: [
-        TextButton(
+        PrimaryButton(
+          text: 'cancel'.tr(),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'cancel'.tr(),
-            style: const TextStyle(color: AppColors.textSecondary),
-          ),
+          width: 96,
+          height: 42,
+          backgroundColor: AppColors.surfacePurple,
+          textColor: AppColors.textSecondary,
+          borderRadius: 10,
         ),
-        SmallPillButton(
-          label: 'submitQuote'.tr(),
+        PrimaryButton(
+          text: 'submitQuote'.tr(),
           onPressed: _submit,
+          width: 132,
+          height: 42,
+          borderRadius: 10,
         ),
       ],
     );

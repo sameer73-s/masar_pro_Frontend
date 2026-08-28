@@ -21,19 +21,25 @@ class DateStatusIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final dots = <Widget>[];
     if (summary.hasTasks) {
-      dots.add(_Dot(
-        color: onSelectedBackground ? Colors.white : AppColors.accentPurple,
-      ));
+      dots.add(
+        _Dot(
+          color: onSelectedBackground
+              ? AppColors.background
+              : AppColors.accentPurple,
+        ),
+      );
     }
     if (summary.deadlineTomorrow) {
       dots.add(const _Dot(color: AppColors.accentYellow));
     }
     if (summary.isOverdue) {
-      dots.add(_Dot(
-        color: onSelectedBackground
-            ? const Color(0xFFFF8A80)
-            : AppColors.error,
-      ));
+      dots.add(
+        _Dot(
+          color: onSelectedBackground
+              ? AppColors.uiDanger.withValues(alpha: 0.55)
+              : AppColors.error,
+        ),
+      );
     }
 
     return SizedBox(
@@ -62,10 +68,7 @@ class _Dot extends StatelessWidget {
     return Container(
       width: DateStatusIndicator._size,
       height: DateStatusIndicator._size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

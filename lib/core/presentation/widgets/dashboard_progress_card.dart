@@ -16,8 +16,8 @@ class DashboardProgressCard extends StatelessWidget {
   final double progress;
   final VoidCallback onViewTask;
 
-  static const Color _trackColor = Color(0xFFEEE9FF);
-  static const Color _progressColor = Color(0xFF8764FF);
+  static const Color _trackColor = AppColors.uiPurpleTrack;
+  static const Color _progressColor = AppColors.uiPurpleProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +39,14 @@ class DashboardProgressCard extends StatelessWidget {
                   'todaysTaskAlmostDone'.tr(),
                   textDirection: Directionality.of(context),
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.background,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     height: 1.3,
                   ),
                 ),
                 const SizedBox(height: 16),
-                SmallPillButton(
-                  label: 'viewTask'.tr(),
-                  onPressed: onViewTask,
-                ),
+                SmallPillButton(label: 'viewTask'.tr(), onPressed: onViewTask),
               ],
             ),
           ),
@@ -60,7 +57,7 @@ class DashboardProgressCard extends StatelessWidget {
             strokeWidth: 6,
             trackColor: _trackColor,
             progressColor: _progressColor,
-            textColor: Colors.white,
+            textColor: AppColors.background,
           ),
         ],
       ),

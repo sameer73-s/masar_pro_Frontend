@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../../config/app_colors.dart';
 import '../../../../../../config/app_theme.dart';
+import '../../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../../../injection/injection_container.dart' as di;
 import '../../../../../content_creation/presentation/task_selection/views/task_selection_page.dart';
 import '../../../../../excel_versioner/excel_versioner_page.dart';
@@ -47,9 +48,7 @@ class QuickToolsBottomSheet extends StatelessWidget {
 
   void _push(BuildContext context, Widget page) {
     Navigator.of(context).pop();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
+    Navigator.of(context).push(premiumPageRoute<void>(page));
   }
 
   List<_QuickToolItem> _tools(BuildContext context) {
@@ -91,8 +90,8 @@ class QuickToolsBottomSheet extends StatelessWidget {
         onTap: () {
           Navigator.of(context).pop();
           Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => BlocProvider(
+            premiumPageRoute<void>(
+              BlocProvider(
                 create: (_) => di.locator<ResearchBloc>(),
                 child: const ResearchHubScreen(),
               ),
@@ -153,7 +152,7 @@ class QuickToolsBottomSheet extends StatelessWidget {
               itemBuilder: (context, index) {
                 final tool = tools[index];
                 return Material(
-                  color: Colors.transparent,
+                  color: AppColors.transparent,
                   child: InkWell(
                     onTap: tool.onTap,
                     borderRadius: BorderRadius.circular(AppShapes.cardRadius),
@@ -163,9 +162,10 @@ class QuickToolsBottomSheet extends StatelessWidget {
                         vertical: 14,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.circular(AppShapes.cardRadius),
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(
+                          AppShapes.cardRadius,
+                        ),
                         border: Border.all(color: AppColors.border),
                       ),
                       child: Row(

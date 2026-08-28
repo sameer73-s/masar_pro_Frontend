@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../config/app_colors.dart';
+import '../../../../../config/constants.dart';
 import '../../../../../core/presentation/widgets/custom_app_bar.dart';
 import '../../../../../core/presentation/widgets/filter_tab_bar.dart';
 import '../../../../../core/presentation/widgets/notification_bell.dart';
@@ -22,18 +23,18 @@ class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
   int _selectedTabIndex = 0;
 
   List<String> get _tabs => [
-        'allTasks'.tr(),
-        'orderStatusPending'.tr(),
-        'orderStatusProcessing'.tr(),
-        'orderStatusCompleted'.tr(),
-      ];
+    'allTasks'.tr(),
+    'orderStatusPending'.tr(),
+    'orderStatusProcessing'.tr(),
+    'orderStatusCompleted'.tr(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     Localizations.localeOf(context);
     return BlocProvider(
-      create: (_) => di.locator<AgencyBloc>()
-        ..add(const FetchAgencyTasksRequested()),
+      create: (_) =>
+          di.locator<AgencyBloc>()..add(const FetchAgencyTasksRequested()),
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: CustomAppBar(
@@ -48,37 +49,53 @@ class _AgencyDashboardPageState extends State<AgencyDashboardPage> {
           ],
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 8),
-                Builder(
-                  builder: (context) {
-                    return FilterTabBar(
-                      tabs: _tabs,
-                      selectedIndex: _selectedTabIndex,
-                      onTabSelected: (index) {
-                        setState(() => _selectedTabIndex = index);
-                        context.read<AgencyBloc>().add(
-                              FetchAgencyTasksRequested(
-                                statusFilter: switch (index) {
-                                  1 => TaskStatus.pendingApproval,
-                                  2 => TaskStatus.processing,
-                                  3 => TaskStatus.completed,
-                                  _ => null,
-                                },
-                              ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final horizontalPadding = constraints.maxWidth >= 1100
+                  ? 32.0
+                  : constraints.maxWidth >= 650
+                  ? 28.0
+                  : 20.0;
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1280),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: kSpacing8),
+                        Builder(
+                          builder: (context) {
+                            return FilterTabBar(
+                              tabs: _tabs,
+                              selectedIndex: _selectedTabIndex,
+                              onTabSelected: (index) {
+                                setState(() => _selectedTabIndex = index);
+                                context.read<AgencyBloc>().add(
+                                  FetchAgencyTasksRequested(
+                                    statusFilter: switch (index) {
+                                      1 => TaskStatus.pendingApproval,
+                                      2 => TaskStatus.processing,
+                                      3 => TaskStatus.completed,
+                                      _ => null,
+                                    },
+                                  ),
+                                );
+                              },
                             );
-                      },
-                    );
-                  },
+                          },
+                        ),
+                        const SizedBox(height: kSpacing12),
+                        const Expanded(child: AgencyDashboardBody()),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                const Expanded(child: AgencyDashboardBody()),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

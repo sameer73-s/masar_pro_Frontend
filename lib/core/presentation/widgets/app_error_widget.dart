@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/strings.dart';
 import '../../../config/app_colors.dart';
 import '../../../config/typography.dart';
+import 'primary_button.dart';
 
 class AppErrorWidget extends StatelessWidget {
   final String message;
@@ -18,11 +19,7 @@ class AppErrorWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: 48,
-              color: AppColors.error,
-            ),
+            Icon(Icons.error_outline_rounded, size: 48, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               message,
@@ -31,10 +28,12 @@ class AppErrorWidget extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              TextButton.icon(
+              PrimaryButton(
+                text: Strings.retry.tr(),
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: Text(Strings.retry.tr()),
+                icon: Icons.refresh,
+                width: 132,
+                height: 44,
               ),
             ],
           ],

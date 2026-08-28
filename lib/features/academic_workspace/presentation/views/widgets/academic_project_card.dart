@@ -11,6 +11,7 @@ import '../../../../../core/network/api_config.dart';
 import '../../../../../core/presentation/widgets/academic_journey_header.dart';
 import '../../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../../core/presentation/widgets/app_success_dialog.dart';
+import '../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../../core/presentation/widgets/primary_button.dart';
 import '../../../../../core/presentation/widgets/pub/ai_worker_card.dart';
 import '../../../../../core/presentation/widgets/status_badge.dart';
@@ -53,10 +54,7 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
         : '${ApiConfig.normalizedBaseUrl}$fileUrl';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(
-        context,
-        message: 'invalidRevisedFileUrl'.tr(),
-      );
+      await AppErrorDialog.show(context, message: 'invalidRevisedFileUrl'.tr());
       return;
     }
 
@@ -112,13 +110,13 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
       onSubmit: (feedbackText, feedbackFile, instructions) {
         setState(() => _awaitingFeedback = true);
         context.read<AcademicWorkspaceBloc>().add(
-              SubmitFeedbackRequested(
-                projectId: widget.project.id,
-                feedbackText: feedbackText,
-                instructions: instructions,
-                source: 'doctor',
-              ),
-            );
+          SubmitFeedbackRequested(
+            projectId: widget.project.id,
+            feedbackText: feedbackText,
+            instructions: instructions,
+            source: 'doctor',
+          ),
+        );
       },
     );
   }
@@ -148,85 +146,98 @@ class _AcademicProjectCardState extends State<AcademicProjectCard> {
         final showWorker =
             _awaitingFeedback && state is AcademicWorkspaceLoading;
 
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(AppShapes.cardRadius),
-            border: Border.all(color: AppColors.border),
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.0, end: 1.0),
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+          builder: (context, value, child) => Opacity(
+            opacity: value,
+            child: Transform.translate(
+              offset: Offset(0, 8 * (1 - value)),
+              child: child,
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.project.title,
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        height: 1.3,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(AppShapes.cardRadius),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.project.title,
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  StatusBadge(
-                    status: Status.toDo,
-                    label: _localizedAcademicLevel(widget.project.academicLevel),
-                  ),
-                  _ProjectOverflowMenu(projectId: widget.project.id),
-                ],
-              ),
-              const SizedBox(height: 16),
-              AcademicJourneyHeader(
-                proposalStatus: widget.project.proposalStatus,
-                researchStatus: widget.project.researchStatus,
-                publishingStatus: widget.project.publishingStatus,
-              ),
-              const SizedBox(height: 16),
-              if (showWorker) ...[
-                AIWorkerCard(
-                  taskTitle: 'generatingAiRevision'.tr(),
-                  progress: 0.55,
-                  state: AIWorkerState.processing,
+                    const SizedBox(width: 4),
+                    StatusBadge(
+                      status: Status.toDo,
+                      label: _localizedAcademicLevel(
+                        widget.project.academicLevel,
+                      ),
+                    ),
+                    _ProjectOverflowMenu(projectId: widget.project.id),
+                  ],
                 ),
-                const SizedBox(height: 12),
-              ],
-              PrimaryButton(
-                text: 'viewProject'.tr(),
-                onPressed: showWorker
-                    ? null
-                    : () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ProposalModulePage(
-                              projectId: widget.project.id,
+                const SizedBox(height: 16),
+                AcademicJourneyHeader(
+                  proposalStatus: widget.project.proposalStatus,
+                  researchStatus: widget.project.researchStatus,
+                  publishingStatus: widget.project.publishingStatus,
+                ),
+                const SizedBox(height: 16),
+                if (showWorker) ...[
+                  AIWorkerCard(
+                    taskTitle: 'generatingAiRevision'.tr(),
+                    progress: 0.55,
+                    state: AIWorkerState.processing,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                PrimaryButton(
+                  text: 'viewProject'.tr(),
+                  onPressed: showWorker
+                      ? null
+                      : () {
+                          Navigator.of(context).push(
+                            premiumPageRoute<void>(
+                              ProposalModulePage(projectId: widget.project.id),
                             ),
-                          ),
-                        );
-                      },
-                width: double.infinity,
-                height: 42,
-                borderRadius: 10,
-                backgroundColor: AppColors.surfacePurple,
-                textColor: AppColors.accentPurple,
-              ),
-              const SizedBox(height: 10),
-              PrimaryButton(
-                text: 'addFeedback'.tr(),
-                onPressed:
-                    showWorker || _isDownloading ? null : _openFeedbackSheet,
-                width: double.infinity,
-                height: 42,
-                borderRadius: 10,
-                icon: Icons.rate_review_outlined,
-              ),
-            ],
+                          );
+                        },
+                  width: double.infinity,
+                  height: 42,
+                  borderRadius: 10,
+                  backgroundColor: AppColors.surfacePurple,
+                  textColor: AppColors.accentPurple,
+                ),
+                const SizedBox(height: 10),
+                PrimaryButton(
+                  text: 'addFeedback'.tr(),
+                  onPressed: showWorker || _isDownloading
+                      ? null
+                      : _openFeedbackSheet,
+                  width: double.infinity,
+                  height: 42,
+                  borderRadius: 10,
+                  icon: Icons.rate_review_outlined,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -283,8 +294,8 @@ class _ProjectOverflowMenu extends StatelessWidget {
       message: 'deleteProjectMessage'.tr(),
       okButtonText: 'delete'.tr(),
       onOk: () => context.read<AcademicWorkspaceBloc>().add(
-            DeleteAcademicProjectRequested(projectId),
-          ),
+        DeleteAcademicProjectRequested(projectId),
+      ),
       secondaryButtonText: 'cancel'.tr(),
       onSecondaryAction: () {},
     );

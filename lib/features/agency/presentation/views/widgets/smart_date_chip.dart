@@ -35,9 +35,11 @@ class SmartDateChip extends StatelessWidget {
     final weekday = _weekdayKeys[date.weekday - 1].tr();
     final day = date.day.toString();
 
-    final Color bg = isSelected ? AppColors.accentPurple : Colors.white;
-    final Color fg = isSelected ? Colors.white : AppColors.primary;
-    final Color muted = isSelected ? Colors.white70 : AppColors.textSecondary;
+    final Color bg = isSelected ? AppColors.accentPurple : AppColors.background;
+    final Color fg = isSelected ? AppColors.background : AppColors.primary;
+    final Color muted = isSelected
+        ? AppColors.background.withValues(alpha: 0.7)
+        : AppColors.textSecondary;
 
     return Material(
       color: bg,

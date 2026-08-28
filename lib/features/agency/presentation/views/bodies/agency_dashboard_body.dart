@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../config/app_colors.dart';
+import '../../../../../config/constants.dart';
 import '../../../../../config/strings.dart';
 import '../../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../../core/presentation/widgets/app_error_widget.dart';
@@ -48,8 +49,8 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
       _pollTimer ??= Timer.periodic(const Duration(seconds: 5), (_) {
         if (!mounted) return;
         context.read<AgencyBloc>().add(
-              const FetchAgencyTasksRequested(silent: true),
-            );
+          const FetchAgencyTasksRequested(silent: true),
+        );
       });
     } else {
       _pollTimer?.cancel();
@@ -71,18 +72,15 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
       buildWhen: (previous, current) => current is! AgencyActionSuccess,
       listener: (context, state) {
         if (state is AgencyActionSuccess) {
-          AppSuccessDialog.show(
-            context,
-            message: state.message.tr(),
-          );
+          AppSuccessDialog.show(context, message: state.message.tr());
         } else if (state is AgencyFailure) {
           AppErrorDialog.show(
             context,
             message: state.error.tr(),
             okButtonText: Strings.retry.tr(),
             onOk: () => context.read<AgencyBloc>().add(
-                  const FetchAgencyTasksRequested(),
-                ),
+              const FetchAgencyTasksRequested(),
+            ),
             secondaryButtonText: Strings.ok.tr(),
             onSecondaryAction: () {},
           );
@@ -103,8 +101,8 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
           return AppErrorWidget(
             message: state.error.tr(),
             onRetry: () => context.read<AgencyBloc>().add(
-                  const FetchAgencyTasksRequested(),
-                ),
+              const FetchAgencyTasksRequested(),
+            ),
           );
         }
 
@@ -113,67 +111,106 @@ class _AgencyDashboardBodyState extends State<AgencyDashboardBody> {
         }
 
         final tasks = state.filteredTasks;
-        final countLabel =
-            tasks.length == 1 ? 'taskSingular'.tr() : 'taskPlural'.tr();
-        final dateLabel = DateFormat('d MMMM', context.locale.toString())
-            .format(state.selectedDate);
+        final countLabel = tasks.length == 1
+            ? 'taskSingular'.tr()
+            : 'taskPlural'.tr();
+        final dateLabel = DateFormat(
+          'd MMMM',
+          context.locale.toString(),
+        ).format(state.selectedDate);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SmartDateSelector(
-              selectedDate: state.selectedDate,
-              dateSummaries: state.dateSummaries,
-              onDateSelected: (date) => context.read<AgencyBloc>().add(
-                    SelectDateRequested(date),
-                  ),
-            ),
-            const SizedBox(height: 16),
-            DateFilterTabs(
-              mode: state.dateFilterMode,
-              onChanged: (mode) => context.read<AgencyBloc>().add(
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final contentSpacing = constraints.maxWidth >= 900
+                ? kSpacing20
+                : kSpacing16;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SmartDateSelector(
+                  selectedDate: state.selectedDate,
+                  dateSummaries: state.dateSummaries,
+                  onDateSelected: (date) =>
+                      context.read<AgencyBloc>().add(SelectDateRequested(date)),
+                ),
+                SizedBox(height: contentSpacing),
+                DateFilterTabs(
+                  mode: state.dateFilterMode,
+                  onChanged: (mode) => context.read<AgencyBloc>().add(
                     ChangeDateFilterRequested(mode),
                   ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'agencyDateTaskCount'.tr(args: [
-                dateLabel,
-                '${tasks.length}',
-                countLabel,
-              ]),
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: _onRefresh,
-                child: tasks.isEmpty
-                    ? ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          const SizedBox(height: 80),
-                          EmptyWidget(
-                            message: 'noAgencyTasksForThisDate',
+                ),
+                SizedBox(height: contentSpacing),
+                Text(
+                  'agencyDateTaskCount'.tr(
+                    args: [dateLabel, '${tasks.length}', countLabel],
+                  ),
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: kSpacing12),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: tasks.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              const SizedBox(height: 120),
+                              Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 360,
+                                  ),
+                                  child: EmptyWidget(
+                                    message: 'noAgencyTasksForThisDate',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : LayoutBuilder(
+                            builder: (context, feedConstraints) {
+                              final isWide = feedConstraints.maxWidth >= 900;
+                              if (isWide) {
+                                final columns = feedConstraints.maxWidth >= 1180
+                                    ? 3
+                                    : 2;
+                                return GridView.builder(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  padding: const EdgeInsets.only(bottom: 24),
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: columns,
+                                        mainAxisSpacing: kSpacing16,
+                                        crossAxisSpacing: kSpacing16,
+                                        mainAxisExtent: 286,
+                                      ),
+                                  itemCount: tasks.length,
+                                  itemBuilder: (context, index) =>
+                                      AgencyTaskCard(task: tasks[index]),
+                                );
+                              }
+                              return ListView.separated(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.only(bottom: 24),
+                                itemCount: tasks.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: kSpacing12),
+                                itemBuilder: (context, index) =>
+                                    AgencyTaskCard(task: tasks[index]),
+                              );
+                            },
                           ),
-                        ],
-                      )
-                    : ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(bottom: 24),
-                        itemCount: tasks.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (context, index) =>
-                            AgencyTaskCard(task: tasks[index]),
-                      ),
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

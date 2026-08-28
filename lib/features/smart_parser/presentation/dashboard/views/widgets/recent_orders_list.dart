@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../config/app_colors.dart';
+import '../../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../../../core/presentation/widgets/unified_task_card.dart';
 import '../../../../domain/entities/order_entity.dart';
 import '../../bloc/dashboard_bloc.dart';
@@ -55,10 +56,10 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
           Text(
             'activeOrders'.tr(),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppColors.deepNavy,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Cairo',
-                ),
+              color: AppColors.deepNavy,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Cairo',
+            ),
           ),
           const SizedBox(height: 16),
           if (_orders.isEmpty)
@@ -88,18 +89,13 @@ class _RecentOrdersListState extends State<RecentOrdersList> {
                   child: UnifiedTaskCard(
                     title: order.subject,
                     subtitle: 'orderCardSubtitle'.tr(
-                      args: [
-                        statusLabel,
-                        '${order.attachments.length}',
-                      ],
+                      args: [statusLabel, '${order.attachments.length}'],
                     ),
                     progress: order.status == 'completed' ? 1.0 : 0.0,
                     taskType: UnifiedTaskType.fromOrderType(order.taskType),
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => OrderDetailsPage(order: order),
-                        ),
+                        premiumPageRoute<void>(OrderDetailsPage(order: order)),
                       );
                     },
                   ),

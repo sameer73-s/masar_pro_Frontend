@@ -90,8 +90,10 @@ class _SmartDateSelectorState extends State<SmartDateSelector> {
   @override
   Widget build(BuildContext context) {
     final today = AgencyCalendarRange.dateOnly(DateTime.now());
-    final isTodaySelected =
-        AgencyCalendarRange.isSameDay(widget.selectedDate, today);
+    final isTodaySelected = AgencyCalendarRange.isSameDay(
+      widget.selectedDate,
+      today,
+    );
     final dates = _dates;
 
     return SizedBox(
@@ -138,10 +140,7 @@ class _SmartDateSelectorState extends State<SmartDateSelector> {
 }
 
 class _TodayButton extends StatelessWidget {
-  const _TodayButton({
-    required this.isSelected,
-    required this.onTap,
-  });
+  const _TodayButton({required this.isSelected, required this.onTap});
 
   final bool isSelected;
   final VoidCallback onTap;
@@ -161,7 +160,7 @@ class _TodayButton extends StatelessWidget {
           child: Text(
             'today'.tr(),
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.accentPurple,
+              color: isSelected ? AppColors.background : AppColors.accentPurple,
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             ),

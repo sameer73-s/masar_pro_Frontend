@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../config/app_colors.dart';
 import '../../../../../core/presentation/widgets/custom_bottom_navigation_bar.dart';
+import '../../../../../core/presentation/widgets/premium_page_route.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../../../../../injection/injection_container.dart' as di;
@@ -22,17 +23,15 @@ class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
 
   void _navigateToExcelVersioner() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const ExcelVersionerPage(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(premiumPageRoute<void>(const ExcelVersionerPage()));
   }
 
   void _navigateToResearch() {
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
+      premiumPageRoute<void>(
+        BlocProvider(
           create: (_) => di.locator<ResearchBloc>(),
           child: const ResearchHubScreen(),
         ),
@@ -41,11 +40,9 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void _navigateToSmartParser() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const SmartParserScreen(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(premiumPageRoute<void>(const SmartParserScreen()));
   }
 
   void _onItemTapped(int index) {

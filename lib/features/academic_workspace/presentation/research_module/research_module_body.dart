@@ -13,16 +13,14 @@ import '../../../../config/app_colors.dart';
 import '../../../../config/app_theme.dart';
 import '../../../../core/network/api_config.dart';
 import '../../../../core/presentation/widgets/academic_journey_header.dart';
+import '../../../../core/presentation/widgets/premium_page_route.dart';
 import '../../../../core/presentation/widgets/app_error_dialog.dart';
 import '../../../../core/presentation/widgets/primary_button.dart';
 import '../../../publishing/presentation/readiness_result/views/readiness_result_page.dart';
 import 'bloc/research_module_bloc.dart';
 
 class ResearchModuleBody extends StatefulWidget {
-  const ResearchModuleBody({
-    super.key,
-    required this.projectId,
-  });
+  const ResearchModuleBody({super.key, required this.projectId});
 
   final String projectId;
 
@@ -53,17 +51,17 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
 
     if (!mounted) return;
     context.read<ResearchModuleBloc>().add(
-          UploadResearchRequested(
-            projectId: widget.projectId,
-            file: File(path),
-          ),
-        );
+      UploadResearchRequested(projectId: widget.projectId, file: File(path)),
+    );
   }
 
   Future<void> _downloadResearch(String? fileUrl) async {
     final raw = (fileUrl ?? '').trim();
     if (raw.isEmpty) {
-      await AppErrorDialog.show(context, message: 'noResearchFileAvailable'.tr());
+      await AppErrorDialog.show(
+        context,
+        message: 'noResearchFileAvailable'.tr(),
+      );
       return;
     }
 
@@ -72,7 +70,10 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
         : '${ApiConfig.normalizedBaseUrl}$raw';
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      await AppErrorDialog.show(context, message: 'invalidResearchFileUrl'.tr());
+      await AppErrorDialog.show(
+        context,
+        message: 'invalidResearchFileUrl'.tr(),
+      );
       return;
     }
 
@@ -139,14 +140,14 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
 
   void _approve() {
     context.read<ResearchModuleBloc>().add(
-          ApproveResearchRequested(widget.projectId),
-        );
+      ApproveResearchRequested(widget.projectId),
+    );
   }
 
   void _proceedToPublishing() {
     context.read<ResearchModuleBloc>().add(
-          StartPublishingRequested(widget.projectId),
-        );
+      StartPublishingRequested(widget.projectId),
+    );
   }
 
   @override
@@ -159,10 +160,8 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
         }
         if (state is ResearchModulePublishingStarted) {
           Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => ReadinessResultPage(
-                projectId: state.pubProjectId,
-              ),
+            premiumPageRoute<void>(
+              ReadinessResultPage(projectId: state.pubProjectId),
             ),
           );
         }
@@ -196,8 +195,8 @@ class _ResearchModuleBodyState extends State<ResearchModuleBody> {
                     text: 'retry'.tr(),
                     onPressed: () {
                       context.read<ResearchModuleBloc>().add(
-                            LoadResearchProjectRequested(widget.projectId),
-                          );
+                        LoadResearchProjectRequested(widget.projectId),
+                      );
                     },
                     width: 160,
                     height: 42,

@@ -73,21 +73,42 @@ class _DashboardFormState extends State<DashboardForm> {
           kSpacing22,
           kSpacing24,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppBarGreeting(
-              userName: _userName,
-              avatarUrl: _avatarUrl,
-              hasNotifications: true,
-            ),
-            const SizedBox(height: kSpacing24),
-            const AcademicWorkspaceSection(),
-            const SizedBox(height: kSpacing24),
-            const ActiveTasksSection(),
-            const SizedBox(height: kSpacing24),
-            const QuickToolsSection(),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 900;
+            final workspaceAndTasks = isWide
+                ? const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: AcademicWorkspaceSection()),
+                      SizedBox(width: kSpacing16),
+                      Expanded(child: ActiveTasksSection()),
+                    ],
+                  )
+                : const Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      AcademicWorkspaceSection(),
+                      SizedBox(height: kSpacing24),
+                      ActiveTasksSection(),
+                    ],
+                  );
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppBarGreeting(
+                  userName: _userName,
+                  avatarUrl: _avatarUrl,
+                  hasNotifications: true,
+                ),
+                const SizedBox(height: kSpacing24),
+                workspaceAndTasks,
+                const SizedBox(height: kSpacing24),
+                const QuickToolsSection(),
+              ],
+            );
+          },
         ),
       ),
     );

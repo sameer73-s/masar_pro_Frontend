@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
-const Color _kPendingGrey = Color(0xFFC5C0D3);
+const Color _kPubBorder = AppColors.uiBorder;
+const Color _kPendingGrey = AppColors.uiPending;
 
 enum TimelineEventState { completed, current, pending }
 
@@ -21,10 +21,7 @@ class TimelineEvent {
 
 /// Vertical submission timeline with solid, pulsing, and dashed segments.
 class SubmissionTimelineWidget extends StatelessWidget {
-  const SubmissionTimelineWidget({
-    super.key,
-    required this.events,
-  });
+  const SubmissionTimelineWidget({super.key, required this.events});
 
   final List<TimelineEvent> events;
 
@@ -44,10 +41,7 @@ class SubmissionTimelineWidget extends StatelessWidget {
         child: Column(
           children: [
             for (var i = 0; i < events.length; i++)
-              _TimelineRow(
-                event: events[i],
-                isLast: i == events.length - 1,
-              ),
+              _TimelineRow(event: events[i], isLast: i == events.length - 1),
           ],
         ),
       ),
@@ -56,10 +50,7 @@ class SubmissionTimelineWidget extends StatelessWidget {
 }
 
 class _TimelineRow extends StatelessWidget {
-  const _TimelineRow({
-    required this.event,
-    required this.isLast,
-  });
+  const _TimelineRow({required this.event, required this.isLast});
 
   final TimelineEvent event;
   final bool isLast;
@@ -68,8 +59,7 @@ class _TimelineRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCompleted = event.state == TimelineEventState.completed;
     final isCurrent = event.state == TimelineEventState.current;
-    final lineColor =
-        isCompleted ? AppColors.accentPurple : _kPendingGrey;
+    final lineColor = isCompleted ? AppColors.accentPurple : _kPendingGrey;
 
     return IntrinsicHeight(
       child: Row(
@@ -85,10 +75,7 @@ class _TimelineRow extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: isCompleted
-                          ? Container(
-                              width: 2,
-                              color: AppColors.accentPurple,
-                            )
+                          ? Container(width: 2, color: AppColors.accentPurple)
                           : LayoutBuilder(
                               builder: (context, constraints) {
                                 return CustomPaint(
@@ -114,8 +101,7 @@ class _TimelineRow extends StatelessWidget {
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 14,
-                      fontWeight:
-                          isCurrent ? FontWeight.w700 : FontWeight.w600,
+                      fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -178,10 +164,7 @@ class _PulsingDotState extends State<_PulsingDot> {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween(
-        begin: _forward ? 0.75 : 1.15,
-        end: _forward ? 1.15 : 0.75,
-      ),
+      tween: Tween(begin: _forward ? 0.75 : 1.15, end: _forward ? 1.15 : 0.75),
       duration: const Duration(milliseconds: 800),
       curve: Curves.easeInOut,
       onEnd: () {

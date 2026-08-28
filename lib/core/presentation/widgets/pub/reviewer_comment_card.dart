@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/config/app_theme.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
+const Color _kPubBorder = AppColors.uiBorder;
 
 /// Reviewer comment with an optional AI-suggested response and accept/edit actions.
 class ReviewerCommentCard extends StatelessWidget {
@@ -43,7 +43,7 @@ class ReviewerCommentCard extends StatelessWidget {
             Text(
               commentText,
               style: const TextStyle(
-                color: Color(0xFF4A4758),
+                color: AppColors.uiMutedText,
                 fontSize: 14,
                 height: 1.45,
                 fontWeight: FontWeight.w400,
@@ -58,7 +58,7 @@ class ReviewerCommentCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F0FF),
+                  color: AppColors.surfacePurple,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -138,7 +138,7 @@ class _PillButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: filled ? AppColors.accentPurple : Colors.transparent,
+      color: filled ? AppColors.accentPurple : AppColors.transparent,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onPressed,
@@ -147,14 +147,12 @@ class _PillButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: filled
-                ? null
-                : Border.all(color: AppColors.accentPurple),
+            border: filled ? null : Border.all(color: AppColors.accentPurple),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: filled ? Colors.white : AppColors.accentPurple,
+              color: filled ? AppColors.background : AppColors.accentPurple,
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),

@@ -24,7 +24,7 @@ class AcademicWorkspaceBanner extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Material(
-          color: Colors.transparent,
+          color: AppColors.transparent,
           child: InkWell(
             onTap: onAcademicWorkspaceTap,
             borderRadius: BorderRadius.circular(AppShapes.cardRadius),
@@ -34,12 +34,9 @@ class AcademicWorkspaceBanner extends StatelessWidget {
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.surfacePurple,
-                    Color(0xFFE8E1FF),
-                  ],
+                  colors: [AppColors.surfacePurple, AppColors.surfacePurple],
                 ),
-                border: Border.all(color: const Color(0xFFE8E5F0)),
+                border: Border.all(color: AppColors.uiBorder),
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
@@ -57,7 +54,7 @@ class AcademicWorkspaceBanner extends StatelessWidget {
                           ),
                           child: const Icon(
                             Icons.school_rounded,
-                            color: Colors.white,
+                            color: AppColors.background,
                             size: 26,
                           ),
                         ),
@@ -111,25 +108,15 @@ class AcademicWorkspaceBanner extends StatelessWidget {
         const SizedBox(height: 12),
         Align(
           alignment: AlignmentDirectional.centerStart,
-          child: TextButton.icon(
+          child: PrimaryButton(
+            text: 'activeTasks'.tr(),
             onPressed: onActiveTasksTap,
-            icon: const Icon(
-              Icons.task_alt_rounded,
-              size: 18,
-              color: AppColors.accentPurple,
-            ),
-            label: Text(
-              'activeTasks'.tr(),
-              style: const TextStyle(
-                color: AppColors.accentPurple,
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
-            ),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.accentPurple,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            ),
+            icon: Icons.task_alt_rounded,
+            width: 170,
+            height: 42,
+            backgroundColor: AppColors.surfacePurple,
+            textColor: AppColors.accentPurple,
+            borderRadius: 12,
           ),
         ),
       ],

@@ -38,9 +38,11 @@ class DateSelectorChip extends StatelessWidget {
     final weekday = _weekdays[date.weekday - 1];
     final day = date.day.toString().padLeft(2, '0');
 
-    final Color bg = isSelected ? AppColors.accentPurple : Colors.white;
-    final Color fg = isSelected ? Colors.white : AppColors.primary;
-    final Color muted = isSelected ? Colors.white : AppColors.textSecondary;
+    final Color bg = isSelected ? AppColors.accentPurple : AppColors.background;
+    final Color fg = isSelected ? AppColors.background : AppColors.primary;
+    final Color muted = isSelected
+        ? AppColors.background
+        : AppColors.textSecondary;
 
     return Material(
       color: bg,

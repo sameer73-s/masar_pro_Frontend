@@ -16,7 +16,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
   final VoidCallback onFabPressed;
 
   /// rgba(95, 51, 225, 0.49)
-  static const Color _fabShadow = Color(0x7D5F33E1);
+  static const Color _fabShadow = AppColors.uiFabShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                 alignment: Alignment.center,
                 child: const Icon(
                   Icons.add,
-                  color: Colors.white,
+                  color: AppColors.background,
                   size: 28,
                 ),
               ),

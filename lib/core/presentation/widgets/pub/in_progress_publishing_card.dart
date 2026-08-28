@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:masar_pro/config/app_colors.dart';
 import 'package:masar_pro/core/presentation/widgets/status_badge.dart';
 
-const Color _kPubBorder = Color(0xFFE8E5F0);
+const Color _kPubBorder = AppColors.uiBorder;
 
 /// Compact "In Progress" publishing project card.
 class InProgressPublishingCard extends StatelessWidget {
@@ -29,7 +29,7 @@ class InProgressPublishingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFEEE9FF),
+        color: AppColors.uiPurpleTrack,
         borderRadius: BorderRadius.circular(19),
         border: Border.all(color: _kPubBorder),
       ),
@@ -80,7 +80,7 @@ class InProgressPublishingCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: value,
                         minHeight: 6,
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColors.background,
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           AppColors.accentPurple,
                         ),

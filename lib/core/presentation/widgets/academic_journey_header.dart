@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../config/app_colors.dart';
 
 /// Visual state for a single academic journey stage.
-enum AcademicJourneyStageState {
-  approved,
-  active,
-  locked,
-}
+enum AcademicJourneyStageState { approved, active, locked }
 
 /// Horizontal 3-stage journey: Proposal → Full Research → Publishing.
 class AcademicJourneyHeader extends StatelessWidget {
@@ -121,7 +117,7 @@ class _JourneyConnector extends StatelessWidget {
     return Container(
       height: 2,
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      color: completed ? AppColors.accentPurple : const Color(0xFFC5C0D3),
+      color: completed ? AppColors.accentPurple : AppColors.uiPending,
     );
   }
 }
@@ -163,15 +159,15 @@ class _JourneyStageNode extends StatelessWidget {
                     color: isApproved
                         ? AppColors.greenLight
                         : isActive
-                            ? AppColors.surfacePurple
-                            : AppColors.grayLight,
+                        ? AppColors.surfacePurple
+                        : AppColors.grayLight,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isApproved
                           ? AppColors.success
                           : isActive
-                              ? AppColors.accentPurple
-                              : const Color(0xFFC5C0D3),
+                          ? AppColors.accentPurple
+                          : AppColors.uiPending,
                       width: 1.5,
                     ),
                   ),
@@ -241,12 +237,14 @@ class _PulsingDotState extends State<_PulsingDot>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _scale = Tween<double>(begin: 0.85, end: 1.25).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _opacity = Tween<double>(begin: 0.55, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scale = Tween<double>(
+      begin: 0.85,
+      end: 1.25,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _opacity = Tween<double>(
+      begin: 0.55,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

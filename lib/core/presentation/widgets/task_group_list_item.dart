@@ -27,7 +27,7 @@ class TaskGroupListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.background,
       elevation: 1,
       shadowColor: AppColors.shadowColor.withValues(alpha: 0.15),
       borderRadius: BorderRadius.circular(15),
@@ -47,11 +47,7 @@ class TaskGroupListItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(9),
                     ),
                     alignment: Alignment.center,
-                    child: Icon(
-                      icon,
-                      size: 20,
-                      color: iconColor,
-                    ),
+                    child: Icon(icon, size: 20, color: iconColor),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
